@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Build') { 
             steps { 
-                sh 'dotnet build' 
+                sh 'cd idetector && dotnet build' 
             }
         }
         stage('Test'){
