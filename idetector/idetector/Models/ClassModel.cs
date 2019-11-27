@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace idetector.Models
 {
-    class ClassModel
+    public class ClassModel
     {
     }
 }
