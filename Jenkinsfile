@@ -6,6 +6,11 @@ pipeline {
                 sh 'cd idetector && dotnet build' 
             }
         }
+        stage('Require packages') { 
+            steps { 
+                sh 'cd idetector/xUnitTest  && dotnet add package XunitXml.TestLogger --version 2.1.26' 
+            }
+        }
         stage('Test'){
             steps {
                 sh 'cd idetector/xUnitTest && dotnet test --logger:xunit'
