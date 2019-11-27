@@ -6,7 +6,7 @@ pipeline {
                 sh 'cd idetector/idetector  && dotnet restore' 
                 sh 'cd idetector/xUnitTest  && dotnet restore' 
                 sh 'cd idetector/xUnitTest  && dotnet add package XunitXml.TestLogger --version 2.1.26' 
-                sh 'cd idetector/xUnitTest  && dotnet tool install -g dotnet-xunit-to-junit' 
+                sh 'cd idetector/xUnitTest  && dotnet tool install -g dotnet-xunit-to-junit || true' 
             }
         }
         stage('Build') { 
