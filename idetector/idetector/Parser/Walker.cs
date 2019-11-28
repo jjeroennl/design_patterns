@@ -23,6 +23,8 @@ namespace idetector.Parser
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
+            MethodModel methodModel = new MethodModel(node);
+
             base.VisitMethodDeclaration(node);
         }
 
