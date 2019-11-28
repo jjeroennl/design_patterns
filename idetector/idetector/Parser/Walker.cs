@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using idetector.Collections;
 using idetector.Models;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -37,10 +38,16 @@ namespace idetector.Parser
             base.VisitPropertyDeclaration(node);
         }
 
+
         public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
         {
             PropertyModel propertyModel = new PropertyModel(node);
             base.VisitFieldDeclaration(node);
+        }  
+        
+        public ClassCollection getCollection()
+        {
+            return new ClassCollection();
         }
     }
 }

@@ -7,7 +7,7 @@ using idetector.Models;
 
 namespace idetector.Collections
 {
-    class ClassCollection
+    public class ClassCollection
     {
 
         /// <summary>
