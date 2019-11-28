@@ -18,6 +18,8 @@ namespace idetector.Parser
 
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
+            ClassModel classModel = new ClassModel(node);
+
             base.VisitClassDeclaration(node);
         }
 

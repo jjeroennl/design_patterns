@@ -9,12 +9,80 @@ namespace idetector.Models
 {
     public class ClassModel
     {
-        public List<MethodModel> methods = new List<MethodModel>();
-        public List<PropertyModel> properties = new List<PropertyModel>();
+        private ClassDeclarationSyntax _node { get; set; }
+        public string[] Modifiers { get; set; }
+        public string[] Members { get; set; }
+        public string[] Attributes { get; set; }
+        public string Keyword { get; set; }
+        public string Identifier { get; set; }
+
+        private List<MethodModel> Methods = new List<MethodModel>();
+        private List<PropertyModel> Properties = new List<PropertyModel>();
 
         public ClassModel(ClassDeclarationSyntax node)
         {
+            _node = node;
+            int MemberCount = _node.Members.Count;
+            int ModifierCount = _node.Modifiers.Count;
+            int AttributeCount = _node.AttributeLists.Count;
 
+            if (MemberCount != 0)
+            {
+                Members = new string[MemberCount];
+                for (int i = 0; i < MemberCount; i++)
+                {
+                    Members[i] = _node.Members[i].ToString();
+                }
+            }
+            else Members = null;
+
+            if (ModifierCount != 0)
+            {
+                Modifiers = new string[ModifierCount];
+                for (int i = 0; i < ModifierCount; i++)
+                {
+                    Modifiers[i] = _node.Modifiers[i].ToString();
+                }
+            }
+            else Modifiers = null;
+
+            if (AttributeCount != 0)
+            {
+                Attributes = new string[AttributeCount];
+                for (int i = 0; i < AttributeCount; i++)
+                {
+                    Attributes[i] = _node.AttributeLists[i].ToString();
+                }
+            }
+            else Attributes = null;
+
+            Keyword = _node.Keyword.ToString();
+            Identifier = _node.Identifier.ToString();
+        }
+
+        public ClassDeclarationSyntax GetNode()
+        {
+            return _node;
+        }
+
+        public void AddMethod(MethodModel method)
+        {
+            Methods.Add(method);
+        }
+
+        public void RemoveMethod(MethodModel method)
+        {
+            Methods.Remove(method);
+        }
+
+        public void AddProperty(PropertyModel property)
+        {
+            Properties.Add(property);
+        }
+
+        public void RemoveProperty(PropertyModel property)
+        {
+            Properties.Remove(property);
         }
     }
 }

@@ -21,10 +21,9 @@ namespace xUnitTest
             {
                 class Program : Controller
                 {
-                    static void Main(string[] args , string foo)
-                    {
-Console.WriteLine('Hello, World!');
-}
+                    static void Main(string[] args , string foo){
+                        Console.WriteLine('Hello, World!');
+                    }
                     public void Foo(){
                         return""Bar"";
                     }
@@ -44,7 +43,16 @@ Console.WriteLine('Hello, World!');
 
             ClassModel classModel = new ClassModel(classDeclaration);
 
-            Assert.Equal(2, classModel.methods.Count());
+            Assert.Equal("class", classModel.Keyword);
+            Assert.Equal("Program", classModel.Identifier);
+            Assert.Equal(@"static void Main(string[] args , string foo){
+                        Console.WriteLine('Hello, World!');
+                    }", classModel.Members[0]);
+            Assert.Equal(@"public void Foo(){
+                        return""Bar"";
+                    }", classModel.Members[1]);
+            Assert.Null(classModel.Modifiers);
+            Assert.Null(classModel.Attributes);
         }
     }
 }
