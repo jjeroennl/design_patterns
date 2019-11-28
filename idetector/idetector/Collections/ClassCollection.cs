@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace idetector.Collections
 {
-    class ClassCollection
+    public class ClassCollection
     {
     }
 }

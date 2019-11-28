@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using idetector.Collections;
 using idetector.Models;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -31,6 +32,11 @@ namespace idetector.Parser
             PropertyModel propertyModel = new PropertyModel(node);
             
             base.VisitPropertyDeclaration(node);
+        }
+
+        public ClassCollection getCollection()
+        {
+            return new ClassCollection();
         }
     }
 }

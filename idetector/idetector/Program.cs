@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using idetector.CodeLoader;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
@@ -16,7 +17,8 @@ namespace idetector
     {
         static async Task Main(string[] args)
         {
-
+            FileReader.ReadDirectory("/Users/jeroentissink/Github/design_patterns/idetector/");
+            
         }
     }
 }
