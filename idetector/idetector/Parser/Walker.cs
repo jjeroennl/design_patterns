@@ -19,6 +19,8 @@ namespace idetector.Parser
 
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
+            ClassModel classModel = new ClassModel(node);
+
             base.VisitClassDeclaration(node);
         }
 
@@ -36,6 +38,13 @@ namespace idetector.Parser
             base.VisitPropertyDeclaration(node);
         }
 
+
+        public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
+        {
+            PropertyModel propertyModel = new PropertyModel(node);
+            base.VisitFieldDeclaration(node);
+        }  
+        
         public ClassCollection getCollection()
         {
             return new ClassCollection();
