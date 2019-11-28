@@ -17,7 +17,6 @@ namespace idetector
     {
         static async Task Main(string[] args)
         {
-            FileReader.ReadDirectory("/Users/jeroentissink/Github/design_patterns/idetector/");
             
         }
     }
