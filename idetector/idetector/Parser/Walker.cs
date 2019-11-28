@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using idetector.Collections;
 using idetector.Models;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -18,11 +19,15 @@ namespace idetector.Parser
 
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
+            ClassModel classModel = new ClassModel(node);
+
             base.VisitClassDeclaration(node);
         }
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
+            MethodModel methodModel = new MethodModel(node);
+
             base.VisitMethodDeclaration(node);
         }
 
@@ -31,6 +36,18 @@ namespace idetector.Parser
             PropertyModel propertyModel = new PropertyModel(node);
             
             base.VisitPropertyDeclaration(node);
+        }
+
+
+        public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
+        {
+            PropertyModel propertyModel = new PropertyModel(node);
+            base.VisitFieldDeclaration(node);
+        }  
+        
+        public ClassCollection getCollection()
+        {
+            return new ClassCollection();
         }
     }
 }
