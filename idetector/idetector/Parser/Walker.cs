@@ -36,5 +36,11 @@ namespace idetector.Parser
             
             base.VisitPropertyDeclaration(node);
         }
+
+        public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
+        {
+            PropertyModel propertyModel = new PropertyModel(node);
+            base.VisitFieldDeclaration(node);
+        }
     }
 }
