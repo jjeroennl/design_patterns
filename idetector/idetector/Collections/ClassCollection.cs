@@ -29,7 +29,14 @@ namespace idetector.Collections
 
         public static ClassModel GetClass(string identifier)
         {
-            return cache[identifier];
+            try
+            {
+                return cache[identifier];
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
 
