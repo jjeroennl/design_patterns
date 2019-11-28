@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 
 namespace idetector.Models
 {
@@ -18,24 +19,30 @@ namespace idetector.Models
 
         private List<MethodModel> Methods = new List<MethodModel>();
         private List<PropertyModel> Properties = new List<PropertyModel>();
+        public HashSet<ClassModel> ObjectCreations = new HashSet<ClassModel>();
 
         public ClassModel(ClassDeclarationSyntax node)
         {
             _node = node;
-            int MemberCount = _node.Members.Count;
-            int ModifierCount = _node.Modifiers.Count;
-            int AttributeCount = _node.AttributeLists.Count;
+            Keyword = _node.Keyword.ToString();
+            Identifier = _node.Identifier.ToString();
+            
+            _setMembers();
+            _setAttributes();
+            _setModifiers();
+        }
 
-            if (MemberCount != 0)
+        public void Visited()
+        {
+            foreach (ClassModel m in ObjectCreations)
             {
-                Members = new string[MemberCount];
-                for (int i = 0; i < MemberCount; i++)
-                {
-                    Members[i] = _node.Members[i].ToString();
-                }
+                
             }
-            else Members = null;
+        }
 
+        private void _setModifiers()
+        {
+            int ModifierCount = _node.Modifiers.Count;
             if (ModifierCount != 0)
             {
                 Modifiers = new string[ModifierCount];
@@ -45,7 +52,11 @@ namespace idetector.Models
                 }
             }
             else Modifiers = null;
+        }
 
+        private void _setAttributes()
+        {
+            int AttributeCount = _node.AttributeLists.Count;
             if (AttributeCount != 0)
             {
                 Attributes = new string[AttributeCount];
@@ -55,9 +66,20 @@ namespace idetector.Models
                 }
             }
             else Attributes = null;
+        }
 
-            Keyword = _node.Keyword.ToString();
-            Identifier = _node.Identifier.ToString();
+        private void _setMembers()
+        {
+            int MemberCount = _node.Members.Count;
+            if (MemberCount != 0)
+            {
+                Members = new string[MemberCount];
+                for (int i = 0; i < MemberCount; i++)
+                {
+                    Members[i] = _node.Members[i].ToString();
+                }
+            }
+            else Members = null;
         }
 
         public ClassDeclarationSyntax GetNode()
@@ -83,6 +105,11 @@ namespace idetector.Models
         public void RemoveProperty(PropertyModel property)
         {
             Properties.Remove(property);
+        }
+
+        public void AddObjectCreation(ClassModel node)
+        {
+            ObjectCreations.Add(node);
         }
     }
 }

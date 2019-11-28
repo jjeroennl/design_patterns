@@ -13,8 +13,24 @@ namespace idetector.Collections
         /// <summary>
         /// Tkey as Namespace/Classname
         /// </summary>
-        private static Dictionary<string, ClassModel> cache;
+        private static Dictionary<string, ClassModel> cache = new Dictionary<string, ClassModel>();
 
+        public static void AddClass(ClassModel classModel)
+        {
+            if (cache.ContainsKey(classModel.Identifier))
+            {
+                cache[classModel.Identifier] = classModel;
+            }
+            else
+            {
+                cache.Add(classModel.Identifier, classModel);
+            }
+        }
+
+        public static ClassModel GetClass(string identifier)
+        {
+            return cache[identifier];
+        }
 
 
 
