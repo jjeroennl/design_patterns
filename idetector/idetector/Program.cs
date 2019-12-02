@@ -19,6 +19,12 @@ namespace idetector
     {
         static async Task Main(string[] args)
         {
+            Console.WriteLine(@" _     _      _            _             
+(_) __| | ___| |_ ___  ___| |_ ___  _ __ 
+| |/ _` |/ _ \ __/ _ \/ __| __/ _ \| '__|
+| | (_| |  __/ ||  __/ (__| || (_) | |   
+|_|\__,_|\___|\__\___|\___|\__\___/|_|");
+
             SyntaxTree tree = CSharpSyntaxTree.ParseText(@"using System;
             using System.Collections;
             using System.Linq;
