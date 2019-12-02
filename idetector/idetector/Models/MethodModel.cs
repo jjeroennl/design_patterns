@@ -43,7 +43,7 @@ namespace idetector.Models
             Body = node.Body.ToString();
         }
 
-        public MethodModel(ConstructorDeclarationSyntax node)
+        public MethodModel(ConstructorDeclarationSyntax node, string type)
         {
             _node = node;
             Modifiers = new string[node.Modifiers.Count];
@@ -53,7 +53,7 @@ namespace idetector.Models
             }
 
             isConstructor = true;
-            ReturnType = null;
+            ReturnType = type;
             Identifier = node.Identifier.ToString();
             Parameters = node.ParameterList.ToString();
             Body = node.Body.ToString();
