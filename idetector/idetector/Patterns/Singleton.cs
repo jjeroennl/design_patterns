@@ -57,6 +57,7 @@ namespace idetector.Patterns
                     }
                 }
             }
+
             return false;
         }
 
@@ -66,15 +67,19 @@ namespace idetector.Patterns
             {
                 if (property.ValueType.Equals(cls.Identifier))
                 {
-                    foreach (var modifier in property.Modifiers)
+                    if (property.Modifiers[0].ToLower().Equals("private"))
                     {
-                        if (modifier.ToLower().Equals("static"))
+                        foreach (var modifier in property.Modifiers)
                         {
-                            return true;
+                            if (modifier.ToLower().Equals("static"))
+                            {
+                                return true;
+                            }
                         }
                     }
                 }
             }
+
             return false;
         }
 
@@ -82,11 +87,18 @@ namespace idetector.Patterns
         {
             foreach (var method in cls.getMethods())
             {
-                if (method.ReturnType.Equals(cls.Identifier))
+                foreach (var modifier in method.Modifiers)
                 {
-                    return true;
+                    if (modifier.ToLower().Equals("static"))
+                    {
+                        if (method.ReturnType.Equals(cls.Identifier))
+                        {
+                            return true;
+                        }
+                    }
                 }
             }
+
             return false;
         }
 
@@ -94,11 +106,12 @@ namespace idetector.Patterns
         {
             foreach (var obj in cls.ObjectCreations)
             {
-                    if (obj.Identifier.Equals(cls.Identifier))
-                    {
-                        return true;
-                    }
+                if (obj.Identifier.Equals(cls.Identifier))
+                {
+                    return true;
+                }
             }
+
             return false;
         }
     }
