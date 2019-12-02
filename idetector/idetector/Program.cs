@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using idetector.CodeLoader;
+using idetector.Collections;
 using idetector.Models;
 using idetector.Parser;
+using idetector.Patterns;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
@@ -19,8 +21,8 @@ namespace idetector
     {
         static async Task Main(string[] args)
         {
-            string title;
-            int percentage;
+            string title = "";
+            int score = 0;
 
             Console.WriteLine(@" _     _      _            _             
 (_) __| | ___| |_ ___  ___| |_ ___  _ __ 
@@ -38,14 +40,14 @@ namespace idetector
             using System.Collections;
             using System.Linq;
             using System.Text;
- 
+
             namespace HelloWorld
             {
                 class Program : Controller
                 {
                     static void Main(string[] args , string foo){
                         Console.WriteLine('Hello, World!');
-                        
+
                         var anotherOne = new AnotherOne();
                     }
                     public void Foo(){
@@ -55,32 +57,57 @@ namespace idetector
 
                 class AnotherOne : Controller
                 {
-                    AnotherOne();
+                    private static AnotherOne x;
+                    AnotherOne(){
                         Console.WriteLine('Hello, World!');
+                        x = new AnotherOne();
                     }
                     public void Foo(){
                         return""Bar"";
                     }
                 }
+
+                class User{
+                    private static User me;
+
+                    private User(){
+
+                    }
+
+                    public static User getUser(){
+                        if(this.me == null){
+                            this.me = new User();
+                        }
+
+                        return this.me;
+                    }
+                }
             }");
 
-            /*
-            ClassWalker w = new ClassWalker();
-            w.Visit(tree.GetRoot());
-            
-            Walker w2 = new Walker();
-            w2.Visit(tree.GetRoot()); 
-            */
+            Walker.GenerateModels(tree);
 
-            // Singleton
-            title = "Singleton";
-            percentage = 80;
+            foreach (var item in ClassCollection.GetClasses())
+            {
+                var cls = item.Value;
+
+                // Singleton
+                Singleton singleton = new Singleton(cls);
+                singleton.Scan();
+                if (score < singleton.Score())
+                {
+                    //title = cls.Identifier;
+                    title = "Singleton";
+                    score = singleton.Score();
+                }
+            }
             sb.Append(@"
-| " + title.PadRight(16) + " | " + percentage.ToString().PadRight(3) + " %       | Link |");
-
+| " + title.PadRight(16) + " | " + score.ToString().PadRight(3) + " %       | Link |");
+            
             sb.Append(@"
 +------------------+-------------+------+");
             Console.WriteLine(sb.ToString());
+            while (true) ;
+
         }
     }
 }

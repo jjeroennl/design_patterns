@@ -39,6 +39,11 @@ namespace idetector.Collections
             }
         }
 
+        public static Dictionary<string, ClassModel> GetClasses()
+        {
+            return cache;
+        }
+
 
 
     }
