@@ -38,8 +38,10 @@ namespace idetector.Patterns
             foreach (var item in ClassCollection.GetClasses())
             {
                 ClassModel cls = item.Value;
+                Console.WriteLine(cls.getMethods());
                 foreach (var method in cls.getMethods())
                 {
+
                     if (method.isConstructor)
                     {
                         foreach (var modifier in method.Modifiers)
@@ -104,8 +106,6 @@ namespace idetector.Patterns
 
                 foreach (var obj in cls.ObjectCreations)
                 {
-                    Console.WriteLine(obj.Identifier);
-                    Console.WriteLine(cls.Identifier);
 
                     if (obj.Identifier.Equals(cls.Identifier))
                    {

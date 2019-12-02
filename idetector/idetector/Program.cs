@@ -44,9 +44,26 @@ namespace idetector
                     private static AnotherOne x;
                     AnotherOne(){
                         Console.WriteLine('Hello, World!');
+                        x = new AnotherOne();
                     }
                     public void Foo(){
                         return""Bar"";
+                    }
+                }
+
+                class User{
+                    private static User me;
+
+                    private User(){
+
+                    }
+                    
+                    public static User getUser(){
+                        if(this.me == null){
+                            this.me = new User();
+                        }
+                        
+                        return this.me;
                     }
                 }
             }");

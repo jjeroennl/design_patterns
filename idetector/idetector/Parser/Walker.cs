@@ -25,8 +25,32 @@ namespace idetector.Parser
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            
+
             MethodModel methodModel = new MethodModel(node);
+
+            var n = node.Parent;
+
+            var shouldLoop = true;
+            var loops = 0;
+
+            while (!n.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax") && shouldLoop)
+            {
+                n = n.Parent;
+
+                loops++;
+                if (loops > 500)
+                {
+                    shouldLoop = false;
+                }
+            }
+
+            if (shouldLoop)
+            {
+                // If parent class found
+                var cls = (ClassDeclarationSyntax)n;
+                var model = ClassCollection.GetClass(cls.Identifier.ToString());
+                model.AddMethod(methodModel);
+            }
 
             base.VisitMethodDeclaration(node);
         }
@@ -41,8 +65,6 @@ namespace idetector.Parser
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
             var n = node.Parent;
-
-            Console.WriteLine(n.GetType());
 
             var shouldLoop = true;
             var loops = 0;
@@ -77,6 +99,9 @@ namespace idetector.Parser
         public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
         {
             PropertyModel propertyModel = new PropertyModel(node);
+
+
+
             base.VisitFieldDeclaration(node);
         }  
         
