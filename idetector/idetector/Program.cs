@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using idetector.CodeLoader;
 using idetector.Models;
 using idetector.Parser;
+using idetector.Patterns;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
@@ -40,7 +41,8 @@ namespace idetector
 
                 class AnotherOne : Controller
                 {
-                    AnotherOne();
+                    private static AnotherOne x;
+                    AnotherOne(){
                         Console.WriteLine('Hello, World!');
                     }
                     public void Foo(){
@@ -54,6 +56,12 @@ namespace idetector
             
             Walker w2 = new Walker();
             w2.Visit(tree.GetRoot());
+
+            Singleton singleton = new Singleton();
+            singleton.Scan();
+            Console.WriteLine(singleton.Score());
+            while (true) ;
+
         }
     }
 }

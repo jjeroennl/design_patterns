@@ -17,8 +17,15 @@ namespace idetector.Parser
             base.VisitNamespaceDeclaration(node);
         }
 
+        public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+        {
+            MethodModel methodModel = new MethodModel(node);
+            base.VisitConstructorDeclaration(node);
+        }
+
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
+            
             MethodModel methodModel = new MethodModel(node);
 
             base.VisitMethodDeclaration(node);
@@ -62,12 +69,6 @@ namespace idetector.Parser
             {
                 throw new ClassNotException();
             }
-
-            while (true)
-            {
-                
-            }
-            
             base.VisitObjectCreationExpression(node);
         }
 
