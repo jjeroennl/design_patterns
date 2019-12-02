@@ -7,21 +7,30 @@ namespace idetector.Patterns
     public class Singleton : IPattern
     {
         private int _score;
+        private ClassModel cls;
+
+        public Singleton(ClassModel _cls)
+        {
+            cls = _cls;
+        }
 
         public void Scan()
         {
-            if(IsPrivateConstructor())
+            if (IsPrivateConstructor())
             {
                 _score += 25;
             }
+
             if (IsStaticSelf())
             {
                 _score += 25;
             }
+
             if (IsGetInstance())
             {
                 _score += 25;
             }
+
             if (IsCreateSelf())
             {
                 _score += 25;
@@ -35,85 +44,61 @@ namespace idetector.Patterns
 
         public bool IsPrivateConstructor()
         {
-            foreach (var item in ClassCollection.GetClasses())
+            foreach (var method in cls.getMethods())
             {
-                ClassModel cls = item.Value;
-                Console.WriteLine(cls.getMethods());
-                foreach (var method in cls.getMethods())
+                if (method.isConstructor)
                 {
-
-                    if (method.isConstructor)
+                    foreach (var modifier in method.Modifiers)
                     {
-                        foreach (var modifier in method.Modifiers)
+                        if (modifier.ToLower().Equals("private"))
                         {
-                            if (modifier.ToLower().Equals("private"))
-                            {
-                                return true;
-                            }
+                            return true;
                         }
                     }
                 }
             }
-
             return false;
         }
 
         public bool IsStaticSelf()
         {
-            foreach (var item in ClassCollection.GetClasses())
+            foreach (var property in cls.getProperties())
             {
-                ClassModel cls = item.Value;
-                foreach (var property in cls.getProperties())
+                if (property.ValueType.Equals(cls.Identifier))
                 {
-                    if (property.ValueType.Equals(cls.Identifier))
+                    foreach (var modifier in property.Modifiers)
                     {
-                        foreach (var modifier in property.Modifiers)
+                        if (modifier.ToLower().Equals("static"))
                         {
-                            if (modifier.ToLower().Equals("static"))
-                            {
-                                return true;
-                            }
+                            return true;
                         }
                     }
                 }
             }
-
             return false;
         }
 
         public bool IsGetInstance()
         {
-            foreach(var item in ClassCollection.GetClasses())
+            foreach (var method in cls.getMethods())
             {
-                ClassModel cls = item.Value;
-                foreach (var method in cls.getMethods())
+                if (method.ReturnType.Equals(cls.Identifier))
                 {
-                    if (method.ReturnType.Equals(cls.Identifier))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
-
             return false;
         }
 
         public bool IsCreateSelf()
         {
-            foreach (var item in ClassCollection.GetClasses())
+            foreach (var obj in cls.ObjectCreations)
             {
-                ClassModel cls = item.Value;
-
-                foreach (var obj in cls.ObjectCreations)
+                if (obj.Identifier.Equals(cls.Identifier))
                 {
-
-                    if (obj.Identifier.Equals(cls.Identifier))
-                   {
-                        return true;
-                   }
+                    return true;
                 }
             }
-            
             return false;
         }
     }

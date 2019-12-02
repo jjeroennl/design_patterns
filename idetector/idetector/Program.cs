@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using idetector.CodeLoader;
+using idetector.Collections;
 using idetector.Models;
 using idetector.Parser;
 using idetector.Patterns;
@@ -73,10 +74,20 @@ namespace idetector
             
             Walker w2 = new Walker();
             w2.Visit(tree.GetRoot());
-
-            Singleton singleton = new Singleton();
-            singleton.Scan();
-            Console.WriteLine(singleton.Score());
+            int score = 0;
+            string name = "";
+            foreach (var item in ClassCollection.GetClasses())
+            {
+                var cls = item.Value;
+                Singleton singleton = new Singleton(cls);
+                singleton.Scan();
+                if (score < singleton.Score())
+                {
+                    score = singleton.Score();
+                    name = cls.Identifier;
+                }
+            }
+            Console.WriteLine(name + " Scoort: " + score + " punten");
             while (true) ;
 
         }
