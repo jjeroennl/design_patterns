@@ -1,38 +1,28 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using idetector.CodeLoader;
 using idetector.Collections;
-using idetector.Models;
-using idetector.Parser;
-using idetector.Patterns;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
+using Walker = idetector.Parser.Walker;
 
-namespace idetector
+using  Xunit;
+
+namespace xUnitTest
 {
-    class Program
+    public class WalkerTests
     {
-        static async Task Main(string[] args)
+        private void prepare()
         {
             SyntaxTree tree = CSharpSyntaxTree.ParseText(@"using System;
             using System.Collections;
             using System.Linq;
             using System.Text;
-
+ 
             namespace HelloWorld
             {
                 class Program : Controller
                 {
                     static void Main(string[] args , string foo){
                         Console.WriteLine('Hello, World!');
-
+                        
                         var anotherOne = new AnotherOne();
                     }
                     public void Foo(){
@@ -58,12 +48,12 @@ namespace idetector
                     private User(){
 
                     }
-
+                    
                     public static User getUser(){
                         if(this.me == null){
                             this.me = new User();
                         }
-
+                        
                         return this.me;
                     }
                 }
@@ -71,22 +61,18 @@ namespace idetector
 
             Walker.GenerateModels(tree);
 
-            int score = 0;
-            string name = "";
-            foreach (var item in ClassCollection.GetClasses())
-            {
-                var cls = item.Value;
-                Singleton singleton = new Singleton(cls);
-                singleton.Scan();
-                if (score < singleton.Score())
-                {
-                    score = singleton.Score();
-                    name = cls.Identifier;
-                }
-            }
-            Console.WriteLine(name + " Scoort: " + score + " punten");
-            while (true) ;
+        }
+        
+        [Fact]
+        public void Test_Construction()
+        {
+            this.prepare();
+            
+            var cls = ClassCollection.GetClass("User");
 
+            Assert.Equal("User", cls.Identifier);
+            Assert.Single(cls.getProperties());
+            Assert.Equal(2, cls.getMethods().Count);
         }
     }
 }

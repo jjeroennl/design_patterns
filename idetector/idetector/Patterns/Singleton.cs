@@ -94,10 +94,10 @@ namespace idetector.Patterns
         {
             foreach (var obj in cls.ObjectCreations)
             {
-                if (obj.Identifier.Equals(cls.Identifier))
-                {
-                    return true;
-                }
+                    if (obj.Identifier.Equals(cls.Identifier))
+                    {
+                        return true;
+                    }
             }
             return false;
         }
