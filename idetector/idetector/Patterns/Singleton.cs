@@ -108,9 +108,9 @@ namespace idetector.Patterns
                 {
 
                     if (obj.Identifier.Equals(cls.Identifier))
-                   {
+                    {
                         return true;
-                   }
+                    }
                 }
             }
             
