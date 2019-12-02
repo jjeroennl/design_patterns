@@ -4,6 +4,6 @@ namespace idetector
 {
     public class ClassNotException: Exception
     {
-        
+
     }
 }

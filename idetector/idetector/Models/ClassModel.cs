@@ -32,14 +32,6 @@ namespace idetector.Models
             _setModifiers();
         }
 
-        public void Visited()
-        {
-            foreach (ClassModel m in ObjectCreations)
-            {
-                
-            }
-        }
-
         private void _setModifiers()
         {
             int ModifierCount = _node.Modifiers.Count;
@@ -110,6 +102,16 @@ namespace idetector.Models
         public void AddObjectCreation(ClassModel node)
         {
             ObjectCreations.Add(node);
+        }
+
+        public List<MethodModel> getMethods()
+        {
+            return Methods;
+        }
+
+        public List<PropertyModel> getProperties()
+        {
+            return Properties;
         }
     }
 }
