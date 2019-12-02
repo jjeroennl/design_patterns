@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using idetector.CodeLoader;
+using idetector.Models;
+using idetector.Parser;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
@@ -17,7 +19,41 @@ namespace idetector
     {
         static async Task Main(string[] args)
         {
+            SyntaxTree tree = CSharpSyntaxTree.ParseText(@"using System;
+            using System.Collections;
+            using System.Linq;
+            using System.Text;
+ 
+            namespace HelloWorld
+            {
+                class Program : Controller
+                {
+                    static void Main(string[] args , string foo){
+                        Console.WriteLine('Hello, World!');
+                        
+                        var anotherOne = new AnotherOne();
+                    }
+                    public void Foo(){
+                        return""Bar"";
+                    }
+                }
+
+                class AnotherOne : Controller
+                {
+                    AnotherOne();
+                        Console.WriteLine('Hello, World!');
+                    }
+                    public void Foo(){
+                        return""Bar"";
+                    }
+                }
+            }");
+
+            ClassWalker w = new ClassWalker();
+            w.Visit(tree.GetRoot());
             
+            Walker w2 = new Walker();
+            w2.Visit(tree.GetRoot());
         }
     }
 }

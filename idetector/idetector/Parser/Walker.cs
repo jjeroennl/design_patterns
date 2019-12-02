@@ -17,13 +17,6 @@ namespace idetector.Parser
             base.VisitNamespaceDeclaration(node);
         }
 
-        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
-        {
-            ClassModel classModel = new ClassModel(node);
-
-            base.VisitClassDeclaration(node);
-        }
-
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             MethodModel methodModel = new MethodModel(node);
@@ -37,6 +30,47 @@ namespace idetector.Parser
             
             base.VisitPropertyDeclaration(node);
         }
+
+        public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+        {
+            var n = node.Parent;
+
+            Console.WriteLine(n.GetType());
+
+            var shouldLoop = true;
+            var loops = 0;
+
+            while (!n.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax") && shouldLoop)
+            {
+                n = n.Parent;
+
+                loops++;
+                if (loops > 500)
+                {
+                    shouldLoop = false;
+                }
+            }
+
+            if (shouldLoop)
+            {
+                var _class = (ClassDeclarationSyntax) n;
+                var member = ClassCollection.GetClass(node.Type.ToString());
+                
+                ClassCollection.GetClass(_class.Identifier.ToString()).AddObjectCreation(member);
+            }
+            else
+            {
+                throw new ClassNotException();
+            }
+
+            while (true)
+            {
+                
+            }
+            
+            base.VisitObjectCreationExpression(node);
+        }
+
 
 
         public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
