@@ -9,12 +9,7 @@ namespace idetector.Parser
         public static void Parse(string code)
         {
             SyntaxTree tree = CSharpSyntaxTree.ParseText(code);
-            
-            ClassWalker w = new ClassWalker();
-            w.Visit(tree.GetRoot());
-            
-            Walker w2 = new Walker();
-            w2.Visit(tree.GetRoot()); 
+            Walker.GenerateModels(tree);
         }
     }
 }

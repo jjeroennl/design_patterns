@@ -9,10 +9,18 @@ namespace idetector.CodeLoader
 {
     public class FileReader
     {
-        public static void ReadSingleFile(string path)
+        public static bool ReadSingleFile(string path)
         {
-            var dataStream = System.IO.File.ReadAllText(path);
-            CodeParser.Parse(dataStream);
+            try
+            {
+                var dataStream = System.IO.File.ReadAllText(path);
+                CodeParser.Parse(dataStream);
+            }
+            catch (FileNotFoundException fileNotFoundException)
+            {
+                return false;
+            }
+            return true;
         }
         
         private static string ReadFile(string path)
