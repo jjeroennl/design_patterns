@@ -61,7 +61,7 @@ namespace xUnitTest
 
                     }
                     
-                    public  User getUser(){
+                    public static User getUser(){
                         if(this.me == null){
                             this.me = new User();
                         }
