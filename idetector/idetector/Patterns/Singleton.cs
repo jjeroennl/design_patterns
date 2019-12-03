@@ -37,6 +37,11 @@ namespace idetector.Patterns
             }
         }
 
+        public bool IsSingleton()
+        {
+            return _score > 59;
+        }
+
         public int Score()
         {
             return _score;
