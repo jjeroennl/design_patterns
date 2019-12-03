@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 
 
 namespace idetector.Models
@@ -13,7 +14,9 @@ namespace idetector.Models
         /// <summary>
         /// Getters/setters for method data.
         /// </summary>
-        private MethodDeclarationSyntax _node { get; set; }
+        private SyntaxNode _node { get; set; }
+
+        public bool isConstructor = false;
         public string[] Modifiers { get; set; }
         public string ReturnType { get; set; }
         public string Identifier { get; set; }
@@ -26,17 +29,34 @@ namespace idetector.Models
         /// <param name="node">Node to extract data from.</param>
         public MethodModel(MethodDeclarationSyntax node)
         {
+
             _node = node; 
-            Modifiers = new string[_node.Modifiers.Count];
-            for (int i = 0; i < _node.Modifiers.Count; i++)
+            Modifiers = new string[node.Modifiers.Count];
+            for (int i = 0; i <node.Modifiers.Count; i++)
             {
-                Modifiers[i] = _node.Modifiers[i].ToString();
+                Modifiers[i] = node.Modifiers[i].ToString();
             }
 
-            ReturnType = _node.ReturnType.ToString();
-            Identifier = _node.Identifier.ToString();
-            Parameters = _node.ParameterList.ToString();
-            Body = _node.Body.ToString();
+            ReturnType = node.ReturnType.ToString();
+            Identifier = node.Identifier.ToString();
+            Parameters = node.ParameterList.ToString();
+            Body = node.Body.ToString();
+        }
+
+        public MethodModel(ConstructorDeclarationSyntax node, string type)
+        {
+            _node = node;
+            Modifiers = new string[node.Modifiers.Count];
+            for (int i = 0; i < node.Modifiers.Count; i++)
+            {
+                Modifiers[i] = node.Modifiers[i].ToString();
+            }
+
+            isConstructor = true;
+            ReturnType = type;
+            Identifier = node.Identifier.ToString();
+            Parameters = node.ParameterList.ToString();
+            Body = node.Body.ToString();
         }
     }
 }

@@ -1,15 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using idetector.CodeLoader;
+using idetector.Collections;
+using idetector.Parser;
+using idetector.Patterns;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 
 namespace idetector
 {
@@ -17,7 +12,10 @@ namespace idetector
     {
         static async Task Main(string[] args)
         {
-            
+            ConsoleApp app = new ConsoleApp();
+
+            while (true) ;
+
         }
     }
 }

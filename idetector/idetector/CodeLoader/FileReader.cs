@@ -9,12 +9,26 @@ namespace idetector.CodeLoader
 {
     public class FileReader
     {
-        public static string ReadFile(string path)
+        public static bool ReadSingleFile(string path)
+        {
+            try
+            {
+                var dataStream = System.IO.File.ReadAllText(path);
+                CodeParser.Parse(dataStream);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+        
+        private static string ReadFile(string path)
         {
             return System.IO.File.ReadAllText(path);
         }
 
-        public static ClassCollection ReadDirectory(string path)
+        public static void ReadDirectory(string path)
         {
             var files = SearchDirectoryForCSFiles(path, new List<string>());
             string dataStream = "";
@@ -24,7 +38,7 @@ namespace idetector.CodeLoader
                 dataStream += FileReader.ReadFile(file);
             }
 
-            return CodeParser.Parse(dataStream);
+            CodeParser.Parse(dataStream);
         }
 
         private static List<string> SearchDirectoryForCSFiles(string sDir, List<string> s)
