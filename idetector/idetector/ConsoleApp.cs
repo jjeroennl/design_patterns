@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using idetector.CodeLoader;
 using idetector.Collections;
 using idetector.Models;
@@ -10,6 +11,7 @@ namespace idetector
     {
         public ConsoleApp()
         {
+            PrintASCII();
             this.printRequest();
             this.getResult();
         }
@@ -29,12 +31,29 @@ namespace idetector
 
         private void getResult()
         {
+            
             foreach (var item in ClassCollection.GetClasses())
             {
                 Singleton s = new Singleton(item.Value);
                 s.Scan();
                 this.printBar(item.Value, "Singleton", s.Score());
             }
+        }
+
+        private void PrintASCII()
+        {
+            Console.WriteLine(@" _     _      _            _             
+(_) __| | ___| |_ ___  ___| |_ ___  _ __ 
+| |/ _` |/ _ \ __/ _ \/ __| __/ _ \| '__|
+| | (_| |  __/ ||  __/ (__| || (_) | |   
+|_|\__,_|\___|\__\___|\___|\__\___/|_|");
+            Console.WriteLine();
+//            StringBuilder sb = new StringBuilder("", 2);
+//            sb.Append(@"
+//                 RESULTS
+//+------------------+-------------+------+
+//|     Pattern      | Probability | Info |
+//+------------------+-------------+------+");
         }
 
         private void printBar(ClassModel item, string name, int score)

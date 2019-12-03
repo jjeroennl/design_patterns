@@ -16,7 +16,7 @@ namespace idetector.CodeLoader
                 var dataStream = System.IO.File.ReadAllText(path);
                 CodeParser.Parse(dataStream);
             }
-            catch (FileNotFoundException fileNotFoundException)
+            catch (Exception ex)
             {
                 return false;
             }
