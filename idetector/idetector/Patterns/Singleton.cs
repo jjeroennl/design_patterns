@@ -94,7 +94,7 @@ namespace idetector.Patterns
             {
                 foreach (var modifier in method.Modifiers)
                 {
-                    if (modifier.ToLower().Equals("static"))
+                    if (modifier.ToLower().Equals("static") && !method.isConstructor)
                     {
                         if (method.ReturnType.Equals(cls.Identifier))
                         {
