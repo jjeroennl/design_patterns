@@ -19,7 +19,9 @@ namespace idetector.Models
 
         private List<MethodModel> Methods = new List<MethodModel>();
         private List<PropertyModel> Properties = new List<PropertyModel>();
+        private HashSet<ClassModel> Parents = new HashSet<ClassModel>();
         public HashSet<ClassModel> ObjectCreations = new HashSet<ClassModel>();
+        public HashSet<string> UnknownParent = new HashSet<string>();
 
         public ClassModel(ClassDeclarationSyntax node)
         {
@@ -31,6 +33,7 @@ namespace idetector.Models
             _setAttributes();
             _setModifiers();
         }
+        
 
         private void _setModifiers()
         {
@@ -94,6 +97,11 @@ namespace idetector.Models
             Properties.Add(property);
         }
 
+        public void AddParent(ClassModel classModel)
+        {
+            Parents.Add(classModel);
+        }
+
         public void RemoveProperty(PropertyModel property)
         {
             Properties.Remove(property);
@@ -112,6 +120,44 @@ namespace idetector.Models
         public List<PropertyModel> getProperties()
         {
             return Properties;
+        }
+
+        public bool HasParent(string name)
+        {
+            var hasUnknownParent = false;
+            
+            if(this.UnknownParent.Count > 0)
+            {
+                hasUnknownParent = this.UnknownParent.Any(e => e.Equals(name));
+            }
+
+            var hasKnownParent = false;
+            if (this.Parents.Count > 0)
+            {
+                hasKnownParent = this.Parents.Any(e => e.Identifier.Equals(name));
+            }
+            return hasUnknownParent || hasKnownParent;
+        }
+
+        public List<string> GetParents()
+        {
+            List<string> returnValue = new List<string>();
+
+            foreach (var parent in this.Parents)
+            {
+                returnValue.Add(parent.Identifier.ToString());
+            }
+            foreach (var parent in this.UnknownParent)
+            {
+                returnValue.Add(parent);
+            }
+
+            return returnValue;
+        }
+
+        public void AddExternalParent(string parent)
+        {
+            UnknownParent.Add(parent);
         }
     }
 }
