@@ -17,7 +17,7 @@ namespace idetector.Collections
 
         public static void AddClass(ClassModel classModel)
         {
-            if (cache.ContainsKey(classModel.Identifier))
+            if (cache.ContainsKey(classModel.Identifier.ToString()))
             {
                 cache[classModel.Identifier] = classModel;
             }
@@ -37,6 +37,14 @@ namespace idetector.Collections
             {
                 return null;
             }
+        }
+
+        public static int ClearCollection()
+        {
+            int count = ClassCollection.cache.Count();
+            ClassCollection.cache = new Dictionary<string, ClassModel>();
+
+            return count;
         }
 
         public static Dictionary<string, ClassModel> GetClasses()

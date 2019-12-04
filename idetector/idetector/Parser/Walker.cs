@@ -18,6 +18,35 @@ namespace idetector.Parser
             base.VisitNamespaceDeclaration(node);
         }
 
+        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+        {
+            var cls = ClassCollection.GetClass(node.Identifier.ToString());
+            if(node.BaseList != null)
+            {
+                foreach (var n in node.BaseList.Types)
+                {
+                    try
+                    {
+                        var parentClass = ClassCollection.GetClass(n.Type.ToString());
+                        if (parentClass != null)
+                        {
+                            cls.AddParent(parentClass);
+                        }
+                        else
+                        {
+                            cls.AddExternalParent(n.Type.ToString());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        cls.AddExternalParent(n.Type.ToString());
+                    }
+                   
+                }
+            }
+            base.VisitClassDeclaration(node);
+        }
+
         public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
             var parentClass = getParentClass(node);
@@ -53,14 +82,15 @@ namespace idetector.Parser
         {
             var me = ClassCollection.GetClass(node.Type.ToString());
 
-            var parentClass = getParentClass(node);
-            parentClass.AddObjectCreation(me);
+            if (me != null)
+            {
+                var parentClass = getParentClass(node);
+                parentClass.AddObjectCreation(me);
+            }
             
             base.VisitObjectCreationExpression(node);
         }
-
-
-
+        
         public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
         {
             PropertyModel propertyModel = new PropertyModel(node);
@@ -106,6 +136,8 @@ namespace idetector.Parser
 
         public static void GenerateModels (SyntaxTree tree)
         {
+            ClassCollection.ClearCollection();
+            
             ClassWalker w = new ClassWalker();
             w.Visit(tree.GetRoot());
             

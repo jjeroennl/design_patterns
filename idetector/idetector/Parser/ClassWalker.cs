@@ -1,3 +1,4 @@
+using System;
 using idetector.Collections;
 using idetector.Models;
 using Microsoft.CodeAnalysis.CSharp;
@@ -11,7 +12,6 @@ namespace idetector.Parser
         {
             ClassModel classModel = new ClassModel(node);
             ClassCollection.AddClass(classModel);
-
             base.VisitClassDeclaration(node);
         }
     }
