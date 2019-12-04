@@ -133,6 +133,8 @@ namespace idetector.Parser
 
         public static void GenerateModels (SyntaxTree tree)
         {
+            ClassCollection.ClearCollection();
+            
             ClassWalker w = new ClassWalker();
             w.Visit(tree.GetRoot());
             

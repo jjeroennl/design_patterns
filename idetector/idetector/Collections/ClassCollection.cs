@@ -39,6 +39,14 @@ namespace idetector.Collections
             }
         }
 
+        public static int ClearCollection()
+        {
+            int count = ClassCollection.cache.Count();
+            ClassCollection.cache = new Dictionary<string, ClassModel>();
+
+            return count;
+        }
+
         public static Dictionary<string, ClassModel> GetClasses()
         {
             return cache;
