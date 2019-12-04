@@ -18,6 +18,35 @@ namespace idetector.Parser
             base.VisitNamespaceDeclaration(node);
         }
 
+        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+        {
+            var cls = ClassCollection.GetClass(node.Identifier.ToString());
+            if(node.BaseList != null)
+            {
+                foreach (var n in node.BaseList.Types)
+                {
+                    try
+                    {
+                        var parentClass = ClassCollection.GetClass(n.Type.ToString());
+                        if (parentClass != null)
+                        {
+                            cls.AddParent(parentClass);
+                        }
+                        else
+                        {
+                            cls.AddExternalParent(n.Type.ToString());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        cls.AddExternalParent(n.Type.ToString());
+                    }
+                   
+                }
+            }
+            base.VisitClassDeclaration(node);
+        }
+
         public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
             var parentClass = getParentClass(node);
@@ -58,9 +87,7 @@ namespace idetector.Parser
             
             base.VisitObjectCreationExpression(node);
         }
-
-
-
+        
         public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
         {
             PropertyModel propertyModel = new PropertyModel(node);
