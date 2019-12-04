@@ -17,7 +17,7 @@ namespace idetector.Collections
 
         public static void AddClass(ClassModel classModel)
         {
-            if (cache.ContainsKey(classModel.Identifier))
+            if (cache.ContainsKey(classModel.Identifier.ToString()))
             {
                 cache[classModel.Identifier] = classModel;
             }
