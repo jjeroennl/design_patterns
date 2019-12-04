@@ -4,24 +4,24 @@ using System.Collections.Generic;
 
 namespace idetector.Collections
 {
-    class PriorityCollection
+    public class PriorityCollection
     {
         /// <summary>
         /// Tkey as Namespace/Classname
         /// </summary>
-        private static Dictionary<string, List<Tuple<string, Priority>>> priorities = new Dictionary<string, List<Tuple<string, Priority>>>();
+        private static Dictionary<string, List<Tuple<string, Priority>>> patterns = new Dictionary<string, List<Tuple<string, Priority>>>();
 
-        public static void AddPriority(string pattern, string methodName, Priority priority)
+        public static void AddPriority(string pattern, string method, Priority priority)
         {
             pattern = pattern.ToLower();
-            if (priorities.ContainsKey(pattern))
+            if (patterns.ContainsKey(pattern))
             {
-                priorities[pattern].Add(new Tuple<string, Priority>(methodName, priority));
+                patterns[pattern].Add(new Tuple<string, Priority>(method, priority));
             }
             else
             {
-                priorities.Add(pattern, new List<Tuple<string, Priority>>());
-                priorities[pattern].Add(new Tuple<string, Priority>(methodName, priority));
+                patterns.Add(pattern, new List<Tuple<string, Priority>>());
+                patterns[pattern].Add(new Tuple<string, Priority>(method, priority));
             }
         }
 
@@ -30,7 +30,7 @@ namespace idetector.Collections
             pattern = pattern.ToLower();
             try
             {
-                return priorities[pattern];
+                return patterns[pattern];
             }
             catch (Exception ex)
             {
@@ -38,17 +38,43 @@ namespace idetector.Collections
             }
         }
 
-        public static List<Tuple<string, int>> GetPercentage(string pattern)
+        public static List<Tuple<string, int>> GetPercentages(string pattern)
         {
+            List<Tuple<string, Priority>> methods = GetPriorities(pattern);
+            List<Tuple<string, int>> percentages = new List<Tuple<string, int>>();
 
+            int counter = 0;
+            foreach (var method in methods)
+            {
+                counter += (int)method.Item2;
+            }
 
-            return null;
+            foreach (var method in methods)
+            {
+                percentages.Add(new Tuple<string, int>(method.Item1, 100 / counter * (int)method.Item2));
+            }
 
+            return percentages;
+        }
+
+        public static int GetPercentage(string pattern, string method)
+        {
+            List<Tuple<string, int>> percentages = GetPercentages(pattern);
+
+            foreach (var item in percentages)
+            {
+                if (item.Item1 == method)
+                {
+                    return item.Item2;
+                }
+            }
+
+            return 0;
         }
 
         public static Dictionary<string, List<Tuple<string, Priority>>> GetPriorities()
         {
-            return priorities;
+            return patterns;
         }
     }
 }
