@@ -13,13 +13,6 @@ namespace idetector
     {
         static async Task Main(string[] args)
         {
-            PriorityCollection.AddPriority("singleton", "IsPrivateConstructor", Priority.High);
-            PriorityCollection.AddPriority("andere", "Method", Priority.Low);
-            PriorityCollection.AddPriority("singleton", "IsGetInstance", Priority.Medium);
-
-
-            Console.WriteLine(PriorityCollection.GetPercentage("singleton", "IsPrivateConstructor"));
-
 
             ConsoleApp app = new ConsoleApp();
 

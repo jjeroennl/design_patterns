@@ -7,10 +7,16 @@ namespace idetector.Collections
     public class PriorityCollection
     {
         /// <summary>
-        /// Tkey as Namespace/Classname
+        /// Dictionary with pattern name and list of tuples with method names and priorities.
         /// </summary>
         private static Dictionary<string, List<Tuple<string, Priority>>> patterns = new Dictionary<string, List<Tuple<string, Priority>>>();
 
+        /// <summary>
+        /// Method to add priority to patterns dictionary.
+        /// </summary>
+        /// <param name="pattern">Pattern name in string format.</param>
+        /// <param name="method">Method name in string format.</param>
+        /// <param name="priority">Priority level in Priority enum format.</param>
         public static void AddPriority(string pattern, string method, Priority priority)
         {
             pattern = pattern.ToLower();
@@ -25,6 +31,11 @@ namespace idetector.Collections
             }
         }
 
+        /// <summary>
+        /// Method to retrieve a list with all priorities based on given pattern.
+        /// </summary>
+        /// <param name="pattern">Pattern name in string format.</param>
+        /// <returns>List of priorities combined with method names.</returns>
         public static List<Tuple<string, Priority>> GetPriorities(string pattern)
         {
             pattern = pattern.ToLower();
@@ -38,6 +49,11 @@ namespace idetector.Collections
             }
         }
 
+        /// <summary>
+        /// Method to retrieve a list with all percentages based on given pattern.
+        /// </summary>
+        /// <param name="pattern">Pattern name in string format.</param>
+        /// <returns>List of percentages combines with method names.</returns>
         public static List<Tuple<string, int>> GetPercentages(string pattern)
         {
             List<Tuple<string, Priority>> methods = GetPriorities(pattern);
@@ -51,12 +67,18 @@ namespace idetector.Collections
 
             foreach (var method in methods)
             {
-                percentages.Add(new Tuple<string, int>(method.Item1, 100 / counter * (int)method.Item2));
+                percentages.Add(new Tuple<string, int>(method.Item1, 100 /(counter * (int)method.Item2)));
             }
 
             return percentages;
         }
 
+        /// <summary>
+        /// Method to retrieve percentage based on given pattern and method.
+        /// </summary>
+        /// <param name="pattern">Pattern name in string format.</param>
+        /// <param name="method">Method name in string format.</param>
+        /// <returns>Percentage.</returns>
         public static int GetPercentage(string pattern, string method)
         {
             List<Tuple<string, int>> percentages = GetPercentages(pattern);
