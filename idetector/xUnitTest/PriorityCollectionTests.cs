@@ -7,12 +7,10 @@ namespace xUnitTest
 {
     public class PriorityCollectionTests
     {
-
         [Fact]
         public void Test_AddPriorityToCollection()
         {
 
         }
-
     }
 }

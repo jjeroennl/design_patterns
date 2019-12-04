@@ -1,7 +1,6 @@
 ﻿using idetector.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace idetector.Collections
 {
@@ -10,23 +9,25 @@ namespace idetector.Collections
         /// <summary>
         /// Tkey as Namespace/Classname
         /// </summary>
-        private static Dictionary<string, List<Priority>> priorities = new Dictionary<string, List<Priority>>();
+        private static Dictionary<string, List<Tuple<string, Priority>>> priorities = new Dictionary<string, List<Tuple<string, Priority>>>();
 
-        public static void AddPriority(string pattern, Priority priority)
+        public static void AddPriority(string pattern, string methodName, Priority priority)
         {
+            pattern = pattern.ToLower();
             if (priorities.ContainsKey(pattern))
             {
-                priorities[pattern].Add(priority);
+                priorities[pattern].Add(new Tuple<string, Priority>(methodName, priority));
             }
             else
             {
-                priorities.Add(pattern, new List<Priority>());
-                priorities[pattern].Add(priority);
+                priorities.Add(pattern, new List<Tuple<string, Priority>>());
+                priorities[pattern].Add(new Tuple<string, Priority>(methodName, priority));
             }
         }
 
-        public static List<Priority> GetPriorities(string pattern)
+        public static List<Tuple<string, Priority>> GetPriorities(string pattern)
         {
+            pattern = pattern.ToLower();
             try
             {
                 return priorities[pattern];
@@ -37,7 +38,15 @@ namespace idetector.Collections
             }
         }
 
-        public static Dictionary<string, List<Priority>> GetPriorities()
+        public static List<Tuple<string, int>> GetPercentage(string pattern)
+        {
+
+
+            return null;
+
+        }
+
+        public static Dictionary<string, List<Tuple<string, Priority>>> GetPriorities()
         {
             return priorities;
         }
