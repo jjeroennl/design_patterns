@@ -11,6 +11,11 @@ namespace idetector.Collections
         /// </summary>
         private static Dictionary<string, List<Tuple<string, Priority>>> patterns = new Dictionary<string, List<Tuple<string, Priority>>>();
 
+        public static void ClearPriorities()
+        {
+            patterns.Clear();
+        }
+
         /// <summary>
         /// Method to add priority to patterns dictionary.
         /// </summary>

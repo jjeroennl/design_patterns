@@ -12,13 +12,11 @@ namespace idetector.Patterns
         public Singleton(ClassModel _cls)
         {
             cls = _cls;
-
-
+            PriorityCollection.ClearPriorities();
             PriorityCollection.AddPriority("singleton", "IsPrivateConstructor", Priority.Low);
             PriorityCollection.AddPriority("singleton", "IsStaticSelf", Priority.Low);
             PriorityCollection.AddPriority("singleton", "IsGetInstance", Priority.Low);
             PriorityCollection.AddPriority("singleton", "IsCreateSelf", Priority.Low);
-
         }
 
         public void Scan()

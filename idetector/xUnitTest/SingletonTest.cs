@@ -80,6 +80,7 @@ namespace xUnitTest
             Singleton singleton = new Singleton(ClassCollection.GetClass("User"));
             singleton.Scan();
             Assert.Equal(100, singleton.Score());
+
             
         }
         [Fact]
