@@ -82,8 +82,11 @@ namespace idetector.Parser
         {
             var me = ClassCollection.GetClass(node.Type.ToString());
 
-            var parentClass = getParentClass(node);
-            parentClass.AddObjectCreation(me);
+            if (me != null)
+            {
+                var parentClass = getParentClass(node);
+                parentClass.AddObjectCreation(me);
+            }
             
             base.VisitObjectCreationExpression(node);
         }
