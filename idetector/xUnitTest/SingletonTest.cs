@@ -153,6 +153,7 @@ namespace xUnitTest
             singleton.Scan();
             Assert.Equal(100, singleton.Score());
         }
+      
         [Fact]
         public void Test_Singleton_NoPrivateConstructor()
         {

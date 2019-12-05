@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using idetector.Collections;
+using idetector.Models;
 using idetector.Parser;
 using idetector.Patterns;
 using Microsoft.CodeAnalysis;
@@ -15,7 +16,6 @@ namespace idetector
             ConsoleApp app = new ConsoleApp();
 
             while (true) ;
-
         }
     }
 }
