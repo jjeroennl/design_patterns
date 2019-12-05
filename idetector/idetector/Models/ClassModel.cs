@@ -10,12 +10,13 @@ namespace idetector.Models
 {
     public class ClassModel
     {
-        private ClassDeclarationSyntax _node { get; set; }
+        private TypeDeclarationSyntax _node { get; set; }
         public string[] Modifiers { get; set; }
         public string[] Members { get; set; }
         public string[] Attributes { get; set; }
         public string Keyword { get; set; }
         public string Identifier { get; set; }
+        public bool IsInterface { get; set; } = false;
 
         private List<MethodModel> Methods = new List<MethodModel>();
         private List<PropertyModel> Properties = new List<PropertyModel>();
@@ -26,8 +27,19 @@ namespace idetector.Models
         public ClassModel(ClassDeclarationSyntax node)
         {
             _node = node;
-            Keyword = _node.Keyword.ToString();
-            Identifier = _node.Identifier.ToString();
+            Keyword = node.Keyword.ToString();
+            Identifier = node.Identifier.ToString();
+            
+            _setMembers();
+            _setAttributes();
+            _setModifiers();
+        }
+        public ClassModel(InterfaceDeclarationSyntax node)
+        {
+            _node = node;
+            Keyword = node.Keyword.ToString();
+            Identifier = node.Identifier.ToString();
+            IsInterface = true;
             
             _setMembers();
             _setAttributes();
@@ -77,7 +89,7 @@ namespace idetector.Models
             else Members = null;
         }
 
-        public ClassDeclarationSyntax GetNode()
+        public TypeDeclarationSyntax GetNode()
         {
             return _node;
         }

@@ -2,7 +2,6 @@
 {
     public interface IPattern
     {
-
         void Scan();
 
     }
