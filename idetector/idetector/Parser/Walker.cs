@@ -109,7 +109,6 @@ namespace idetector.Parser
         
         private ClassModel getParentClass(SyntaxNode node){
             var n = node.Parent;
-            Console.WriteLine(n.GetType().ToString());
             var shouldLoop = true;
             var loops = 0;
 
