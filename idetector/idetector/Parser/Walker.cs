@@ -20,7 +20,7 @@ namespace idetector.Parser
 
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
-            var cls = ClassCollection.GetInstance().GetClass(node.Identifier.ToString());
+            ClassModel cls = ClassCollection.GetInstance().GetClass(node.Identifier.ToString());
             if(node.BaseList != null)
             {
                 foreach (var n in node.BaseList.Types)
