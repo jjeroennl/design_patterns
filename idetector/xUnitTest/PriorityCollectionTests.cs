@@ -18,7 +18,7 @@ namespace xUnitTest
         {
             PriorityCollection.ClearPriorities();
             PriorityCollection.AddPriority("singleton", "IsPrivateConstructor", Priority.High);
-            
+
             Assert.Single(PriorityCollection.GetPriorities());
         }
 
@@ -45,22 +45,40 @@ namespace xUnitTest
         }
 
         [Fact]
-        public void Test_GetPercentage()
+        public void Test_GetPercentage_MultiplePatterns()
         {
             PriorityCollection.ClearPriorities();
+
+            // Singleton
             PriorityCollection.AddPriority("singleton", "IsPrivateConstructor", Priority.Low);
             PriorityCollection.AddPriority("singleton", "IsStaticSelf", Priority.Low);
             PriorityCollection.AddPriority("singleton", "IsGetInstance", Priority.Low);
 
-            int percentage = PriorityCollection.GetPercentage("singleton", "IsPrivateConstructor");
-            Assert.Equal(33, percentage);
+            Assert.Equal(33, PriorityCollection.GetPercentage("singleton", "IsPrivateConstructor"));
 
+            // Facade
+            PriorityCollection.AddPriority("facade", "IsFacadeTest1", Priority.Low);
+            PriorityCollection.AddPriority("facade", "IsFacadeTest2", Priority.Medium);
 
-            PriorityCollection.AddPriority("facade", "IsFacadeTest1", Priority.Medium);
-            PriorityCollection.AddPriority("facade", "IsFacadeTest2", Priority.High);
+            Assert.Equal(33, PriorityCollection.GetPercentage("facade", "IsFacadeTest1"));
+            Assert.Equal(66, PriorityCollection.GetPercentage("facade", "IsFacadeTest2"));
 
-            int percentage2 = PriorityCollection.GetPercentage("facade", "IsFacadeTest1");
-            Assert.Equal(40, percentage2);
+            // Observer
+            PriorityCollection.AddPriority("observer", "IsObserverTest1", Priority.Low);
+            PriorityCollection.AddPriority("observer", "IsObserverTest2", Priority.Medium);
+            PriorityCollection.AddPriority("observer", "IsObserverTest3", Priority.High);
+
+            Assert.Equal(16, PriorityCollection.GetPercentage("observer", "IsObserverTest1"));
+            Assert.Equal(32, PriorityCollection.GetPercentage("observer", "IsObserverTest2"));
+            Assert.Equal(48, PriorityCollection.GetPercentage("observer", "IsObserverTest3"));
+        }
+
+        [Fact]
+        public void Test_GetPercentage_Empty()
+        {
+            PriorityCollection.ClearPriorities();
+
+            Assert.Equal(0, PriorityCollection.GetPercentage("singleton", "IsPrivateConstructor"));
         }
     }
 }

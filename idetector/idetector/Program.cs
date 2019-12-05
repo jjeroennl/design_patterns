@@ -13,11 +13,9 @@ namespace idetector
     {
         static async Task Main(string[] args)
         {
-
             ConsoleApp app = new ConsoleApp();
 
             while (true) ;
-
         }
     }
 }
