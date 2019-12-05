@@ -21,6 +21,7 @@ namespace idetector.Parser
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             ClassModel cls = ClassCollection.GetInstance().GetClass(node.Identifier.ToString());
+
             if(node.BaseList != null)
             {
                 foreach (var n in node.BaseList.Types)
@@ -87,8 +88,6 @@ namespace idetector.Parser
                 var parentClass = getParentClass(node);
                 parentClass.AddObjectCreation(me);
             }
-        
-            
             base.VisitObjectCreationExpression(node);
         }
         
@@ -100,8 +99,9 @@ namespace idetector.Parser
             parentClass.AddProperty(propertyModel);
 
             base.VisitFieldDeclaration(node);
-        }  
-        
+        }
+
+
         public ClassCollection getCollection()
         {
             return ClassCollection.GetInstance();
@@ -109,12 +109,16 @@ namespace idetector.Parser
         
         private ClassModel getParentClass(SyntaxNode node){
             var n = node.Parent;
-
             var shouldLoop = true;
             var loops = 0;
 
+
             while (!n.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax") && shouldLoop)
             {
+                if (n.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax"))
+                {
+                    break;
+                }
                 n = n.Parent;
 
                 loops++;
@@ -138,7 +142,6 @@ namespace idetector.Parser
         public static void GenerateModels (SyntaxTree tree)
         {
             ClassCollection.GetInstance().Clear();
-            
             ClassWalker w = new ClassWalker();
             w.Visit(tree.GetRoot());
             

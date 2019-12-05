@@ -14,5 +14,12 @@ namespace idetector.Parser
             ClassCollection.GetInstance().AddClass(classModel);
             base.VisitClassDeclaration(node);
         }
+
+        public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
+        {
+            ClassModel cls = new ClassModel(node);
+            ClassCollection.GetInstance().AddClass(cls);
+            base.VisitInterfaceDeclaration(node);
+        }
     }
 }
