@@ -99,8 +99,9 @@ namespace idetector.Parser
             parentClass.AddProperty(propertyModel);
 
             base.VisitFieldDeclaration(node);
-        }  
-        
+        }
+
+
         public ClassCollection getCollection()
         {
             return new ClassCollection();
@@ -108,12 +109,16 @@ namespace idetector.Parser
         
         private ClassModel getParentClass(SyntaxNode node){
             var n = node.Parent;
-
             var shouldLoop = true;
             var loops = 0;
 
+
             while (!n.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax") && shouldLoop)
             {
+                if (n.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax"))
+                {
+                    break;
+                }
                 n = n.Parent;
 
                 loops++;
@@ -125,7 +130,7 @@ namespace idetector.Parser
 
             if (shouldLoop)
             {
-                var _class = (ClassDeclarationSyntax) n;
+                var _class = (TypeDeclarationSyntax) n;
                 var member = ClassCollection.GetClass(_class.Identifier.ToString());
 
                 return member;
