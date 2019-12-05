@@ -1,3 +1,4 @@
+using System;
 using idetector.Collections;
 using idetector.Models;
 using Microsoft.CodeAnalysis.CSharp;
@@ -10,8 +11,7 @@ namespace idetector.Parser
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             ClassModel classModel = new ClassModel(node);
-            ClassCollection.AddClass(classModel);
-
+            ClassCollection.GetInstance().AddClass(classModel);
             base.VisitClassDeclaration(node);
         }
     }

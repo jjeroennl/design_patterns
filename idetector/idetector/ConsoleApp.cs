@@ -35,7 +35,7 @@ namespace idetector
 
         private void getResult()
         {
-            foreach (var item in ClassCollection.GetClasses())
+            foreach (var item in ClassCollection.GetInstance().GetClasses())
             {
                 Singleton s = new Singleton(item.Value);
                 s.Scan();

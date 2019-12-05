@@ -68,7 +68,7 @@ namespace xUnitTest
         {
             this.prepare();
             
-            var cls = ClassCollection.GetClass("User");
+            var cls = ClassCollection.GetInstance().GetClass("User");
 
             Assert.Equal("User", cls.Identifier);
             Assert.Single(cls.getProperties());

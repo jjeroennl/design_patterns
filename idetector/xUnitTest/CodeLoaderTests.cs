@@ -31,7 +31,7 @@ namespace xUnitTest
 
              CodeParser.Parse(code);
             
-            Assert.NotNull(ClassCollection.GetClass("Program"));
+            Assert.NotNull(ClassCollection.GetInstance().GetClass("Program"));
             
             //COLLECTION NOT YET IMPLEMENTED, ADD UNIT TESTS HERE WHEN CREATING IT.
         }

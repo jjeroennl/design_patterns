@@ -77,7 +77,7 @@ namespace xUnitTest
             var tree = Successsetup();
             Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetClass("User"));
+            Singleton singleton = new Singleton(ClassCollection.GetInstance().GetClass("User"));
             singleton.Scan();
             Assert.Equal(100, singleton.Score());
             
@@ -88,7 +88,7 @@ namespace xUnitTest
             var tree = noStaticGetInstancesetup();
             Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetClass("User"));
+            Singleton singleton = new Singleton(ClassCollection.GetInstance().GetClass("User"));
             singleton.Scan();
             Assert.Equal(75, singleton.Score());
 
@@ -99,7 +99,7 @@ namespace xUnitTest
             var tree = noPrivateStaticSelfsetup();
             Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetClass("User"));
+            Singleton singleton = new Singleton(ClassCollection.GetInstance().GetClass("User"));
             singleton.Scan();
             Assert.Equal(75, singleton.Score());
 
