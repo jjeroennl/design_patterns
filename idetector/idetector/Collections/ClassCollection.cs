@@ -9,11 +9,7 @@ namespace idetector.Collections
 {
     public class ClassCollection
     {
-
-        private static ClassCollection instance;
-        private ClassCollection(){}
-
-        private static Dictionary<string, ClassModel> cache = new Dictionary<string, ClassModel>();
+        private  Dictionary<string, ClassModel> cache = new Dictionary<string, ClassModel>();
 
         public void AddClass(ClassModel classModel)
         {
@@ -47,15 +43,6 @@ namespace idetector.Collections
         public Dictionary<string, ClassModel> GetClasses()
         {
             return cache;
-        }
-
-        public static ClassCollection GetInstance()
-        {
-            if (ClassCollection.instance == null)
-            {
-                ClassCollection.instance = new ClassCollection();
-            }
-            return ClassCollection.instance;
         }
 
 

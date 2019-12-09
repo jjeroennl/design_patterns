@@ -29,9 +29,9 @@ namespace xUnitTest
                 }
             }";
 
-             CodeParser.Parse(code);
+             var collection =  CodeParser.Parse(code);
             
-            Assert.NotNull(ClassCollection.GetInstance().GetClass("Program"));
+            Assert.NotNull(collection.GetClass("Program"));
             
             //COLLECTION NOT YET IMPLEMENTED, ADD UNIT TESTS HERE WHEN CREATING IT.
         }

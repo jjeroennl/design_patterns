@@ -147,9 +147,9 @@ namespace xUnitTest
         public void Test_Singleton_Succeed()
         {
             var tree = Successsetup();
-            Walker.GenerateModels(tree);
+            var collection = Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetInstance().GetClass("User"));
+            Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
             Assert.Equal(100, singleton.Score());
         }
@@ -158,9 +158,9 @@ namespace xUnitTest
         public void Test_Singleton_NoPrivateConstructor()
         {
             var tree = noPrivateConstructor();
-            Walker.GenerateModels(tree);
+            var collection = Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetInstance().GetClass("User"));
+            Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
             Assert.NotEqual(100, singleton.Score());
         }
@@ -168,9 +168,9 @@ namespace xUnitTest
         public void Test_Singleton_noPrivateStatic()
         {
             var tree = noPrivateSelf();
-            Walker.GenerateModels(tree);
+            var collection = Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetInstance().GetClass("User"));
+            Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
             Assert.NotEqual(100, singleton.Score());
         }
@@ -178,9 +178,9 @@ namespace xUnitTest
         public void Test_Singleton_NoStaticSelf()
         {
             var tree = NoStaticSelf();
-            Walker.GenerateModels(tree);
+            var collection = Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetInstance().GetClass("User"));
+            Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
             Assert.NotEqual(100, singleton.Score());
         }
@@ -188,9 +188,9 @@ namespace xUnitTest
         public void Test_Singleton_NoGetInstance()
         {
             var tree = noGetInstance();
-            Walker.GenerateModels(tree);
+            var collection = Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetInstance().GetClass("User"));
+            Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
             Assert.NotEqual(100, singleton.Score());
         }
@@ -198,9 +198,9 @@ namespace xUnitTest
         public void Test_Singleton_NoStaticGetInstance()
         {
             var tree = noStaticGetInstancesetup();
-            Walker.GenerateModels(tree);
+            var collection = Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetInstance().GetClass("User"));
+            Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
             Assert.NotEqual(100, singleton.Score());
         }
@@ -208,9 +208,9 @@ namespace xUnitTest
         public void Test_Singleton_NoCreationOfSelf()
         {
             var tree = noCreationOfSelf();
-            Walker.GenerateModels(tree);
+            var collection = Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetInstance().GetClass("User"));
+            Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
             Assert.NotEqual(100, singleton.Score());
         }
