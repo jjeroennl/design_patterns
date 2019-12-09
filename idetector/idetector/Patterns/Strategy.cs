@@ -9,20 +9,31 @@ namespace idetector.Patterns
     public class Strategy : IPattern
     {
         private int _score;
-        private ClassModel cls;
+        private ClassCollection cc;
 
-        public Strategy(ClassModel _cls)
+        public Strategy(ClassCollection _cc)
         {
-            cls = _cls;
+            cc = _cc;
             PriorityCollection.ClearPriorities();
-            PriorityCollection.AddPriority("strategy", "IsPrivateConstructor", Priority.Low);
-            PriorityCollection.AddPriority("strategy", "IsStaticSelf", Priority.Low);
-            PriorityCollection.AddPriority("strategy", "IsGetInstance", Priority.Low);
-            PriorityCollection.AddPriority("strategy", "IsCreateSelf", Priority.Low);
+            PriorityCollection.AddPriority("strategy", "IsTrue", Priority.Low);
         }
+
         public void Scan()
         {
-            throw new NotImplementedException();
+            if (IsTrue())
+            {
+                _score += PriorityCollection.GetPercentage("strategy", "IsTrue");
+            }
+        }
+
+        public int Score()
+        {
+            return _score;
+        }
+
+        public bool IsTrue()
+        {
+            return true;
         }
     }
 }
