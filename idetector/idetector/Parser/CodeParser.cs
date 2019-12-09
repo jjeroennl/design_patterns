@@ -6,10 +6,10 @@ namespace idetector.Parser
 {
     public class CodeParser
     {
-        public static void Parse(string code)
+        public static ClassCollection Parse(string code)
         {
             SyntaxTree tree = CSharpSyntaxTree.ParseText(code);
-            Walker.GenerateModels(tree);
+            return Walker.GenerateModels(tree);
         }
     }
 }

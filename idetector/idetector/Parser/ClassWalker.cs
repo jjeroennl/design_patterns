@@ -8,17 +8,22 @@ namespace idetector.Parser
 {
     public class ClassWalker: CSharpSyntaxWalker
     {
+        private ClassCollection _collection;
+        public ClassWalker(ClassCollection collection)
+        {
+            _collection = collection;
+        }
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             ClassModel classModel = new ClassModel(node);
-            ClassCollection.AddClass(classModel);
+            _collection.AddClass(classModel);
             base.VisitClassDeclaration(node);
         }
 
         public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
         {
             ClassModel cls = new ClassModel(node);
-            ClassCollection.AddClass(cls);
+            _collection.AddClass(cls);
             base.VisitInterfaceDeclaration(node);
         }
     }
