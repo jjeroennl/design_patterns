@@ -8,6 +8,8 @@ namespace idetector
 {
     public class ConsoleApp
     {
+        private ClassCollection collection;
+
         public ConsoleApp()
         {
             Console.WriteLine(@" _     _      _            _             
@@ -27,15 +29,20 @@ namespace idetector
 
             var file = FileReader.ReadSingleFile(path);
 
-            if (!file)
+
+            if (file == null)
             {
                 this.printRequest();
+            }
+            else
+            {
+                this.collection = file;
             }
         }
 
         private void getResult()
         {
-            foreach (var item in ClassCollection.GetClasses())
+            foreach (var item in this.collection.GetClasses())
             {
                 Singleton s = new Singleton(item.Value);
                 s.Scan();

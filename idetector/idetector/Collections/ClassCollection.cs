@@ -9,13 +9,9 @@ namespace idetector.Collections
 {
     public class ClassCollection
     {
+        private  Dictionary<string, ClassModel> cache = new Dictionary<string, ClassModel>();
 
-        /// <summary>
-        /// Tkey as Namespace/Classname
-        /// </summary>
-        private static Dictionary<string, ClassModel> cache = new Dictionary<string, ClassModel>();
-
-        public static void AddClass(ClassModel classModel)
+        public void AddClass(ClassModel classModel)
         {
             if (cache.ContainsKey(classModel.Identifier.ToString()))
             {
@@ -27,7 +23,7 @@ namespace idetector.Collections
             }
         }
 
-        public static ClassModel GetClass(string identifier)
+        public ClassModel GetClass(string identifier)
         {
             try
             {
@@ -38,16 +34,13 @@ namespace idetector.Collections
                 return null;
             }
         }
-
-        public static int ClearCollection()
+        
+        public void Clear()
         {
-            int count = ClassCollection.cache.Count();
-            ClassCollection.cache = new Dictionary<string, ClassModel>();
-
-            return count;
+            cache = new Dictionary<string, ClassModel>();
         }
-
-        public static Dictionary<string, ClassModel> GetClasses()
+        
+        public Dictionary<string, ClassModel> GetClasses()
         {
             return cache;
         }
