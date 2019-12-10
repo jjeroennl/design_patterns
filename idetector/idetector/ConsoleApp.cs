@@ -46,6 +46,7 @@ namespace idetector
             {
                 Singleton s = new Singleton(item.Value);
                 s.Scan();
+                Decorator d = new Decorator(item.Value, collection.GetClasses());
                 this.printBar(item.Value, "Singleton", s.Score());
             }
         }

@@ -10,7 +10,7 @@ namespace idetector.Models
 {
     public class PropertyModel
     {
-        private SyntaxNode _node;
+        private MemberDeclarationSyntax _node;
         public string Parent { get; set; }
         public Type ParentType { get; set; }
         public string[] Modifiers { get; set; }
@@ -71,7 +71,7 @@ namespace idetector.Models
 
         }
 
-        public SyntaxNode GetNode()
+        public MemberDeclarationSyntax GetNode()
         {
             if (Type == Type.FieldSyntax)
             {
