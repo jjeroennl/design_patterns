@@ -9,8 +9,9 @@ namespace idetector.Patterns
         private ClassModel _cls;
         private Dictionary<string, ClassModel> _collection;
         private List<ClassModel> _children = new List<ClassModel>();
-        private ClassModel _decorator;
-        private ClassModel _base;
+        private ClassModel _decoratorInterface;
+        private List<ClassModel> _decorators;
+        private List<ClassModel> _bases;
         private int _score = 0;
 
         public Decorator(ClassModel cls, Dictionary<string, ClassModel> collection)
@@ -23,19 +24,15 @@ namespace idetector.Patterns
         {
             if (_cls.IsInterface || _cls.IsAbstract)
             {
-                if (checkAmountChildren())
+                if (checkChildren().isTrue)
                 {
                     _score += 25;
-                    if (checkChildrenType())
+
+                    if (findDecorators().isTrue)
                     {
                         _score += 25;
-                        if (checkDecorators())
-                        {
-                            _score += 25;
-                        }
                     }
                 }
-
             }
         }
 
@@ -44,7 +41,7 @@ namespace idetector.Patterns
         /// Checks if interface has children
         /// </summary>
         /// <returns></returns>
-        private bool checkAmountChildren()
+        private CheckedMessage checkChildren()
         {
             List<ClassModel> list = new List<ClassModel>();
             foreach (var item in _collection.Values)
@@ -55,61 +52,71 @@ namespace idetector.Patterns
                 }
             }
 
-            if (list.Count == 2)
+            if (list.Count > 1)
             {
                 _children = list;
-                return true;
+                return checkChildrenType();
             }
-            return false;
+
+            return new CheckedMessage("The class did not have enough children to qualify", false);
         }
 
-        private bool checkChildrenType()
+        private CheckedMessage checkChildrenType()
         {
-            var list = _children;
-            var a = list[0].IsInterface || list[0].IsAbstract;
-            var b = list[1].IsInterface || list[1].IsAbstract;
-            if ((a && b == false) || (b && a == false))
+            var i = 0;
+            foreach (var child in _children)
             {
-                if (a)
+                if (child.IsAbstract)
                 {
-                    _decorator = list[0];
-                    _base = list[1];
+                    i++;
+                    _decoratorInterface = child;
                 }
-                else
+                else {_bases.Add(child);}
+                
+            }
+            if (i > 1)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private CheckedMessage decoratorBaseHasComponent()
+        {
+            foreach (var property in _decoratorInterface.getProperties())
+            {
+                if (property.Identifier.Equals(_cls.Identifier))
                 {
-                    _decorator = list[1];
-                    _base = list[0];
+                    return true;
                 }
-                return true;
             }
 
             return false;
         }
 
-        private bool checkDecorators()
+        private CheckedMessage constructorSetsComponent()
         {
-            bool isBase = true;
-            bool isDecorator = false;
+
+        }
+
+        private CheckedMessage findDecorators()
+        {
+            CheckedMessage isDecorator = false;
             foreach (var item in _collection.Values)
             {
-                if (item.HasParent(_base.Identifier))
+                if (item.HasParent(_decoratorInterface.Identifier))
                 {
-                    isBase = false;
-                }
-
-                if (item.HasParent(_decorator.Identifier))
-                {
-                    isDecorator = true;
+                    _decorators.Add(item);
                 }
             }
 
-            if (isBase && isDecorator)
-            {
-                return true;
-            }
-
-            return false;
+            return _decorators.Count > 0;
         }
 
+        private CheckedMessage checkDecoratorCallsBase()
+        {
+
+        }
     }
 }
