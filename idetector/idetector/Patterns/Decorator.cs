@@ -1,6 +1,13 @@
 ﻿using System.Collections.Generic;
+
 using idetector.Collections;
 using idetector.Models;
+using System.Linq;
+using idetector.Collections;
+using idetector.Models;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 
 namespace idetector.Patterns
 {
@@ -58,7 +65,7 @@ namespace idetector.Patterns
                 return checkChildrenType();
             }
 
-            return new CheckedMessage("The class did not have enough children to qualify", false);
+            return new CheckedMessage("The class did not have enough children to qualify", false, _cls.Identifier);
         }
 
         private CheckedMessage checkChildrenType()
@@ -71,15 +78,20 @@ namespace idetector.Patterns
                     i++;
                     _decoratorInterface = child;
                 }
-                else {_bases.Add(child);}
-                
-            }
-            if (i > 1)
-            {
-                return false;
+                else
+                {
+                    _bases.Add(child);
+                }
+
             }
 
-            return true;
+            if (i > 1)
+            {
+                return new CheckedMessage("Decorator pattern does not allow multiple base decorator classes", false,
+                    _cls.Identifier);
+            }
+
+            return new CheckedMessage(true);
         }
 
         private CheckedMessage decoratorBaseHasComponent()
@@ -88,11 +100,12 @@ namespace idetector.Patterns
             {
                 if (property.Identifier.Equals(_cls.Identifier))
                 {
-                    return true;
+                    return new CheckedMessage(true);
                 }
             }
 
-            return false;
+            return new CheckedMessage("The base decorator did not have a property/field of type: " + _cls.Identifier,
+                false, _decoratorInterface.Identifier);
         }
 
         private CheckedMessage constructorSetsComponent()
@@ -102,7 +115,7 @@ namespace idetector.Patterns
 
         private CheckedMessage findDecorators()
         {
-            CheckedMessage isDecorator = false;
+            bool isDecorator = false;
             foreach (var item in _collection.Values)
             {
                 if (item.HasParent(_decoratorInterface.Identifier))
@@ -111,12 +124,31 @@ namespace idetector.Patterns
                 }
             }
 
-            return _decorators.Count > 0;
+            if (_decorators.Count > 0)
+            {
+                return new CheckedMessage(true);
+            }
+
+            return new CheckedMessage("the base decorator does not have any children", false,
+                _decoratorInterface.Identifier);
         }
 
         private CheckedMessage checkDecoratorCallsBase()
         {
+            foreach (var decorator in _decorators)
+            {
+                foreach (var method in decorator.getMethods())
+                {
+                    if (method.isConstructor)
+                    {
+                        var node = (ConstructorDeclarationSyntax) method.getNode();
+                        if (node.Initializer.)
+                        {
 
+                        }
+                    }
+                }
+            }
         }
     }
 }
