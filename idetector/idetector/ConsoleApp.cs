@@ -48,6 +48,8 @@ namespace idetector
                 s.Scan();
                 this.printBar(item.Value, "Singleton", s.Score());
             }
+                Strategy st = new Strategy(collection);
+                st.Scan();
         }
 
         private void printBar(ClassModel item, string name, int score)

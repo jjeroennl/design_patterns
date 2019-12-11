@@ -15,14 +15,29 @@ namespace idetector.Patterns
         {
             cc = _cc;
             PriorityCollection.ClearPriorities();
-            PriorityCollection.AddPriority("strategy", "IsTrue", Priority.Low);
+            PriorityCollection.AddPriority("strategy", "ContextHasStrategy", Priority.Medium);
+            PriorityCollection.AddPriority("strategy", "ContextHasPrivateStrategy", Priority.Low);
+            PriorityCollection.AddPriority("strategy", "HasPublicConstructor", Priority.Low);
+            PriorityCollection.AddPriority("strategy", "ContextHasStrategySetter", Priority.Medium);
         }
 
         public void Scan()
         {
-            if (IsTrue())
+            if (ContextHasStrategy())
             {
-                _score += PriorityCollection.GetPercentage("strategy", "IsTrue");
+                _score += PriorityCollection.GetPercentage("strategy", "ContextHasStrategy");
+            }
+            if (ContextHasPrivateStrategy())
+            {
+                _score += PriorityCollection.GetPercentage("strategy", "ContextHasPrivateStrategy");
+            }
+            if (HasPublicConstructor())
+            {
+                _score += PriorityCollection.GetPercentage("strategy", "HasPublicConstructor");
+            }
+            if (ContextHasStrategySetter())
+            {
+                _score += PriorityCollection.GetPercentage("strategy", "ContextHasStrategySetter");
             }
         }
 
@@ -31,9 +46,83 @@ namespace idetector.Patterns
             return _score;
         }
 
-        public bool IsTrue()
+        public bool ContextHasStrategy()
         {
-            return true;
+            foreach (var cls in cc.GetClasses())
+            {
+                foreach (var property in cls.Value.getProperties())
+                {
+                    if(cc.GetClass(property.ValueType.ToString()).IsInterface)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool ContextHasPrivateStrategy()
+        {
+            foreach (var cls in cc.GetClasses())
+            {
+                foreach (var property in cls.Value.getProperties())
+                {
+                    if (cc.GetClass(property.ValueType.ToString()).IsInterface)
+                    {
+                        if (property.Modifiers[0].ToLower().Equals("private"))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool HasPublicConstructor()
+        {
+            foreach (var cls in cc.GetClasses())
+            {
+                foreach (var method in cls.Value.getMethods())
+                {
+                    if (method.isConstructor)
+                    {
+                        foreach (var modifier in method.Modifiers)
+                        {
+                            if (modifier.ToLower().Equals("public"))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool ContextHasStrategySetter()
+        {
+            foreach (var cls in cc.GetClasses())
+            {
+                foreach (var method in cls.Value.getMethods())
+                {
+                    foreach (var property in cls.Value.getProperties())
+                    {
+                        if (method.Parameters.Contains(property.ValueType.ToString()))
+                        {
+                            Console.WriteLine(property.Identifier);
+                            /*
+                            Console.WriteLine(method.Parameters.ToString());
+                            Console.WriteLine(property.ValueType.ToString());
+                            */
+                            return true;
+
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

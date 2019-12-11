@@ -77,6 +77,41 @@ namespace xUnitTest
                 }
             }");
         }
+
+        SyntaxTree FailSetup()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+            namespace RefactoringGuru.DesignPatterns.Strategy.Conceptual
+            {
+                class Context
+                {
+                    private IStrategy _strategy;
+
+                    private Context()
+                    { }
+
+                    public void SetStrategy(IStrategy strategy)
+                    { }
+
+                    public void DoSomeBusinessLogic()
+                    { }
+                }
+                public class IStrategy
+                { }
+
+                class ConcreteStrategyA : IStrategy
+                {
+                    public void DoAlgorithm(object data)
+                    { }
+                }
+
+                class ConcreteStrategyB : IStrategy
+                {
+                    public void DoAlgorithm(object data)
+                    { }
+                }
+            }");
+        }
         [Fact]
         public void Test_Strategy_Succeed()
         {
@@ -86,6 +121,76 @@ namespace xUnitTest
             Strategy strategy = new Strategy(collection);
             strategy.Scan();
             Assert.Equal(100, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_NoContext()
+        {
+            var tree = FailSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Strategy strategy = new Strategy(collection);
+            strategy.Scan();
+            Assert.Equal(0, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_NoInterface()
+        {
+            var tree = FailSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Strategy strategy = new Strategy(collection);
+            strategy.Scan();
+            Assert.Equal(0, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_NoConcreteStrategy()
+        {
+            var tree = FailSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Strategy strategy = new Strategy(collection);
+            strategy.Scan();
+            Assert.Equal(0, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_NoStrategySetter()
+        {
+            var tree = FailSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Strategy strategy = new Strategy(collection);
+            strategy.Scan();
+            Assert.Equal(0, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_NoPrivateStrategy()
+        {
+            var tree = FailSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Strategy strategy = new Strategy(collection);
+            strategy.Scan();
+            Assert.Equal(0, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_NoMethodContext()
+        {
+            var tree = FailSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Strategy strategy = new Strategy(collection);
+            strategy.Scan();
+            Assert.Equal(0, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_RelationsBetweenStrategies ()
+        {
+            var tree = FailSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Strategy strategy = new Strategy(collection);
+            strategy.Scan();
+            Assert.Equal(0, strategy.Score());
         }
     }
 }
