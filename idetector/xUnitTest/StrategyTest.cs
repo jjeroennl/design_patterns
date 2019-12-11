@@ -85,7 +85,7 @@ namespace xUnitTest
             {
                 class Context
                 {
-                    public IStrategy _strategy { get; };
+                    public int _strategy { get; };
 
                     private Context()
                     { }
@@ -100,13 +100,13 @@ namespace xUnitTest
                 public class IStrategy
                 { }
 
-                class ConcreteStrategyA : IStrategy
+                class ConcreteStrategyA
                 {
                     public void DoAlgorithm(object data)
                     { }
                 }
 
-                class ConcreteStrategyB : IStrategy
+                class ConcreteStrategyB
                 {
                     public void DoAlgorithm(object data)
                     { }

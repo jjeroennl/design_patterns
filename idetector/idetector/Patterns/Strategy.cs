@@ -21,6 +21,7 @@ namespace idetector.Patterns
             PriorityCollection.AddPriority("strategy", "ContextHasPublicConstructor", Priority.Low);
             PriorityCollection.AddPriority("strategy", "ContextHasStrategySetter", Priority.Medium);
             PriorityCollection.AddPriority("strategy", "HasInterface", Priority.Low);
+            PriorityCollection.AddPriority("strategy", "HasConcreteClasses", Priority.Low);
         }
 
         public void Scan()
@@ -45,6 +46,10 @@ namespace idetector.Patterns
             {
                 _score += PriorityCollection.GetPercentage("strategy", "HasInterface");
             }
+            if (HasConcreteClasses())
+            {
+                _score += PriorityCollection.GetPercentage("strategy", "HasConcreteClasses");
+            }
         }
 
         public int Score()
@@ -58,9 +63,9 @@ namespace idetector.Patterns
             {
                 foreach (var property in cls.Value.getProperties())
                 {
-                    if(cc.GetClass(property.ValueType.ToString()).IsInterface)
+                    if(cc.GetClass(property.ValueType.ToString()) != null)
                     {
-                        return true;
+                        if (cc.GetClass(property.ValueType.ToString()).IsInterface) return true;
                     }
                 }
             }
@@ -73,11 +78,11 @@ namespace idetector.Patterns
             {
                 foreach (var property in cls.Value.getProperties())
                 {
-                    if (cc.GetClass(property.ValueType.ToString()).IsInterface)
+                    if (cc.GetClass(property.ValueType.ToString()) != null)
                     {
-                        if (property.Modifiers[0].ToLower().Equals("private"))
+                        if (cc.GetClass(property.ValueType.ToString()).IsInterface)
                         {
-                            return true;
+                            if (property.Modifiers[0].ToLower().Equals("private")) return true;
                         }
                     }
                 }
@@ -95,10 +100,7 @@ namespace idetector.Patterns
                     {
                         foreach (var modifier in method.Modifiers)
                         {
-                            if (modifier.ToLower().Equals("public"))
-                            {
-                                return true;
-                            }
+                            if (modifier.ToLower().Equals("public")) return true;
                         }
                     }
                 }
@@ -115,29 +117,51 @@ namespace idetector.Patterns
                     if (property.Type.Equals(Models.Type.PropertySyntax))
                     {
                         var node = (PropertyDeclarationSyntax)property.GetNode();
-                        if (node.AccessorList.ToString().Contains("set"))
-                        {
-                            return true;
-                        }
+                        if (node.AccessorList.ToString().Contains("set")) return true;
                     }
                     foreach (var method in cls.Value.getMethods())
                     {
-                        if (method.Parameters.Contains(property.ValueType.ToString()) && method.Body.Contains(property.Identifier))
+                        if (method.Parameters.Contains(property.ValueType.ToString()) && method.Body.Contains(property.Identifier)) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool ContextHasLogic()
+        {
+            foreach (var cls in cc.GetClasses())
+            {
+                foreach (var property in cls.Value.getProperties())
+                {
+                    if (cc.GetClass(property.ValueType.ToString()) != null)
+                    {
+                        if (cc.GetClass(property.ValueType.ToString()).IsInterface)
                         {
-                            return true;
+
                         }
                     }
                 }
             }
             return false;
         }
+
         public bool HasInterface()
         {
             foreach (var cls in cc.GetClasses())
             {
-                if(cls.Value.IsInterface)
+                if(cls.Value.IsInterface) return true;
+            }
+            return false;
+        }
+
+        public bool HasConcreteClasses()
+        {
+            foreach (var cls in cc.GetClasses())
+            {
+                foreach (string parent in cls.Value.GetParents())
                 {
-                    return true;
+                    if (cc.GetClass(parent).IsInterface) return true;
                 }
             }
             return false;
