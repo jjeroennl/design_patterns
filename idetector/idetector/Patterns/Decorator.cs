@@ -17,14 +17,21 @@ namespace idetector.Patterns
         private Dictionary<string, ClassModel> _collection;
         private List<ClassModel> _children = new List<ClassModel>();
         private ClassModel _decoratorInterface;
-        private List<ClassModel> _decorators;
-        private List<ClassModel> _bases;
+        private List<ClassModel> _decorators = new List<ClassModel>();
+        private List<ClassModel> _bases = new List<ClassModel>();
         private int _score = 0;
+        private List<(string, string)> _messages;
 
         public Decorator(ClassModel cls, Dictionary<string, ClassModel> collection)
         {
             _collection = collection;
             _cls = cls;
+            PriorityCollection.ClearPriorities();
+            PriorityCollection.AddPriority("decorator", "checkChildren", Priority.Low);
+            PriorityCollection.AddPriority("decorator", "findDecorators", Priority.Low);
+            PriorityCollection.AddPriority("decorator", "decoratorBaseHasComponent", Priority.Low);
+            PriorityCollection.AddPriority("decorator", "constructorSetsComponent", Priority.Low);
+            PriorityCollection.AddPriority("decorator", "DecoratorCallsBase", Priority.Low);
         }
 
         public void Scan()
@@ -33,21 +40,41 @@ namespace idetector.Patterns
             {
                 if (checkChildren().isTrue)
                 {
-                    _score += 25;
+                    _score += PriorityCollection.GetPercentage("decorator", "checkChildren");
 
                     if (findDecorators().isTrue)
-                    {
-                        _score += 25;
+                    { 
+                        _score += PriorityCollection.GetPercentage("decorator", "findDecorators");
+                        if (decoratorBaseHasComponent().isTrue)
+                        {
+                            _score += PriorityCollection.GetPercentage("decorator", "decoratorBaseHasComponent");
+                        }
+
+                        if (constructorSetsComponent().isTrue)
+                        {
+                            _score += PriorityCollection.GetPercentage("decorator", "constructorSetsComponent");
+                        }
+
+                        if (DecoratorCallsBase().isTrue)
+                        {
+                            _score += PriorityCollection.GetPercentage("decorator", "DecoratorCallsBase");
+                        }
                     }
                 }
+                
             }
+        }
+
+        public int Score()
+        {
+            return _score;
         }
 
 
         /// <summary>
         /// Checks if interface has children
         /// </summary>
-        /// <returns></returns>
+        /// <returns>CheckedMessage</returns>
         private CheckedMessage checkChildren()
         {
             List<ClassModel> list = new List<ClassModel>();
@@ -85,20 +112,21 @@ namespace idetector.Patterns
 
             }
 
-            if (i > 1)
+            if (i != 1)
             {
                 return new CheckedMessage("Decorator pattern does not allow multiple base decorator classes", false,
                     _cls.Identifier);
             }
 
             return new CheckedMessage(true);
+
         }
 
         private CheckedMessage decoratorBaseHasComponent()
         {
             foreach (var property in _decoratorInterface.getProperties())
             {
-                if (property.Identifier.Equals(_cls.Identifier))
+                if (property.ValueType.Equals(_cls.Identifier))
                 {
                     return new CheckedMessage(true);
                 }
@@ -110,12 +138,43 @@ namespace idetector.Patterns
 
         private CheckedMessage constructorSetsComponent()
         {
+            foreach (var item in _decoratorInterface.getMethods())
+            {
+                if (item.Parameters.Contains(_cls.Identifier))
+                {
+                    int count = 0;
+                    foreach (var decorator in _decorators)
+                    {
+                        bool triggered = false;
+                        
+                        foreach (var method in decorator.getMethods())
+                        {
+                            if (method.isConstructor)
+                            {
+                                count++;
+                                if (!method.Parameters.Contains(_cls.Identifier))
+                                {
+                                    triggered = true;
+                                }
 
+                            }
+                        }
+
+                        if (!triggered && (count >= _decorators.Count))
+                        {
+                            return new CheckedMessage(true);
+
+                        }
+                        return new CheckedMessage("One or more decorator does not take a " + _cls.Identifier + "as parameter", false, decorator.Identifier);
+                    }
+
+                }
+            }
+            return new CheckedMessage("The decorator base does not take a value of " + _cls.Identifier + "as parameter", false, _decoratorInterface.Identifier);
         }
 
         private CheckedMessage findDecorators()
         {
-            bool isDecorator = false;
             foreach (var item in _collection.Values)
             {
                 if (item.HasParent(_decoratorInterface.Identifier))
@@ -133,7 +192,7 @@ namespace idetector.Patterns
                 _decoratorInterface.Identifier);
         }
 
-        private CheckedMessage checkDecoratorCallsBase()
+        private CheckedMessage DecoratorCallsBase()
         {
             foreach (var decorator in _decorators)
             {
@@ -142,13 +201,14 @@ namespace idetector.Patterns
                     if (method.isConstructor)
                     {
                         var node = (ConstructorDeclarationSyntax) method.getNode();
-                        if (node.Initializer.)
+                        if (!node.Initializer.ThisOrBaseKeyword.ToString().ToLower().Equals("base"))
                         {
-
+                            return new CheckedMessage("Not all decorators call the base constructor", false, decorator.Identifier);
                         }
                     }
                 }
             }
+            return new CheckedMessage(true);
         }
     }
 }
