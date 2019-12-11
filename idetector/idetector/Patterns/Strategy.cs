@@ -138,7 +138,10 @@ namespace idetector.Patterns
                     {
                         if (cc.GetClass(property.ValueType.ToString()).IsInterface)
                         {
+                            foreach (var method in cls.Value.getMethods())
+                            {
 
+                            }
                         }
                     }
                 }

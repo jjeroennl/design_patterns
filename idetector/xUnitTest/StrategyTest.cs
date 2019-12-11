@@ -97,16 +97,18 @@ namespace xUnitTest
                     { }
                 }
 
-                public class IStrategy
-                { }
+                abstract class IStrategy
+                { 
+                    object DoAlgorithm(object data);
+                }
 
-                class ConcreteStrategyA
+                class ConcreteStrategyA : IStrategy
                 {
                     public void DoAlgorithm(object data)
                     { }
                 }
 
-                class ConcreteStrategyB
+                class ConcreteStrategyB : IStrategy
                 {
                     public void DoAlgorithm(object data)
                     { }
