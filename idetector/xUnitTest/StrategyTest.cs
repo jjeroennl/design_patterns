@@ -96,6 +96,7 @@ namespace xUnitTest
                     public void DoSomeBusinessLogic()
                     { }
                 }
+
                 public class IStrategy
                 { }
 

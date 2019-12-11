@@ -18,8 +18,9 @@ namespace idetector.Patterns
             PriorityCollection.ClearPriorities();
             PriorityCollection.AddPriority("strategy", "ContextHasStrategy", Priority.Medium);
             PriorityCollection.AddPriority("strategy", "ContextHasPrivateStrategy", Priority.Low);
-            PriorityCollection.AddPriority("strategy", "HasPublicConstructor", Priority.Low);
+            PriorityCollection.AddPriority("strategy", "ContextHasPublicConstructor", Priority.Low);
             PriorityCollection.AddPriority("strategy", "ContextHasStrategySetter", Priority.Medium);
+            PriorityCollection.AddPriority("strategy", "HasInterface", Priority.Low);
         }
 
         public void Scan()
@@ -32,13 +33,17 @@ namespace idetector.Patterns
             {
                 _score += PriorityCollection.GetPercentage("strategy", "ContextHasPrivateStrategy");
             }
-            if (HasPublicConstructor())
+            if (ContextHasPublicConstructor())
             {
-                _score += PriorityCollection.GetPercentage("strategy", "HasPublicConstructor");
+                _score += PriorityCollection.GetPercentage("strategy", "ContextHasPublicConstructor");
             }
             if (ContextHasStrategySetter())
             {
                 _score += PriorityCollection.GetPercentage("strategy", "ContextHasStrategySetter");
+            }
+            if (HasInterface())
+            {
+                _score += PriorityCollection.GetPercentage("strategy", "HasInterface");
             }
         }
 
@@ -80,7 +85,7 @@ namespace idetector.Patterns
             return false;
         }
 
-        public bool HasPublicConstructor()
+        public bool ContextHasPublicConstructor()
         {
             foreach (var cls in cc.GetClasses())
             {
@@ -122,6 +127,17 @@ namespace idetector.Patterns
                             return true;
                         }
                     }
+                }
+            }
+            return false;
+        }
+        public bool HasInterface()
+        {
+            foreach (var cls in cc.GetClasses())
+            {
+                if(cls.Value.IsInterface)
+                {
+                    return true;
                 }
             }
             return false;
