@@ -85,12 +85,12 @@ namespace xUnitTest
             {
                 class Context
                 {
-                    private IStrategy _strategy;
+                    public IStrategy _strategy { get; };
 
                     private Context()
                     { }
 
-                    public void SetStrategy(IStrategy strategy)
+                    private Context(IStrategy strategy)
                     { }
 
                     public void DoSomeBusinessLogic()

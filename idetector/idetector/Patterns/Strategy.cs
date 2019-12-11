@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using idetector.Collections;
 using idetector.Models;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace idetector.Patterns
 {
@@ -104,24 +105,25 @@ namespace idetector.Patterns
         {
             foreach (var cls in cc.GetClasses())
             {
-                foreach (var method in cls.Value.getMethods())
+                foreach (var property in cls.Value.getProperties())
                 {
-                    foreach (var property in cls.Value.getProperties())
+                    if (property.Type.Equals(Models.Type.PropertySyntax))
                     {
-                        if (method.Parameters.Contains(property.ValueType.ToString()))
+                        var node = (PropertyDeclarationSyntax)property.GetNode();
+                        if (node.AccessorList.ToString().Contains("set"))
                         {
-                            Console.WriteLine(property.Identifier);
-                            /*
-                            Console.WriteLine(method.Parameters.ToString());
-                            Console.WriteLine(property.ValueType.ToString());
-                            */
                             return true;
-
+                        }
+                    }
+                    foreach (var method in cls.Value.getMethods())
+                    {
+                        if (method.Parameters.Contains(property.ValueType.ToString()) && method.Body.Contains(property.Identifier))
+                        {
+                            return true;
                         }
                     }
                 }
             }
-
             return false;
         }
     }
