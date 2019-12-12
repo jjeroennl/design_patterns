@@ -10,7 +10,7 @@ namespace idetector.Models
 {
     public class PropertyModel
     {
-        private SyntaxNode _node;
+        private MemberDeclarationSyntax _node;
         public string Parent { get; set; }
         public Type ParentType { get; set; }
         public string[] Modifiers { get; set; }
@@ -32,7 +32,6 @@ namespace idetector.Models
                     isOverride = true;
                 }
             }
-            
             ValueType = node.Type.ToString();
             _setParent(node.Parent);
             Type = Type.PropertySyntax;
@@ -50,7 +49,7 @@ namespace idetector.Models
             ValueType = node.Declaration.Type.ToString();
             Type = Type.FieldSyntax;
             string[] str = node.Declaration.ToString().Split(' ');
-            Identifier = str[Modifiers.Length - 1];
+            Identifier = str[str.Length - 1];
         }
 
         private void _setParent(SyntaxNode node)
@@ -71,7 +70,7 @@ namespace idetector.Models
 
         }
 
-        public SyntaxNode GetNode()
+        public MemberDeclarationSyntax GetNode()
         {
             if (Type == Type.FieldSyntax)
             {

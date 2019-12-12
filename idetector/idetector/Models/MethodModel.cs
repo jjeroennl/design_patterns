@@ -14,7 +14,7 @@ namespace idetector.Models
         /// <summary>
         /// Getters/setters for method data.
         /// </summary>
-        private SyntaxNode _node { get; set; }
+        private BaseMethodDeclarationSyntax _node { get; set; }
 
         public bool isConstructor = false;
         public string[] Modifiers { get; set; }
@@ -30,7 +30,7 @@ namespace idetector.Models
         public MethodModel(MethodDeclarationSyntax node)
         {
 
-            _node = node; 
+            _node = node;
             Modifiers = new string[node.Modifiers.Count];
             for (int i = 0; i <node.Modifiers.Count; i++)
             {
@@ -63,6 +63,11 @@ namespace idetector.Models
             {
                 Body = node.Body.ToString();
             }
+        }
+
+        public BaseMethodDeclarationSyntax getNode()
+        {
+            return _node;
         }
     }
 }
