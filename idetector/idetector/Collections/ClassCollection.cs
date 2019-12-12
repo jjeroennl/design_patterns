@@ -8,7 +8,7 @@ using idetector.Models;
 namespace idetector.Collections
 {
     public class ClassCollection
-    {
+    { 
         private  Dictionary<string, ClassModel> cache = new Dictionary<string, ClassModel>();
 
         public void AddClass(ClassModel classModel)
