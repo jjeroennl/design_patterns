@@ -34,24 +34,42 @@ namespace idetector.Patterns
             return _score;
         }
 
-        public ClassModel GetAbstractCreatorClass()
+        public List<ClassModel> GetAbstractClasses()
         {
+            List<ClassModel> abstractClasses = new List<ClassModel>();
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
-                foreach (var modifier in cls.Value.Modifiers)
+                if (cls.Value.Modifiers != null)
                 {
-                    if (modifier.ToLower().Equals("abstract"))
+                    foreach (var modifier in cls.Value.Modifiers)
                     {
-                        return cls.Value;
+                        if (modifier.ToLower().Equals("abstract"))
+                        {
+                            abstractClasses.Add(cls.Value);
+                        }
                     }
                 }
             }
-            return null;
+            return abstractClasses;
+        }
+
+        public List<ClassModel> GetInterfaces()
+        {
+            List<ClassModel> interfaces = new List<ClassModel>();
+            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            {
+                if (cls.Value.IsInterface)
+                {
+                    interfaces.Add(cls.Value);
+                }
+            }
+
+            return interfaces;
         }
 
         public bool IsAbstractCreatorClass()
         {
-           if (GetAbstractCreatorClass() != null)
+           if (GetAbstractClasses().Count != 0)
            {
                return true;
            }
@@ -59,7 +77,7 @@ namespace idetector.Patterns
             return false;
         }
 
-        public ClassModel GetAbstractProductInterface()
+        public bool IsAbstractProductInterface()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
@@ -71,21 +89,11 @@ namespace idetector.Patterns
                         {
                             if (cc.GetClass(method.ReturnType).IsInterface)
                             {
-                                return cc.GetClass(method.ReturnType);
+                                return true;
                             }
                         }
                     }
                 }
-            }
-
-            return null;
-        }
-
-        public bool IsAbstractProductInterface()
-        {
-            if (GetAbstractProductInterface() != null)
-            {
-                return true;
             }
 
             return false;
@@ -93,13 +101,16 @@ namespace idetector.Patterns
 
         public bool IsInheritingAbstractCreatorClass()
         {
-            if (GetAbstractCreatorClass() != null)
+            if (GetAbstractClasses() != null)
             {
                 foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
                 {
-                    if (cls.Value.HasParent(GetAbstractCreatorClass().Identifier))
+                    foreach (var abstractClass in GetAbstractClasses())
                     {
-                        return true;
+                        if (cls.Value.HasParent(abstractClass.Identifier))
+                        {
+                            return true;
+                        }
                     }
                 }
             }
@@ -109,12 +120,9 @@ namespace idetector.Patterns
 
         public bool IsProductInterface()
         {
-            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            if (GetInterfaces().Count != 0)
             {
-                if (cls.Value.IsInterface)
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
@@ -122,7 +130,26 @@ namespace idetector.Patterns
 
         public bool IsInheritingProductInterface()
         {
+            foreach (var interf in GetInterfaces())
+            {
+                if (interf != null)
+                {
+                    foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+                    {
+                        if (cls.Value.HasParent(interf.Identifier))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            
             return false;
+        }
+
+        public bool IsFactoryClass()
+        {
+            return true;
         }
     }
 }

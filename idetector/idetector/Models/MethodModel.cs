@@ -59,7 +59,10 @@ namespace idetector.Models
             ReturnType = type;
             Identifier = node.Identifier.ToString();
             Parameters = node.ParameterList.ToString();
-            Body = node.Body.ToString();
+            if (node.Body != null)
+            {
+                Body = node.Body.ToString();
+            }
         }
     }
 }
