@@ -3,8 +3,6 @@
 using idetector.Collections;
 using idetector.Models;
 using System.Linq;
-using idetector.Collections;
-using idetector.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -20,7 +18,6 @@ namespace idetector.Patterns
         private List<ClassModel> _decorators = new List<ClassModel>();
         private List<ClassModel> _bases = new List<ClassModel>();
         private int _score = 0;
-        private List<(string, string)> _messages;
 
         public Decorator(ClassModel cls, Dictionary<string, ClassModel> collection)
         {
