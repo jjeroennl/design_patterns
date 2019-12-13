@@ -17,7 +17,7 @@ namespace idetector.Patterns
         private ClassModel _decoratorInterface;
         private List<ClassModel> _decorators = new List<ClassModel>();
         private List<ClassModel> _bases = new List<ClassModel>();
-        private int _score = 0;
+        private float _score = 0;
 
         public Decorator(ClassModel cls, Dictionary<string, ClassModel> collection)
         {
@@ -64,7 +64,7 @@ namespace idetector.Patterns
 
         public int Score()
         {
-            return _score;
+            return (int) _score;
         }
 
 

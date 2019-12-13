@@ -6,7 +6,7 @@ namespace idetector.Patterns
 {
     public class Singleton : IPattern
     {
-        private int _score;
+        private float _score;
         private ClassModel cls;
 
         public Singleton(ClassModel _cls)
@@ -49,7 +49,7 @@ namespace idetector.Patterns
 
         public int Score()
         {
-            return _score;
+            return (int) _score;
         }
 
         public bool IsPrivateConstructor()

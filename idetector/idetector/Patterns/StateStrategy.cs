@@ -7,29 +7,44 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace idetector.Patterns
 {
-    public class Strategy : IPattern
+    public class StateStrategy : IPattern
     {
-        private int _score;
+        private float _score;
         private ClassCollection cc;
+        private ClassCollection Concretes;
         private ClassModel Context;
+        private ClassModel Interface;
         private MethodModel Setter;
 
-        public Strategy(ClassCollection _cc)
+        public StateStrategy(ClassCollection _cc)
         {
             cc = _cc;
+            Concretes = new ClassCollection();
             PriorityCollection.ClearPriorities();
-            PriorityCollection.AddPriority("strategy", "ContextHasStrategy", Priority.Medium);
+            PriorityCollection.AddPriority("strategy", "ContextHasStrategy", Priority.High);
+            PriorityCollection.AddPriority("strategy", "ContextHasStrategySetter", Priority.High);
+            PriorityCollection.AddPriority("strategy", "ContextHasLogic", Priority.Medium);
             PriorityCollection.AddPriority("strategy", "ContextHasPrivateStrategy", Priority.Low);
             PriorityCollection.AddPriority("strategy", "ContextHasPublicConstructor", Priority.Low);
-            PriorityCollection.AddPriority("strategy", "ContextHasStrategySetter", Priority.Medium);
-            PriorityCollection.AddPriority("strategy", "ContextHasLogic", Priority.Low);
-            PriorityCollection.AddPriority("strategy", "HasInterface", Priority.Low);
-            PriorityCollection.AddPriority("strategy", "HasConcreteClasses", Priority.Low);
-            PriorityCollection.AddPriority("strategy", "HasNoRelationsBetweenConcreteClasses", Priority.Low);
+            PriorityCollection.AddPriority("strategy", "HasInterfaceOrAbstract", Priority.Medium);
+            PriorityCollection.AddPriority("strategy", "HasConcreteClasses", Priority.Medium);
+            PriorityCollection.AddPriority("strategy", "HasRelationsBetweenConcreteClasses", Priority.Low);
         }
 
         public void Scan()
         {
+            if (HasInterfaceOrAbstract().isTrue)
+            {
+                _score += PriorityCollection.GetPercentage("strategy", "HasInterfaceOrAbstract");
+            }
+            if (HasConcreteClasses().isTrue)
+            {
+                _score += PriorityCollection.GetPercentage("strategy", "HasConcreteClasses");
+                if (HasRelationsBetweenConcreteClasses().isTrue)
+                {
+                    _score += PriorityCollection.GetPercentage("strategy", "HasRelationsBetweenConcreteClasses");
+                }
+            }
             if (ContextChecks().isTrue)
             {
                 if (ContextHasStrategy(Context).isTrue)
@@ -40,37 +55,25 @@ namespace idetector.Patterns
                     {
                         _score += PriorityCollection.GetPercentage("strategy", "ContextHasPrivateStrategy");
                     }
+                    if (ContextHasStrategySetter(Context).isTrue)
+                    {
+                        _score += PriorityCollection.GetPercentage("strategy", "ContextHasStrategySetter");
+                    }
                 }
                 if (ContextHasPublicConstructor(Context).isTrue)
                 {
                     _score += PriorityCollection.GetPercentage("strategy", "ContextHasPublicConstructor");
-                }
-                if (ContextHasStrategySetter(Context).isTrue)
-                {
-                    _score += PriorityCollection.GetPercentage("strategy", "ContextHasStrategySetter");
                 }
                 if (ContextHasLogic(Context).isTrue)
                 {
                     _score += PriorityCollection.GetPercentage("strategy", "ContextHasLogic");
                 }
             }
-            if (HasInterface().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("strategy", "HasInterface");
-            }
-            if (HasConcreteClasses().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("strategy", "HasConcreteClasses");
-            }
-            if (HasNoRelationsBetweenConcreteClasses().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("strategy", "HasNoRelationsBetweenConcreteClasses");
-            }
         }
 
         public int Score()
         {
-            return _score;
+            return (int) _score;
         }
 
         /// <summary>
@@ -111,7 +114,7 @@ namespace idetector.Patterns
             {
                 if (cc.GetClass(property.ValueType.ToString()) != null)
                 {
-                    if (cc.GetClass(property.ValueType.ToString()).IsInterface) return new CheckedMessage(true);
+                    if (cc.GetClass(property.ValueType.ToString()) == Interface) return new CheckedMessage(true);
                 }
             }
             return new CheckedMessage("There is not an 'Context' class, which contains an strategy", false);
@@ -128,7 +131,7 @@ namespace idetector.Patterns
             {
                 if (cc.GetClass(property.ValueType.ToString()) != null)
                 {
-                    if (cc.GetClass(property.ValueType.ToString()).IsInterface)
+                    if (cc.GetClass(property.ValueType.ToString()) == Interface)
                     {
                         if (property.Modifiers[0].ToLower().Equals("private")) return new CheckedMessage(true);
                     }
@@ -175,10 +178,16 @@ namespace idetector.Patterns
                 {
                     if (!method.isConstructor)
                     {
-                        if (method.Parameters.Contains(property.ValueType.ToString()) && method.Body.Contains(property.Identifier))
+                        if (Interface != null)
                         {
-                            Setter = method;
-                            return new CheckedMessage(true);
+                            if (property.ValueType.ToString() == Interface.Identifier)
+                            {
+                                if (method.Parameters.Contains(property.ValueType.ToString()) && method.Body.Contains(property.Identifier))
+                                {
+                                    Setter = method;
+                                    return new CheckedMessage(true);
+                                }
+                            }
                         }
                     }
                 }
@@ -201,7 +210,7 @@ namespace idetector.Patterns
                     {
                         if (cc.GetClass(property.ValueType.ToString()) != null)
                         {
-                            if (cc.GetClass(property.ValueType.ToString()).IsInterface)
+                            if (cc.GetClass(property.ValueType.ToString()) == Interface)
                             {
                                 if (Setter == null || method != Setter)
                                 {
@@ -219,11 +228,15 @@ namespace idetector.Patterns
         /// 
         /// </summary>
         /// <returns>CheckedMessage</returns>
-        private CheckedMessage HasInterface()
+        private CheckedMessage HasInterfaceOrAbstract()
         {
             foreach (var cls in cc.GetClasses())
             {
-                if(cls.Value.IsInterface) return new CheckedMessage(true);
+                if (cls.Value.IsInterface || cls.Value.IsAbstract)
+                {
+                    Interface = cls.Value;
+                    return new CheckedMessage(true);
+                }
             }
             return new CheckedMessage("There is not an interface or abstract class for the strategies/patterns", false);
         }
@@ -234,12 +247,15 @@ namespace idetector.Patterns
         /// <returns>CheckedMessage</returns>
         private CheckedMessage HasConcreteClasses()
         {
+            int i = 0;
             foreach (var cls in cc.GetClasses())
             {
+                i += 1;
                 foreach (string parent in cls.Value.GetParents())
                 {
-                    if (cc.GetClass(parent).IsInterface) return new CheckedMessage(true);
+                    if (cc.GetClass(parent) == Interface) Concretes.AddClass(cls.Value);
                 }
+                if (cc.GetClasses().Count == i && Concretes.GetClasses().Count >= 1) return new CheckedMessage(true);
             }
             return new CheckedMessage("There are no classes that implement the abstract class or interface", false);
         }
@@ -248,13 +264,25 @@ namespace idetector.Patterns
         /// 
         /// </summary>
         /// <returns>CheckedMessage</returns>
-        private CheckedMessage HasNoRelationsBetweenConcreteClasses()
+        private CheckedMessage HasRelationsBetweenConcreteClasses()
         {
-            foreach (var cls in cc.GetClasses())
+            foreach (var cls in Concretes.GetClasses())
             {
-                return new CheckedMessage(true);
+                foreach (var method in cls.Value.getMethods())
+                {
+                    if (!method.isConstructor)
+                    {
+                        foreach (var cs in Concretes.GetClasses())
+                        {
+                            if (cs.Value.Identifier != cls.Value.Identifier)
+                            {
+                                if (method.Body.Contains(cs.Value.Identifier)) return new CheckedMessage("There are relations between the strategies, which aren't allowed", false);
+                            }
+                        }
+                    }
+                }
             }
-            return new CheckedMessage(false);
+            return new CheckedMessage(true);
         }
     }
 }

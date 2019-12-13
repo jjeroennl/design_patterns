@@ -15,7 +15,7 @@ namespace xUnitTest
 {
     public class StrategyTest
     {
-        SyntaxTree Successsetup()
+        SyntaxTree SuccessSetup()
         {
             return CSharpSyntaxTree.ParseText(@"
             namespace RefactoringGuru.DesignPatterns.Strategy.Conceptual
@@ -48,6 +48,7 @@ namespace xUnitTest
                         }
                     }
                 }
+
                 public interface IStrategy
                 {
                     object DoAlgorithm(object data);
@@ -76,6 +77,74 @@ namespace xUnitTest
                     }
                 }
             }");
+        }
+        SyntaxTree StateSetup()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+            namespace RefactoringGuru.DesignPatterns.State.Conceptual
+                {
+                class Context
+                {
+                    private State _state;
+
+                    public Context(State state)
+                    {
+                        _state = null;
+                        this.TransitionTo(state);
+                    }
+
+                    public void TransitionTo(State state)
+                    {
+                        this._state = state;
+                        this._state.SetContext(this);
+                    }
+                    public void Request1()
+                    {
+                        this._state.Handle1();
+                    }
+
+                    public void Request2()
+                    {
+                        this._state.Handle2();
+                    }
+                }
+
+                abstract class State
+                {
+                    protected Context _context;
+
+                    public void SetContext(Context context)
+                    {
+                        this._context = context;
+                    }
+
+                    public abstract void Handle1();
+
+                    public abstract void Handle2();
+                }
+
+                class ConcreteStateA : State
+                {
+                    public override void Handle1()
+                    {
+                        this._context.TransitionTo(new ConcreteStateB());
+                    }
+
+                    public override void Handle2()
+                    {
+                    }
+                }
+
+                class ConcreteStateB : State
+                {
+                    public override void Handle1()
+                    { }
+
+                    public override void Handle2()
+                    {
+                        this._context.TransitionTo(new ConcreteStateA());
+                    }
+                }");
         }
 
         SyntaxTree FailSetup()
@@ -114,17 +183,30 @@ namespace xUnitTest
         [Fact]
         public void Test_Strategy_Succeed()
         {
-            var tree = Successsetup();
+            var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
 
-            Strategy strategy = new Strategy(collection);
+            StateStrategy strategy = new StateStrategy(collection);
             strategy.Scan();
+            /*
             bool hundred = false;
             if (strategy.Score() >= 95)
             {
                 hundred = true;
             }
             Assert.True(hundred);
+            */
+            Assert.Equal(100, strategy.Score());
+        }
+        [Fact]
+        public void Test_State()
+        {
+            var tree = StateSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            StateStrategy strategy = new StateStrategy(collection);
+            strategy.Scan();
+            Assert.InRange(strategy.Score(), 85, 95);
         }
         [Fact]
         public void Test_Strategy_NoContext()
@@ -132,7 +214,7 @@ namespace xUnitTest
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
 
-            Strategy strategy = new Strategy(collection);
+            StateStrategy strategy = new StateStrategy(collection);
             strategy.Scan();
             Assert.Equal(0, strategy.Score());
         }
@@ -142,7 +224,7 @@ namespace xUnitTest
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
 
-            Strategy strategy = new Strategy(collection);
+            StateStrategy strategy = new StateStrategy(collection);
             strategy.Scan();
             Assert.Equal(0, strategy.Score());
         }
@@ -152,7 +234,7 @@ namespace xUnitTest
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
 
-            Strategy strategy = new Strategy(collection);
+            StateStrategy strategy = new StateStrategy(collection);
             strategy.Scan();
             Assert.Equal(0, strategy.Score());
         }
@@ -162,7 +244,7 @@ namespace xUnitTest
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
 
-            Strategy strategy = new Strategy(collection);
+            StateStrategy strategy = new StateStrategy(collection);
             strategy.Scan();
             Assert.Equal(0, strategy.Score());
         }
@@ -172,7 +254,7 @@ namespace xUnitTest
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
 
-            Strategy strategy = new Strategy(collection);
+            StateStrategy strategy = new StateStrategy(collection);
             strategy.Scan();
             Assert.Equal(0, strategy.Score());
         }
@@ -182,7 +264,7 @@ namespace xUnitTest
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
 
-            Strategy strategy = new Strategy(collection);
+            StateStrategy strategy = new StateStrategy(collection);
             strategy.Scan();
             Assert.Equal(0, strategy.Score());
         }
@@ -192,7 +274,7 @@ namespace xUnitTest
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
 
-            Strategy strategy = new Strategy(collection);
+            StateStrategy strategy = new StateStrategy(collection);
             strategy.Scan();
             Assert.Equal(0, strategy.Score());
         }

@@ -62,21 +62,21 @@ namespace idetector.Collections
         /// </summary>
         /// <param name="pattern">Pattern name in string format.</param>
         /// <returns>List of percentages combines with method names.</returns>
-        public static List<Tuple<string, int>> GetPercentages(string pattern)
+        public static List<Tuple<string, float>> GetPercentages(string pattern)
         {
             try
             {
                 List<Tuple<string, Priority>> methods = GetPriorities(pattern);
-                List<Tuple<string, int>> percentages = new List<Tuple<string, int>>();
+                List<Tuple<string, float>> percentages = new List<Tuple<string, float>>();
 
-                int counter = 0;
+                float counter = 0;
                 foreach (var method in methods)
                 {
-                    counter += (int)method.Item2;
+                    counter += (float)method.Item2;
                 }
                 foreach (var method in methods)
                 {
-                    percentages.Add(new Tuple<string, int>(method.Item1, 100 / counter * (int)method.Item2));
+                    percentages.Add(new Tuple<string, float>(method.Item1, 100 / counter * (float)method.Item2));
                 }
 
                 return percentages;
@@ -94,11 +94,11 @@ namespace idetector.Collections
         /// <param name="pattern">Pattern name in string format.</param>
         /// <param name="method">Method name in string format.</param>
         /// <returns>Percentage.</returns>
-        public static int GetPercentage(string pattern, string method)
+        public static float GetPercentage(string pattern, string method)
         {
             try
             {
-                List<Tuple<string, int>> percentages = GetPercentages(pattern);
+                List<Tuple<string, float>> percentages = GetPercentages(pattern);
 
                 foreach (var item in percentages)
                 {

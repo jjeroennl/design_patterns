@@ -51,7 +51,7 @@ namespace idetector
                 this.printBar(item.Value, "Singleton", s.Score());
                 this.printBar(item.Value,"Decorator", d.Score());
             }
-                Strategy st = new Strategy(collection);
+                StateStrategy st = new StateStrategy(collection);
                 st.Scan();
         }
 
