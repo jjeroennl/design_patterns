@@ -15,6 +15,116 @@ namespace xUnitTest
 {
     public class StrategyTest
     {
+        [Fact]
+        public void Test_Strategy_Succeed()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            StateStrategy strategy = new StateStrategy(collection, false);
+            strategy.Scan();
+            Assert.Equal(100, strategy.Score());
+        }
+        [Fact]
+        public void Test_State()
+        {
+            var tree = StateSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            StateStrategy strategy = new StateStrategy(collection, false);
+            strategy.Scan();
+            Assert.InRange(strategy.Score(), 85, 95);
+        }
+        [Fact]
+        public void Test_Strategy_NoContext()
+        {
+            var tree = NoContext();
+            var collection = Walker.GenerateModels(tree);
+
+            StateStrategy strategy = new StateStrategy(collection, false);
+            strategy.Scan();
+            Assert.NotEqual(100, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_NoInterface()
+        {
+            var tree = NoInterface();
+            var collection = Walker.GenerateModels(tree);
+
+            StateStrategy strategy = new StateStrategy(collection, false);
+            strategy.Scan();
+            Assert.NotEqual(100, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_NoConcreteStrategy()
+        {
+            var tree = NoConcreteStrategy();
+            var collection = Walker.GenerateModels(tree);
+
+            StateStrategy strategy = new StateStrategy(collection, false);
+            strategy.Scan();
+            Assert.NotEqual(100, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_NoStrategySetter()
+        {
+            var tree = NoStrategySetter();
+            var collection = Walker.GenerateModels(tree);
+
+            StateStrategy strategy = new StateStrategy(collection, false);
+            strategy.Scan();
+            Assert.NotEqual(100, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_NoPrivateStrategy()
+        {
+            var tree = NoPrivateStrategy();
+            var collection = Walker.GenerateModels(tree);
+
+            StateStrategy strategy = new StateStrategy(collection, false);
+            strategy.Scan();
+            Assert.NotEqual(100, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_NoMethodContext()
+        {
+            var tree = NoMethodContext();
+            var collection = Walker.GenerateModels(tree);
+
+            StateStrategy strategy = new StateStrategy(collection, false);
+            strategy.Scan();
+            Assert.NotEqual(100, strategy.Score());
+        }
+        [Fact]
+        public void Test_Strategy_RelationsBetweenStrategies()
+        {
+            var tree = RelationsBetweenStrategies();
+            var collection = Walker.GenerateModels(tree);
+
+            StateStrategy strategy = new StateStrategy(collection, false);
+            strategy.Scan();
+            Assert.NotEqual(100, strategy.Score());
+        }
+        [Fact]
+        public void Test_Nothing()
+        {
+            var tree = FailSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            StateStrategy strategy = new StateStrategy(collection, false);
+            strategy.Scan();
+            Assert.NotEqual(100, strategy.Score());
+        }
+        [Fact]
+        public void Test_OnlineCode()
+        {
+            var collection = Walker.GenerateModels(CSharpSyntaxTree.ParseText(TestStrings.StrategyExample()));
+
+            StateStrategy strategy = new StateStrategy(collection, false);
+            strategy.Scan();
+            Assert.InRange(strategy.Score(), 70, 90);
+        }
+
         SyntaxTree SuccessSetup()
         {
             return CSharpSyntaxTree.ParseText(@"
@@ -78,6 +188,7 @@ namespace xUnitTest
                 }
             }");
         }
+
         SyntaxTree StateSetup()
         {
             return CSharpSyntaxTree.ParseText(@"
@@ -147,6 +258,385 @@ namespace xUnitTest
                 }");
         }
 
+        SyntaxTree NoContext()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+            namespace RefactoringGuru.DesignPatterns.Strategy.Conceptual
+            {
+                public interface IStrategy
+                {
+                    object DoAlgorithm(object data);
+                }
+
+                class ConcreteStrategyA : IStrategy
+                {
+                    public object DoAlgorithm(object data)
+                    {
+                        var list = data as List<string>;
+                        list.Sort();
+
+                        return list;
+                    }
+                }
+
+                class ConcreteStrategyB : IStrategy
+                {
+                    public object DoAlgorithm(object data)
+                    {
+                        var list = data as List<string>;
+                        list.Sort();
+                        list.Reverse();
+
+                        return list;
+                    }
+                }
+            }");
+        }
+
+        SyntaxTree NoInterface()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+            namespace RefactoringGuru.DesignPatterns.Strategy.Conceptual
+            {
+                class Context
+                {
+                    private IStrategy _strategy;
+
+                    public Context()
+                    { }
+
+                    public Context(IStrategy strategy)
+                    {
+                        this._strategy = strategy;
+                    }
+
+                    public void SetStrategy(IStrategy strategy)
+                    {
+                        this._strategy = strategy;
+                    }
+
+                    public void DoSomeBusinessLogic()
+                    {
+                        var result = this._strategy.DoAlgorithm(new List<string> { 'a', 'b', 'c', 'd', 'e' });
+
+                        string resultStr = string.Empty;
+                        foreach (var element in result as List<string>)
+                        {
+                            resultStr += element + ',';
+                        }
+                    }
+                }
+
+                public class IStrategy
+                {
+                    object DoAlgorithm(object data);
+                }
+
+                class ConcreteStrategyA : IStrategy
+                {
+                    public object DoAlgorithm(object data)
+                    {
+                        var list = data as List<string>;
+                        list.Sort();
+
+                        return list;
+                    }
+                }
+
+                class ConcreteStrategyB : IStrategy
+                {
+                    public object DoAlgorithm(object data)
+                    {
+                        var list = data as List<string>;
+                        list.Sort();
+                        list.Reverse();
+
+                        return list;
+                    }
+                }
+            }");
+        }
+
+        SyntaxTree NoConcreteStrategy()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+            namespace RefactoringGuru.DesignPatterns.Strategy.Conceptual
+            {
+                class Context
+                {
+                    private IStrategy _strategy;
+
+                    public Context()
+                    { }
+
+                    public Context(IStrategy strategy)
+                    {
+                        this._strategy = strategy;
+                    }
+
+                    public void SetStrategy(IStrategy strategy)
+                    {
+                        this._strategy = strategy;
+                    }
+
+                    public void DoSomeBusinessLogic()
+                    {
+                        var result = this._strategy.DoAlgorithm(new List<string> { 'a', 'b', 'c', 'd', 'e' });
+
+                        string resultStr = string.Empty;
+                        foreach (var element in result as List<string>)
+                        {
+                            resultStr += element + ',';
+                        }
+                    }
+                }
+
+                public interface IStrategy
+                {
+                    object DoAlgorithm(object data);
+                }
+            }");
+        }
+
+        SyntaxTree NoStrategySetter()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+            namespace RefactoringGuru.DesignPatterns.Strategy.Conceptual
+            {
+                class Context
+                {
+                    private IStrategy _strategy;
+
+                    public Context()
+                    { }
+
+                    public Context(IStrategy strategy)
+                    { }
+
+                    public void DoSomeBusinessLogic()
+                    {
+                        var result = this._strategy.DoAlgorithm(new List<string> { 'a', 'b', 'c', 'd', 'e' });
+
+                        string resultStr = string.Empty;
+                        foreach (var element in result as List<string>)
+                        {
+                            resultStr += element + ',';
+                        }
+                    }
+                }
+
+                public interface IStrategy
+                {
+                    object DoAlgorithm(object data);
+                }
+
+                class ConcreteStrategyA : IStrategy
+                {
+                    public object DoAlgorithm(object data)
+                    {
+                        var list = data as List<string>;
+                        list.Sort();
+
+                        return list;
+                    }
+                }
+
+                class ConcreteStrategyB : IStrategy
+                {
+                    public object DoAlgorithm(object data)
+                    {
+                        var list = data as List<string>;
+                        list.Sort();
+                        list.Reverse();
+
+                        return list;
+                    }
+                }
+            }");
+        }
+
+        SyntaxTree NoPrivateStrategy()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+            namespace RefactoringGuru.DesignPatterns.Strategy.Conceptual
+            {
+                class Context
+                {
+                    public IStrategy _strategy;
+
+                    public Context()
+                    { }
+
+                    public Context(IStrategy strategy)
+                    {
+                        this._strategy = strategy;
+                    }
+
+                    public void SetStrategy(IStrategy strategy)
+                    {
+                        this._strategy = strategy;
+                    }
+
+                    public void DoSomeBusinessLogic()
+                    {
+                        var result = this._strategy.DoAlgorithm(new List<string> { 'a', 'b', 'c', 'd', 'e' });
+
+                        string resultStr = string.Empty;
+                        foreach (var element in result as List<string>)
+                        {
+                            resultStr += element + ',';
+                        }
+                    }
+                }
+
+                public interface IStrategy
+                {
+                    object DoAlgorithm(object data);
+                }
+
+                class ConcreteStrategyA : IStrategy
+                {
+                    public object DoAlgorithm(object data)
+                    {
+                        var list = data as List<string>;
+                        list.Sort();
+
+                        return list;
+                    }
+                }
+
+                class ConcreteStrategyB : IStrategy
+                {
+                    public object DoAlgorithm(object data)
+                    {
+                        var list = data as List<string>;
+                        list.Sort();
+                        list.Reverse();
+
+                        return list;
+                    }
+                }
+            }");
+        }
+
+        SyntaxTree NoMethodContext()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+            namespace RefactoringGuru.DesignPatterns.Strategy.Conceptual
+            {
+                class Context
+                {
+                    private IStrategy _strategy;
+
+                    public Context()
+                    { }
+
+                    public Context(IStrategy strategy)
+                    {
+                        this._strategy = strategy;
+                    }
+
+                    public void SetStrategy(IStrategy strategy)
+                    {
+                        this._strategy = strategy;
+                    }
+                }
+
+                public interface IStrategy
+                {
+                    object DoAlgorithm(object data);
+                }
+
+                class ConcreteStrategyA : IStrategy
+                {
+                    public object DoAlgorithm(object data)
+                    {
+                        var list = data as List<string>;
+                        list.Sort();
+
+                        return list;
+                    }
+                }
+
+                class ConcreteStrategyB : IStrategy
+                {
+                    public object DoAlgorithm(object data)
+                    {
+                        var list = data as List<string>;
+                        list.Sort();
+                        list.Reverse();
+
+                        return list;
+                    }
+                }
+            }");
+        }
+
+        SyntaxTree RelationsBetweenStrategies()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+            namespace RefactoringGuru.DesignPatterns.Strategy.Conceptual
+            {
+                class Context
+                {
+                    private IStrategy _strategy;
+
+                    public Context()
+                    { }
+
+                    public Context(IStrategy strategy)
+                    {
+                        this._strategy = strategy;
+                    }
+
+                    public void SetStrategy(IStrategy strategy)
+                    {
+                        this._strategy = strategy;
+                    }
+
+                    public void DoSomeBusinessLogic()
+                    {
+                        var result = this._strategy.DoAlgorithm(new List<string> { 'a', 'b', 'c', 'd', 'e' });
+
+                        string resultStr = string.Empty;
+                        foreach (var element in result as List<string>)
+                        {
+                            resultStr += element + ',';
+                        }
+                    }
+                }
+
+                public interface IStrategy
+                {
+                    object DoAlgorithm(object data);
+                }
+
+                class ConcreteStrategyA : IStrategy
+                {
+                    public object DoAlgorithm(object data)
+                    {
+                        var strat = new ConcreteStrategyB;
+                        var list = data as List<string>;
+                        list.Sort();
+
+                        return list;
+                    }
+                }
+
+                class ConcreteStrategyB : IStrategy
+                {
+                    public object DoAlgorithm(object data)
+                    {
+                        var list = data as List<string>;
+                        list.Sort();
+                        list.Reverse();
+
+                        return list;
+                    }
+                }
+            }");
+        }
+
         SyntaxTree FailSetup()
         {
             return CSharpSyntaxTree.ParseText(@"
@@ -179,104 +669,6 @@ namespace xUnitTest
                 class ConcreteStrategyB
                 { }
             }");
-        }
-        [Fact]
-        public void Test_Strategy_Succeed()
-        {
-            var tree = SuccessSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            StateStrategy strategy = new StateStrategy(collection);
-            strategy.Scan();
-            /*
-            bool hundred = false;
-            if (strategy.Score() >= 95)
-            {
-                hundred = true;
-            }
-            Assert.True(hundred);
-            */
-            Assert.Equal(100, strategy.Score());
-        }
-        [Fact]
-        public void Test_State()
-        {
-            var tree = StateSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            StateStrategy strategy = new StateStrategy(collection);
-            strategy.Scan();
-            Assert.InRange(strategy.Score(), 85, 95);
-        }
-        [Fact]
-        public void Test_Strategy_NoContext()
-        {
-            var tree = FailSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            StateStrategy strategy = new StateStrategy(collection);
-            strategy.Scan();
-            Assert.Equal(0, strategy.Score());
-        }
-        [Fact]
-        public void Test_Strategy_NoInterface()
-        {
-            var tree = FailSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            StateStrategy strategy = new StateStrategy(collection);
-            strategy.Scan();
-            Assert.Equal(0, strategy.Score());
-        }
-        [Fact]
-        public void Test_Strategy_NoConcreteStrategy()
-        {
-            var tree = FailSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            StateStrategy strategy = new StateStrategy(collection);
-            strategy.Scan();
-            Assert.Equal(0, strategy.Score());
-        }
-        [Fact]
-        public void Test_Strategy_NoStrategySetter()
-        {
-            var tree = FailSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            StateStrategy strategy = new StateStrategy(collection);
-            strategy.Scan();
-            Assert.Equal(0, strategy.Score());
-        }
-        [Fact]
-        public void Test_Strategy_NoPrivateStrategy()
-        {
-            var tree = FailSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            StateStrategy strategy = new StateStrategy(collection);
-            strategy.Scan();
-            Assert.Equal(0, strategy.Score());
-        }
-        [Fact]
-        public void Test_Strategy_NoMethodContext()
-        {
-            var tree = FailSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            StateStrategy strategy = new StateStrategy(collection);
-            strategy.Scan();
-            Assert.Equal(0, strategy.Score());
-        }
-        [Fact]
-        public void Test_Strategy_RelationsBetweenStrategies ()
-        {
-            var tree = FailSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            StateStrategy strategy = new StateStrategy(collection);
-            strategy.Scan();
-            Assert.Equal(0, strategy.Score());
         }
     }
 }

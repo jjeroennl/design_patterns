@@ -10,15 +10,22 @@ namespace idetector.Patterns
     public class StateStrategy : IPattern
     {
         private float _score;
+        private bool IsState = false;
         private ClassCollection cc;
         private ClassCollection Concretes;
         private ClassModel Context;
         private ClassModel Interface;
         private MethodModel Setter;
 
-        public StateStrategy(ClassCollection _cc)
+        /// <summary>
+        /// Constructor for StateStrategy
+        /// </summary>
+        /// <param name="_cc">ClassCollection to check</param>
+        /// <param name="state">Bool whether it should check for an state pattern</param>
+        public StateStrategy(ClassCollection _cc, bool state)
         {
             cc = _cc;
+            IsState = state;
             Concretes = new ClassCollection();
             PriorityCollection.ClearPriorities();
             PriorityCollection.AddPriority("strategy", "ContextHasStrategy", Priority.High);
@@ -28,7 +35,7 @@ namespace idetector.Patterns
             PriorityCollection.AddPriority("strategy", "ContextHasPublicConstructor", Priority.Low);
             PriorityCollection.AddPriority("strategy", "HasInterfaceOrAbstract", Priority.Medium);
             PriorityCollection.AddPriority("strategy", "HasConcreteClasses", Priority.Medium);
-            PriorityCollection.AddPriority("strategy", "HasRelationsBetweenConcreteClasses", Priority.Low);
+            if (IsState == false) PriorityCollection.AddPriority("strategy", "HasRelationsBetweenConcreteClasses", Priority.Low);
         }
 
         public void Scan()
@@ -40,7 +47,7 @@ namespace idetector.Patterns
             if (HasConcreteClasses().isTrue)
             {
                 _score += PriorityCollection.GetPercentage("strategy", "HasConcreteClasses");
-                if (HasRelationsBetweenConcreteClasses().isTrue)
+                if (IsState == false && HasRelationsBetweenConcreteClasses().isTrue)
                 {
                     _score += PriorityCollection.GetPercentage("strategy", "HasRelationsBetweenConcreteClasses");
                 }
@@ -133,7 +140,10 @@ namespace idetector.Patterns
                 {
                     if (cc.GetClass(property.ValueType.ToString()) == Interface)
                     {
-                        if (property.Modifiers[0].ToLower().Equals("private")) return new CheckedMessage(true);
+                        if (property.Modifiers.Length >= 1)
+                        {
+                            if (property.Modifiers[0].ToLower().Equals("private")) return new CheckedMessage(true);
+                        }
                     }
                 }
             }

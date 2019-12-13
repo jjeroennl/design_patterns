@@ -48,16 +48,20 @@ namespace idetector
                 s.Scan();
                 Decorator d = new Decorator(item.Value, collection.GetClasses());
                 d.Scan();
-                this.printBar(item.Value, "Singleton", s.Score());
-                this.printBar(item.Value,"Decorator", d.Score());
+                Console.WriteLine(item.Value.Identifier + ":");
+                this.printBar("Singleton", s.Score());
+                this.printBar("Decorator", d.Score());
             }
-                StateStrategy st = new StateStrategy(collection);
-                st.Scan();
+            StateStrategy strat = new StateStrategy(collection, false);
+            strat.Scan();
+            this.printBar("Strategy", strat.Score());
+            StateStrategy state = new StateStrategy(collection, true);
+            state.Scan();
+            this.printBar("State", state.Score());
         }
 
-        private void printBar(ClassModel item, string name, int score)
+        private void printBar(string name, int score)
         {
-            Console.WriteLine(item.Identifier + ": ");
             Console.WriteLine("\t " +name + " " + score + "%:");
             Console.WriteLine("\t" + new string('-', 102));
             Console.Write("\t|");
