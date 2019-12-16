@@ -54,23 +54,23 @@ namespace xUnitTest
             PriorityCollection.AddPriority("singleton", "IsStaticSelf", Priority.Low);
             PriorityCollection.AddPriority("singleton", "IsGetInstance", Priority.Low);
 
-            Assert.Equal(33, PriorityCollection.GetPercentage("singleton", "IsPrivateConstructor"));
+            Assert.InRange(PriorityCollection.GetPercentage("singleton", "IsPrivateConstructor"), 33, 34);
 
             // Facade
             PriorityCollection.AddPriority("facade", "IsFacadeTest1", Priority.Low);
             PriorityCollection.AddPriority("facade", "IsFacadeTest2", Priority.Medium);
 
-            Assert.Equal(33, PriorityCollection.GetPercentage("facade", "IsFacadeTest1"));
-            Assert.Equal(66, PriorityCollection.GetPercentage("facade", "IsFacadeTest2"));
+            Assert.InRange(PriorityCollection.GetPercentage("facade", "IsFacadeTest1"), 33, 34);
+            Assert.InRange(PriorityCollection.GetPercentage("facade", "IsFacadeTest2"), 66, 67);
 
             // Observer
             PriorityCollection.AddPriority("observer", "IsObserverTest1", Priority.Low);
             PriorityCollection.AddPriority("observer", "IsObserverTest2", Priority.Medium);
             PriorityCollection.AddPriority("observer", "IsObserverTest3", Priority.High);
 
-            Assert.Equal(16, PriorityCollection.GetPercentage("observer", "IsObserverTest1"));
-            Assert.Equal(32, PriorityCollection.GetPercentage("observer", "IsObserverTest2"));
-            Assert.Equal(48, PriorityCollection.GetPercentage("observer", "IsObserverTest3"));
+            Assert.InRange(PriorityCollection.GetPercentage("observer", "IsObserverTest1"), 16, 17);
+            Assert.InRange(PriorityCollection.GetPercentage("observer", "IsObserverTest2"), 33, 34);
+            Assert.Equal(50, PriorityCollection.GetPercentage("observer", "IsObserverTest3"));
         }
 
         [Fact]
