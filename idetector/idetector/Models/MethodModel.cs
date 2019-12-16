@@ -40,10 +40,7 @@ namespace idetector.Models
             ReturnType = node.ReturnType.ToString();
             Identifier = node.Identifier.ToString();
             Parameters = node.ParameterList.ToString();
-            if (node.Body != null)
-            {
-                Body = node.Body.ToString();
-            }
+            Body = node.Body.ToString();
         }
 
         public MethodModel(ConstructorDeclarationSyntax node, string type)
@@ -59,10 +56,7 @@ namespace idetector.Models
             ReturnType = type;
             Identifier = node.Identifier.ToString();
             Parameters = node.ParameterList.ToString();
-            if (node.Body != null)
-            {
-                Body = node.Body.ToString();
-            }
+            Body = node.Body.ToString();
         }
     }
 }
