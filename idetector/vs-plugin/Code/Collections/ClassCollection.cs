@@ -34,7 +34,7 @@ namespace idetector.Collections
                 return null;
             }
         }
-        
+
         public void Clear()
         {
             cache = new Dictionary<string, ClassModel>();

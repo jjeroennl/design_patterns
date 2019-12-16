@@ -68,6 +68,7 @@
     <Compile Include="Code\Patterns\Helper\RelationTable.cs" />
     <Compile Include="Code\Patterns\IPattern.cs" />
     <Compile Include="Code\Patterns\Singleton.cs" />
+    <Compile Include="Code\Patterns\StateStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DesignPattersTool.cs" />
     <Compile Include="DesignPatternsToolCommand.cs" />

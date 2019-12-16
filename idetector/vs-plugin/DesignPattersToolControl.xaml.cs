@@ -4,7 +4,6 @@
     using idetector.Parser;
     using idetector.Patterns;
     using idetector.Patterns.Facade;
-    using System.Diagnostics.CodeAnalysis;
     using System.Windows;
     using System.Windows.Controls;
 
@@ -26,26 +25,38 @@
             PatternList.Children.Clear();
             
             //Scan file
-            var file = "C:\\Users\\jjero\\singleton.cs"; //replace with VS magic
+            var file = "C:\\Users\\jjero\\strat.cs"; //replace with VS magic
 
             var collection = FileReader.ReadSingleFile(file);
-            
+
             Facade f = new Facade(collection);
             f.Scan();
 
+            StateStrategy state = new StateStrategy(collection, true);
+            state.Scan();
+
+
+            StateStrategy strat = new StateStrategy(collection, false);
+            strat.Scan();
+
+
+            FactoryMethod fm = new FactoryMethod(collection);
+            fm.Scan();
+
             foreach (var item in collection.GetClasses())
             {
+
                 Singleton s = new Singleton(item.Value);
                 s.Scan();
-                Decorator d = new System.Windows.Controls.Decorator(item.Value, collection.GetClasses());
+                idetector.Patterns.Decorator d = new idetector.Patterns.Decorator(item.Value, collection.GetClasses());
                 d.Scan();
-             
 
-                this.printBar(item.Value, "Singleton", s.Score());
-                this.printBar(item.Value,"Decorator", d.Score());
-                this.printBar(item.Value,"Facade", f.Score(item.Value));
+                SinglePattern p = new SinglePattern();
+                p.SetHandle(item.Key.ToString());
+                PatternList.Children.Add(p);
             }
-           
+
+
         }
     }
 }
