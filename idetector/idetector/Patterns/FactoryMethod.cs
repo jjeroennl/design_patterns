@@ -18,14 +18,41 @@ namespace idetector.Patterns
         {
             cc = _cc;
             PriorityCollection.ClearPriorities();
-            PriorityCollection.AddPriority("factorymethod", "IsAbstractCreatorClass", Priority.Low);
+            PriorityCollection.AddPriority("factorymethod", "ContainsAbstractFactoryClass", Priority.Low);
+            PriorityCollection.AddPriority("factorymethod", "ContainsProductInterface", Priority.Low);
+            PriorityCollection.AddPriority("factorymethod", "ContainsAbstractProductInterfaceMethod", Priority.High);
+            PriorityCollection.AddPriority("factorymethod", "IsInheritingAbstractFactoryClass", Priority.Low);
+            PriorityCollection.AddPriority("factorymethod", "IsInheritingProductInterface", Priority.Low);
+            PriorityCollection.AddPriority("factorymethod", "ConcreteFactoryIsReturningConcreteProduct", Priority.High);
         }
 
         public void Scan()
         {
-            if (IsAbstractCreatorClass())
+            _score = 0;
+
+            if (ContainsAbstractFactoryClass())
             {
-                _score = 2;
+                _score += PriorityCollection.GetPercentage("factorymethod", "ContainsAbstractFactoryClass");
+            }
+            if (ContainsProductInterface())
+            {
+                _score += PriorityCollection.GetPercentage("factorymethod", "ContainsProductInterface");
+            }
+            if (ContainsAbstractProductInterfaceMethod())
+            {
+                _score += PriorityCollection.GetPercentage("factorymethod", "ContainsAbstractProductInterfaceMethod");
+            }
+            if (IsInheritingAbstractFactoryClass())
+            {
+                _score += PriorityCollection.GetPercentage("factorymethod", "IsInheritingAbstractFactoryClass");
+            }
+            if (IsInheritingProductInterface())
+            {
+                _score += PriorityCollection.GetPercentage("factorymethod", "IsInheritingProductInterface");
+            }
+            if (ConcreteFactoryIsReturningConcreteProduct())
+            {
+                _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteFactoryIsReturningConcreteProduct");
             }
         }
 
@@ -33,21 +60,15 @@ namespace idetector.Patterns
         {
             return _score;
         }
-
+        #region Lists
         public List<ClassModel> GetAbstractClasses()
         {
             List<ClassModel> abstractClasses = new List<ClassModel>();
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
-                if (cls.Value.Modifiers != null)
+                if (cls.Value.IsAbstract)
                 {
-                    foreach (var modifier in cls.Value.Modifiers)
-                    {
-                        if (modifier.ToLower().Equals("abstract"))
-                        {
-                            abstractClasses.Add(cls.Value);
-                        }
-                    }
+                    abstractClasses.Add(cls.Value);
                 }
             }
             return abstractClasses;
@@ -63,22 +84,12 @@ namespace idetector.Patterns
                     interfaces.Add(cls.Value);
                 }
             }
-
             return interfaces;
         }
 
-        public bool IsAbstractCreatorClass()
+        public List<ClassModel> GetAbstractProductInterfaceClasses()
         {
-           if (GetAbstractClasses().Count != 0)
-           {
-               return true;
-           }
-
-            return false;
-        }
-
-        public bool IsAbstractProductInterface()
-        {
+            List<ClassModel> classes = new List<ClassModel>();
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
                 foreach (var method in cls.Value.getMethods())
@@ -87,19 +98,50 @@ namespace idetector.Patterns
                     {
                         if (modifier.ToLower().Equals("abstract"))
                         {
-                            if (cc.GetClass(method.ReturnType).IsInterface)
+                            foreach (var @interface in GetInterfaces())
                             {
-                                return true;
+                                if (method.ReturnType == @interface.Identifier)
+                                {
+                                    classes.Add(cls.Value);
+                                }
                             }
                         }
                     }
                 }
             }
+            return classes;
+        }
+        #endregion
 
+        #region Checks
+        public bool ContainsAbstractFactoryClass()
+        {
+            if (GetAbstractClasses().Count != 0)
+            {
+                return true;
+            }
             return false;
         }
 
-        public bool IsInheritingAbstractCreatorClass()
+        public bool ContainsProductInterface()
+        {
+            if (GetInterfaces().Count != 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool ContainsAbstractProductInterfaceMethod()
+        {
+            if (GetAbstractProductInterfaceClasses().Count != 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool IsInheritingAbstractFactoryClass()
         {
             if (GetAbstractClasses() != null)
             {
@@ -114,42 +156,50 @@ namespace idetector.Patterns
                     }
                 }
             }
-
-            return false;
-        }
-
-        public bool IsProductInterface()
-        {
-            if (GetInterfaces().Count != 0)
-            {
-                return true;
-            }
-
             return false;
         }
 
         public bool IsInheritingProductInterface()
         {
-            foreach (var interf in GetInterfaces())
+            foreach (var @interface in GetInterfaces())
             {
-                if (interf != null)
+                if (@interface != null)
                 {
                     foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
                     {
-                        if (cls.Value.HasParent(interf.Identifier))
+                        if (cls.Value.HasParent(@interface.Identifier))
                         {
                             return true;
                         }
                     }
                 }
             }
-            
             return false;
         }
 
-        public bool IsFactoryClass()
+        public bool ConcreteFactoryIsReturningConcreteProduct()
         {
-            return true;
+            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            {
+                foreach (var @class in GetAbstractProductInterfaceClasses())
+                {
+                    if (cls.Value.HasParent(@class.Identifier))
+                    {
+                        foreach (var method in cls.Value.getMethods())
+                        {
+                            foreach (var @interface in GetInterfaces())
+                            {
+                                if (method.ReturnType == @interface.Identifier)
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
         }
+        #endregion
     }
 }
