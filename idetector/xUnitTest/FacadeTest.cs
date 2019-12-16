@@ -17,7 +17,7 @@ namespace xUnitTest
         [Fact]
         void FacadeProject()
         {
-            Facade f = new Facade(this.notFacade);
+            Facade f = new Facade(this.facade);
             Assert.Equal(100, f.Score("GasPipes"));
             Assert.Equal(100, f.Score("HouseBuilderFacade"));
             Assert.Equal(0, f.Score("User"));
