@@ -13,7 +13,7 @@ namespace idetector.Patterns
         private bool IsState = false;
         private ClassCollection cc;
         private ClassCollection Concretes;
-        private ClassModel Context;
+        public ClassModel Context;
         private ClassModel Interface;
         private MethodModel Setter;
 
@@ -115,7 +115,7 @@ namespace idetector.Patterns
         /// </summary>
         /// <param name="cls">ClassModel to check</param>
         /// <returns>CheckedMessage</returns>
-        public CheckedMessage ContextHasStrategy(ClassModel cls)
+        private CheckedMessage ContextHasStrategy(ClassModel cls)
         {
             foreach (var property in cls.getProperties())
             {
