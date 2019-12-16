@@ -17,6 +17,7 @@ namespace idetector.Models
         public string Keyword { get; set; }
         public string Identifier { get; set; }
         public bool IsInterface { get; set; } = false;
+        public bool IsAbstract { get; set; } = false;
 
         private List<MethodModel> Methods = new List<MethodModel>();
         private List<PropertyModel> Properties = new List<PropertyModel>();
@@ -56,6 +57,10 @@ namespace idetector.Models
                 for (int i = 0; i < ModifierCount; i++)
                 {
                     Modifiers[i] = _node.Modifiers[i].ToString();
+                    if (Modifiers[i].ToLower().Equals("abstract"))
+                    {
+                        IsAbstract = true;
+                    }
                 }
             }
             else Modifiers = null;
