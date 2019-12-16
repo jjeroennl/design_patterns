@@ -37,8 +37,6 @@ namespace xUnitTest
             state.Scan();
             Assert.NotEqual(100, state.Score());
         }
-
-
         [Fact]
         public void Test_State_NoRelationsBetweenStates()
         {
@@ -47,7 +45,16 @@ namespace xUnitTest
 
             StateStrategy state = new StateStrategy(collection, true);
             state.Scan();
-            Assert.Equal(100, state.Score());
+            Assert.True(state.HasRelationsBetweenConcreteClasses().isTrue);
+        }
+        [Fact]
+        public void Test_OnlineCode()
+        {
+            var collection = Walker.GenerateModels(CSharpSyntaxTree.ParseText(TestStrings.StateExample()));
+
+            StateStrategy state = new StateStrategy(collection, true);
+            state.Scan();
+            Assert.InRange(state.Score(), 70, 75);
         }
 
         SyntaxTree SuccessSetup()

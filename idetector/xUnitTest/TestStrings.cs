@@ -509,5 +509,234 @@ namespace DoFactory.GangOfFour.Strategy.Structural
     }
 }";
         }
+
+        public static string StateExample()
+        {
+            return @"﻿using DesignPatternsState.States;
+using System;
+
+namespace DesignPatternsState
+{
+    public enum Upgrades
+    {
+        Default,
+        Shroom,
+        Fire,
+        Uranium
+    }
+
+    public class PlayerCharacter
+    {
+        private string name;
+
+        public IUpgradeState state;
+
+        public PlayerCharacter() : this('jeff')
+        {
+            }
+
+            public PlayerCharacter(string name)
+            {
+                this.name = name;
+
+                state = new DefaultState(this);
+            }
+
+            #region Functions inside the Interface
+            // the functions within this region simply throw the events towards the state object
+            // the state object can then do whatever its designd to do
+            // for instance the DefaultState dies when it gets an OnHit event
+
+            public void OnHit(object obj)
+            {
+                state.OnHit(obj);
+            }
+
+            public int Jump()
+            {
+                return state.GetJumpHeight();
+            }
+
+            public void DoAction()
+            {
+                state.Action();
+            }
+
+            public string ReturnVisual()
+            {
+                return '\r\n' + state.ReturnVisual() + ' \r\n -------------------------------------------------------------------------';
+                // ReturnVisual() for 'Uranium'-state:
+                // return '                                                  ,                             \r\n                      **     **        @@##(*/#&#&(*@                        \r\n                     ****   ****    &&&&&&&&&&&&&&&&/*@@                     \r\n                      XX     XX   @&%&&&&&&&@&&&&&&&&&***@ @                   \r\n                       XX   XX   &&&&&@        &&   &@@@@(@                   \r\n                        XX XX  @%@&&&                 &&  ( @@                 \r\n                         XXX  @#%&&&                 , @@ #@                   \r\n                          XX  @ &&                    , @         %             \r\n                           XX  *           &            &        %%%             \r\n               %          @% @          /@@&    &&@@&    @        %             \r\n              %%%        @                      @@&     ,@                     \r\n               %         @# #                    &&     @                      \r\n    %                        #              @   %      %                       \r\n   %%%                     @             &     &&      &                       \r\n    %                        ,,,                      (/   @                    \r\n          @@@                ,,*           &&@&@     (/@  @ @       %           \r\n         @   @              ,             &&&       (#  @    @     %%%           \r\n        @     @                                    @   @   @  @     %           \r\n       @   @   @            ,                 **  *   @   @ @  @                \r\n       @  @ @   @        @                  @     ,    @   @   @                \r\n        @  @   @           @              @@@     ,     @     @                 \r\n         @  @@    @     &                          %     @   @@@               \r\n          @    @   @ %  &                          # #@@  @@@   @              \r\n        @        &@     &                      &   #     #@@      @            \r\n     @@        @@@                           &     &&      @        @@         \r\n  @          @ @                            &&     %        @@         @@      \r\n@         @@  @                     &     &                  @@@         @     \r\n       @@    @                                                 @  @@      @    \r\n    @       @                       RRR                         @   @       @@ \r\n   @       @                        R  R                        @@   @        @\r\n          @                         R  R                     @@  @     @@      @\r\n   @     @@@                        RRR                    @@    @       @     @\r\n   @    @    @@@       @ @          R R             @     @@      @         @@@@\r\n@@      @       @@@  @   @          R  R            @@  @         @             \r\n        @           @@   @ @@ @                    @ @@           @  @@@       \r\n        @            @   @@    @      @@           @  @@           @ @  @      \r\n         @            @  @ @            @          @   @                @@     \r\n          @              @@@            @          @    @                 @@   \r\n           @                             @          @     @                @   \r\n            @@                           @          @       @@@  @         @   \r\n               @@                        @          @           @          @   \r\n                 @@                      @          @            @@        @   \r\n        %          ***@@@  @           @@            @             *@@@@@@@    \r\n       %%%              @     @@ @@@@@               @                         \r\n        %              @                              @          %              \r\n                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@        %%%               \r\n                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@         %             \r\n                     @                                  @                      \r\n                    @                                    @                     \r\n                   @@                                     @                    \r\n                   @                                       @                   \r\n';
+            }
+
+            #endregion
+
+            // this function is to add flavor text to the console.
+            // this purely throws the upgrade towards the actual function that does the changing
+            public void GotUpgrade(Upgrades upgrade)
+            {
+                SetUpgradeState(upgrade);
+                Console.WriteLine('Upgraded to: ' + upgrade);
+            }
+
+            // this function gets called from states, purely to change the state while not adding flavor text
+            public void SetUpgradeState(Upgrades upgrade)
+            {
+                // the switch case is used to determine the state
+                switch (upgrade)
+                {
+                    case Upgrades.Default:
+                        state = new DefaultState(this);
+                        break;
+                    case Upgrades.Shroom:
+                        state = new BigState(this);
+                        break;
+                    case Upgrades.Fire:
+                        state = new FireState(this);
+                        break;
+                    case Upgrades.Uranium:
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            public void OnDeath()
+            {
+                Console.WriteLine('The player has died');
+            }
+
+        public override string ToString()
+        {
+            return $'My name is:{name}, Jump height:{Jump()}, UpgradeState: {state} {ReturnVisual()}';
+        }
+    }
+
+    public interface IUpgradeState
+    {
+        void OnHit(object obj);
+        int GetJumpHeight();
+        void Action();
+        string ReturnVisual();
+    }
+
+        public class DefaultState : IUpgradeState // this state is the default state aka small state
+    {
+        private PlayerCharacter character;
+
+        public DefaultState(PlayerCharacter character)
+        {
+            this.character = character;
+        }
+
+        public void Action()
+        {
+            return;
+        }
+
+        public string ReturnVisual()
+        {
+            return '                                                  ,                             \r\n                                       @@##(*/#&#&(*@                        \r\n                                    &&& &          &/*@@                     \r\n                                  @&%    &&&@        &***@ @                   \r\n                                 &&&  @        &&   & * (@                   \r\n                               @%@&&&                 &&  ( @@                 \r\n                              @#%&&&                 , @@ #@                   \r\n                              @ &&                    , @                      \r\n                               *           &            &                      \r\n                          @% @          /@@&    &&@@&    @                     \r\n                         @                      @@&     ,@                     \r\n                         @# #                    &&     @                      \r\n                             #              @   %      %                       \r\n                           @             &     &&      &                       \r\n                             ,,,                      (/                       \r\n                             ,,*           &&@&@     (/@                       \r\n                             ,             &&&       (#                        \r\n                                                   @                           \r\n                            ,                 **  *                            \r\n                         @                  @     ,                            \r\n                           @              @@@     ,                            \r\n                       &                          %                           \r\n                   @ %  &                          # #@@                   \r\n                 &@     &                      &   #     #@@                 \r\n               @@@                           &     &&      @                \r\n               @                            &&     %        @@              \r\n              @                     &     &                  @@@            \r\n             @                                                 @        \r\n            @                                                   @        \r\n           @                                                    @@         \r\n          @                                                  @@  @         \r\n         @@@                                               @@    @           \r\n        @    @@@       @ @                         @     @@      @        \r\n        @       @@@  @   @                         @@  @         @             \r\n        @           @@   @ @@ @                    @ @@           @  @@@       \r\n        @            @   @@    @      @@           @  @@           @ @  @      \r\n         @            @  @ @            @          @   @                @@     \r\n          @              @@@            @          @    @                 @@   \r\n           @                             @          @     @                @   \r\n            @@                           @          @       @@@  @         @   \r\n               @@                        @          @           @          @   \r\n                 @@                      @          @            @@        @   \r\n                   ***@@@  @           @@            @             *@@@@@@@    \r\n                        @     @@ @@@@@               @                         \r\n                       @                              @                        \r\n                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                       \r\n                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                      \r\n                     @                                  @                      \r\n                    @                                    @                     \r\n                   @@                                     @                    \r\n                   @                                       @';
+        }
+
+        public int GetJumpHeight()
+        {
+            return 5;
+        }
+
+        public void OnHit(object obj)
+        {
+            Console.WriteLine('Hit while small');
+            character.OnDeath();
+        }
+
+        public override string ToString()
+        {
+            return Upgrades.Default.ToString();
+        }
+    }
+    public class FireState : IUpgradeState
+    {
+        private PlayerCharacter character;
+
+        public FireState(PlayerCharacter character)
+        {
+            this.character = character;
+        }
+
+        public void Action()
+        {
+            Fireball();
+        }
+
+        public string ReturnVisual()
+        {
+            return '                                                  ,                             \r\n                                       @@##(*/#&#&(*@                        \r\n                                    &&& &          &/*@@                     \r\n                                  @&%    &&&@        &***@ @                   \r\n                                 &&&  @        &&   & * (@                   \r\n                               @%@&&&                 &&  ( @@                 \r\n                              @#%&&&                 , @@ #@                   \r\n                              @ &&                    , @                      \r\n                               *           &            &                      \r\n                          @% @          /@@&    &&@@&    @                     \r\n                      *  @                      @@&     ,@                     \r\n                 *   * * @# #                    &&     @   *                   \r\n                * *  *  *    #              @   %      %   * *                   \r\n                * * *   *  @             &     &&      &  *   *    *              \r\n                *  *    *    ,,,                      (/  *   *   * *    *          \r\n            *  *   *     *   ,,*           &&@&@     (/@ *     * *  *   * *          \r\n           * * *         *   ,             &&&       (#  *     * *   *  * *         \r\n          *   *           *                       @     *       *    * *  *       \r\n          *   *            *  ,                 **  *   *      *     *    *        \r\n         *               @                  @     ,    *      *     *    *       \r\n         *                @              @@@     ,    *            *     *     \r\n         *             &                          %  *             *     *      \r\n          *        @ %  &                          # #@@                *   \r\n           *     &@     &                      &   #     #@@           *      \r\n            *  @@@                           &     &&      @          *      \r\n             * @                            &&     %        @@       *       \r\n              @                     &     &                  @@@    *        \r\n             @                                                 @   *     \r\n            @                       FFFFFFF                     @ *       \r\n           @                        FFFFFFF                     @@         \r\n          @                         FF                       @@  @         \r\n         @@@                        FFFFF                  @@    @           \r\n        @    @@@       @ @          FFFFF          @     @@      @        \r\n        @       @@@  @   @          FF             @@  @         @             \r\n        @           @@   @ @@ @     FF             @ @@           @  @@@       \r\n        @            @   @@    @      @@           @  @@           @ @  @      \r\n         @            @  @ @            @          @   @                @@     \r\n          @              @@@            @          @    @                 @@   \r\n           @                             @          @     @                @   \r\n            @@                           @          @       @@@  @         @   \r\n               @@                        @          @           @          @   \r\n                 @@                      @          @            @@        @   \r\n                   ***@@@  @           @@            @             *@@@@@@@    \r\n                        @     @@ @@@@@               @                         \r\n                       @                              @                        \r\n                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                       \r\n                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                      \r\n                     @ ................................ @                      \r\n                    @ .................................. @                     \r\n                   @@ ................................... @                    \r\n                   @ ..................................... @ ';
+        }
+
+        public int GetJumpHeight()
+        {
+            return 10;
+        }
+
+        public void OnHit(object obj)
+        {
+            Console.WriteLine('Hit while Fire');
+            Console.WriteLine('Reverting to SmallState');
+            character.SetUpgradeState(Upgrades.Default);
+        }
+
+        private void Fireball()
+        {
+            Console.WriteLine('Shot fireball!');
+        }
+
+        public override string ToString()
+        {
+            return Upgrades.Fire.ToString();
+        }
+    }
+  public class BigState : IUpgradeState
+    {
+        private PlayerCharacter character;
+
+        public BigState(PlayerCharacter character)
+        {
+            this.character = character;
+        }
+
+        public void Action()
+        {
+            return;
+        }
+
+        public string ReturnVisual()
+        {
+            return '                                                 ,                             \r\n                                       @@##(*/#&#&(*@                        \r\n                                    &&& &          &/*@@                     \r\n                                  @&%    &&&@        &***@ @                   \r\n                                 &&&  @        &&   & * (@                   \r\n                               @%@&&&                 &&  ( @@                 \r\n                              @#%&&&                 , @@ #@                   \r\n                              @ &&                    , @                      \r\n                               *           &            &                      \r\n                          @% @          /@@&    &&@@&    @                     \r\n                         @                      @@&     ,@                     \r\n                         @# #                    &&     @                      \r\n                             #              @   %      %                       \r\n                           @             &     &&      &                       \r\n                             ,,,                      (/                       \r\n                             ,,*           &&@&@     (/@                       \r\n                             ,             &&&       (#                        \r\n                                                   @                           \r\n                            ,                 **  *                            \r\n                         @                  @     ,                            \r\n                           @              @@@     ,                            \r\n                       &                          %                           \r\n                   @ %  &                          # #@@                   \r\n               &@       &                      &   #     #@@                 \r\n            @@@                              &     &&        @                \r\n           @                                &&     %          @@              \r\n          @                         &     &                    @@@            \r\n          @                                                      @        \r\n           @                         BBB                        @        \r\n           @                         B  B                       @@         \r\n          @                          BBB                      @@  @         \r\n         @@@                         B  B                   @@     @           \r\n        @    @@@       @ @           BBB              @  @@        @        \r\n        @       @@@  @   @                         @@  @           @             \r\n        @           @@   @ @@ @                    @ @@           @  @@@       \r\n        @             @  @@    @      @@           @  @@           @ @  @      \r\n         @            @  @ @            @          @   @                @@     \r\n          @              @@@            @          @    @                 @@   \r\n           @                             @          @     @                @   \r\n            @@                           @          @       @@@  @         @   \r\n               @@                        @          @           @          @   \r\n                 @@                      @          @            @@        @   \r\n                   ***@@@  @           @@            @             *@@@@@@@    \r\n                        @     @@ @@@@@               @                         \r\n                       @                              @                        \r\n                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                       \r\n                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                      \r\n                     @                                  @                      \r\n                    @                                    @                     \r\n                   @@                                     @                    \r\n                   @                                       @                   ';
+        }
+
+        public int GetJumpHeight()
+        {
+            return 10;
+        }
+
+        public void OnHit(object obj)
+        {
+            Console.WriteLine('Hit while big');
+            Console.WriteLine('Reverting to SmallState');
+            character.SetUpgradeState(Upgrades.Default);
+        }
+
+        public override string ToString()
+        {
+            return Upgrades.Shroom.ToString();
+        }
+
+
+    }
+
+}
+";
+        }
     }
 }
