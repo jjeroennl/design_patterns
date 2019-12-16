@@ -3,6 +3,7 @@ using idetector.CodeLoader;
 using idetector.Collections;
 using idetector.Models;
 using idetector.Patterns;
+using idetector.Patterns.Facade;
 
 namespace idetector
 {
@@ -42,38 +43,52 @@ namespace idetector
 
         private void getResult()
         {
+            Facade f = new Facade(collection);
+            f.Scan();
+
             foreach (var item in this.collection.GetClasses())
-            {
+            {                
+              
+                Console.WriteLine(item.Value.Identifier + ": ");
                 Singleton s = new Singleton(item.Value);
                 s.Scan();
                 Decorator d = new Decorator(item.Value, collection.GetClasses());
                 d.Scan();
-                Console.WriteLine(item.Value.Identifier + ":");
+
                 this.printBar("Singleton", s.Score());
                 this.printBar("Decorator", d.Score());
+                this.printBar(item.Value, "Singleton", s.Score());
+                this.printBar(item.Value,"Decorator", d.Score());
+                this.printBar(item.Value,"Facade", f.Score(item.Value));
             }
-            StateStrategy strat = new StateStrategy(collection, false);
-            strat.Scan();
-            this.printBar("Strategy", strat.Score());
-            StateStrategy state = new StateStrategy(collection, true);
-            state.Scan();
-            this.printBar("State", state.Score());
+
+            FactoryMethod fm = new FactoryMethod(collection);
+            fm.Scan();
+            printBar("FactoryMethod", fm.Score());
         }
 
         private void printBar(string name, int score)
         {
-            Console.WriteLine("\t " +name + " " + score + "%:");
+            Console.WriteLine(name + ": ");
+            Console.WriteLine("\t " + score + "%:");
             Console.WriteLine("\t" + new string('-', 102));
             Console.Write("\t|");
-                
+
             Console.Write(new string('█', score));
 
             if (100 - score != 0)
             {
                 Console.Write(new string(' ', 100 - score));
             }
-                
+
             Console.Write("|\n");
-            Console.WriteLine("\t" + new string('-', 102));        }
+            Console.WriteLine("\t" + new string('-', 102));
+        }
+
+     
+        private void printBar(ClassModel item, string name, int score)
+        {
+          printbar(name, score);       
+        }
     }
 }

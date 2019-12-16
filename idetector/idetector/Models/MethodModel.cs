@@ -30,7 +30,7 @@ namespace idetector.Models
         public MethodModel(MethodDeclarationSyntax node)
         {
 
-            _node = node; 
+            _node = node;
             Modifiers = new string[node.Modifiers.Count];
             for (int i = 0; i <node.Modifiers.Count; i++)
             {
