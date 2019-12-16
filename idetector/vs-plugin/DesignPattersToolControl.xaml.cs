@@ -1,6 +1,9 @@
 ﻿namespace vs_plugin
 {
     using idetector.CodeLoader;
+    using idetector.Parser;
+    using idetector.Patterns;
+    using idetector.Patterns.Facade;
     using System.Diagnostics.CodeAnalysis;
     using System.Windows;
     using System.Windows.Controls;
@@ -18,20 +21,31 @@
             this.InitializeComponent();
         }
 
-        /// <summary>
-        /// Handles click on the button by displaying a message box.
-        /// </summary>
-        /// <param name="sender">The event sender.</param>
-        /// <param name="e">The event args.</param>
-        [SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions", Justification = "Sample code")]
-        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", Justification = "Default event handler naming pattern")]
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var collection = FileReader.ReadSingleFile(textbox1.Text);
+            PatternList.Children.Clear();
+            
+            //Scan file
+            var file = "C:\\Users\\jjero\\singleton.cs"; //replace with VS magic
 
+            var collection = FileReader.ReadSingleFile(file);
+            
+            Facade f = new Facade(collection);
+            f.Scan();
 
-            MessageBox.Show(
-                string.Format(System.Globalization.CultureInfo.CurrentUICulture, "Invoked '{0}'", collection.GetClass("User").Identifier.ToString()));
+            foreach (var item in collection.GetClasses())
+            {
+                Singleton s = new Singleton(item.Value);
+                s.Scan();
+                Decorator d = new System.Windows.Controls.Decorator(item.Value, collection.GetClasses());
+                d.Scan();
+             
+
+                this.printBar(item.Value, "Singleton", s.Score());
+                this.printBar(item.Value,"Decorator", d.Score());
+                this.printBar(item.Value,"Facade", f.Score(item.Value));
+            }
+           
         }
     }
 }

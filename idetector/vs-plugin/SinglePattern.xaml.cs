@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace vs_plugin
+{
+    /// <summary>
+    /// Interaction logic for SinglePattern.xaml
+    /// </summary>
+    public partial class SinglePattern : UserControl
+    {
+        private string Test;
+
+        public void SetHandle(string handle)
+        {
+            TextBlock textBlock = new TextBlock();
+            textBlock.Text = handle;
+
+            PatternName1.Header = textBlock;
+        }
+
+        public SinglePattern()
+        {
+            InitializeComponent();
+        }
+    }
+}

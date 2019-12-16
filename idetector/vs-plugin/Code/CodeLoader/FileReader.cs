@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using idetector.Collections;
 using idetector.Parser;
 
@@ -12,16 +11,14 @@ namespace idetector.CodeLoader
     {
         public static ClassCollection ReadSingleFile(string path)
         {
-           
             try
             {
                 var dataStream = System.IO.File.ReadAllText(path);
                 return CodeParser.Parse(dataStream);
             }
-            catch (FileNotFoundException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show(
-               string.Format(System.Globalization.CultureInfo.CurrentUICulture, "Invoked '{0}'", ex.FileName));
+                Console.WriteLine(ex.Message);
                 return null;
             }
         }

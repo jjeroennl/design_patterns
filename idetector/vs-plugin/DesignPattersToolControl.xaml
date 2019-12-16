@@ -10,10 +10,25 @@
              d:DesignHeight="300" d:DesignWidth="300"
              Name="MyToolWindow">
     <Grid>
-        <StackPanel Orientation="Vertical">
-            <TextBlock Margin="10" HorizontalAlignment="Center">ToolWindow1</TextBlock>
-            <TextBox x:Name="textbox1" Height="23" TextWrapping="Wrap" Text="TextBox"/>
-            <Button Content="Click me!" Click="button1_Click" Width="120" Height="80" Name="button1"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32px" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Orientation="Horizontal">
+            <Button Content="Scan current project" HorizontalAlignment="Left" VerticalAlignment="Top" Width="119" Click="Button_Click"/>
+            <Button x:Name="ScanFile" Content="Scan current file" HorizontalAlignment="Left" Margin="0 0 10px 0" VerticalAlignment="Top" Width="120" Click="Button_Click"/>
         </StackPanel>
+        <Grid HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch" Name="Patterns">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+            <Label Content="Placeholder uitleg" HorizontalAlignment="Left" Margin="1.667,0,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+            <StackPanel x:Name="PatternList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></StackPanel>
+        </Grid>
+
     </Grid>
 </UserControl>
