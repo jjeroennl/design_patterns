@@ -12,6 +12,7 @@ namespace xUnitTest
 {
     public class FactoryMethodTests
     {
+        #region Syntax Trees
         SyntaxTree SuccessSetup()
         {
             return CSharpSyntaxTree.ParseText(@" 
@@ -230,7 +231,7 @@ namespace xUnitTest
         ");
         }
         
-        SyntaxTree ConcreteFactoryHasNotOneMethodSetup()
+        SyntaxTree ConcreteFactoriesDoNotHaveOneMethodSetup()
         {
             return CSharpSyntaxTree.ParseText(@"
                 abstract class Creator
@@ -276,6 +277,7 @@ namespace xUnitTest
 
         ");
         }
+        #endregion
 
         #region Tests for individual succeeding checks.
 
@@ -346,7 +348,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
-            Assert.True(factoryMethod.ConcreteFactoryHasOneMethod());
+            Assert.True(factoryMethod.ConcreteFactoriesHaveOneMethod());
         }
         #endregion
 
@@ -418,14 +420,15 @@ namespace xUnitTest
         [Fact]
         public void Test_FactoryMethod_ConcreteFactoryHasNotOneMethod()
         {
-            var tree = ConcreteFactoryHasNotOneMethodSetup();
+            var tree = ConcreteFactoriesDoNotHaveOneMethodSetup();
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
-            Assert.False(factoryMethod.ConcreteFactoryHasOneMethod());
+            Assert.False(factoryMethod.ConcreteFactoriesHaveOneMethod());
         }
         #endregion
 
+        #region Tests for scores.
         [Fact]
         public void Test_FactoryMethod_ScorePass()
         {
@@ -441,8 +444,8 @@ namespace xUnitTest
             Assert.True(factoryMethod.IsInheritingAbstractFactoryClass());
             Assert.True(factoryMethod.IsInheritingProductInterface());
             Assert.True(factoryMethod.ConcreteFactoryIsReturningConcreteProduct());
-            Assert.True(factoryMethod.ConcreteFactoryHasOneMethod());
-            Assert.Equal(99, factoryMethod.Score());
+            Assert.True(factoryMethod.ConcreteFactoriesHaveOneMethod());
+            Assert.Equal(100, factoryMethod.Score());
         }
 
         [Fact]
@@ -460,9 +463,10 @@ namespace xUnitTest
             Assert.False(factoryMethod.IsInheritingAbstractFactoryClass());
             Assert.False(factoryMethod.IsInheritingProductInterface());
             Assert.False(factoryMethod.ConcreteFactoryIsReturningConcreteProduct());
-            Assert.False(factoryMethod.ConcreteFactoryHasOneMethod());
+            Assert.False(factoryMethod.ConcreteFactoriesHaveOneMethod());
 
             Assert.Equal(18, factoryMethod.Score());
         }
+        #endregion
     }
 }
