@@ -32,6 +32,7 @@ namespace idetector.Models
                     isOverride = true;
                 }
             }
+
             ValueType = node.Type.ToString();
             _setParent(node.Parent);
             Type = Type.PropertySyntax;
