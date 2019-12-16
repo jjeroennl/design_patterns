@@ -395,7 +395,5 @@ namespace xUnitTest
 
             Assert.Equal(20, factoryMethod.Score());
         }
-
-
     }
 }

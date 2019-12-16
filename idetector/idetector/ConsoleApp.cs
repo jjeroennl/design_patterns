@@ -51,6 +51,28 @@ namespace idetector
                 this.printBar(item.Value, "Singleton", s.Score());
                 this.printBar(item.Value,"Decorator", d.Score());
             }
+
+            FactoryMethod fm = new FactoryMethod(collection);
+            fm.Scan();
+            printBar("FactoryMethod", fm.Score());
+        }
+
+        private void printBar(string name, int score)
+        {
+            Console.WriteLine(name + ": ");
+            Console.WriteLine("\t " + score + "%:");
+            Console.WriteLine("\t" + new string('-', 102));
+            Console.Write("\t|");
+
+            Console.Write(new string('█', score));
+
+            if (100 - score != 0)
+            {
+                Console.Write(new string(' ', 100 - score));
+            }
+
+            Console.Write("|\n");
+            Console.WriteLine("\t" + new string('-', 102));
         }
 
         private void printBar(ClassModel item, string name, int score)
@@ -68,6 +90,7 @@ namespace idetector
             }
                 
             Console.Write("|\n");
-            Console.WriteLine("\t" + new string('-', 102));        }
+            Console.WriteLine("\t" + new string('-', 102));
+        }
     }
 }
