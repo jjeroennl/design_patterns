@@ -33,27 +33,27 @@ namespace idetector.Patterns
 
             if (ContainsAbstractFactoryClass())
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ContainsAbstractFactoryClass");
+                _score += (int)PriorityCollection.GetPercentage("factorymethod", "ContainsAbstractFactoryClass");
             }
             if (ContainsProductInterface())
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ContainsProductInterface");
+                _score += (int)PriorityCollection.GetPercentage("factorymethod", "ContainsProductInterface");
             }
             if (ContainsAbstractProductInterfaceMethod())
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ContainsAbstractProductInterfaceMethod");
+                _score += (int)PriorityCollection.GetPercentage("factorymethod", "ContainsAbstractProductInterfaceMethod");
             }
             if (IsInheritingAbstractFactoryClass())
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "IsInheritingAbstractFactoryClass");
+                _score += (int)PriorityCollection.GetPercentage("factorymethod", "IsInheritingAbstractFactoryClass");
             }
             if (IsInheritingProductInterface())
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "IsInheritingProductInterface");
+                _score += (int)PriorityCollection.GetPercentage("factorymethod", "IsInheritingProductInterface");
             }
             if (ConcreteFactoryIsReturningConcreteProduct())
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteFactoryIsReturningConcreteProduct");
+                _score += (int)PriorityCollection.GetPercentage("factorymethod", "ConcreteFactoryIsReturningConcreteProduct");
             }
             if (ConcreteFactoryHasOneMethod())
             {
