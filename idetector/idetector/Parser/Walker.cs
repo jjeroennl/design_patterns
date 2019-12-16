@@ -13,9 +13,46 @@ namespace idetector.Parser
 {
     public class Walker : CSharpSyntaxWalker
     {
+        private ClassCollection _collection;
+
+        public Walker(ClassCollection collection)
+        {
+            this._collection = collection;
+        }
+        
         public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
             base.VisitNamespaceDeclaration(node);
+        }
+
+        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+        {
+            ClassModel cls = _collection.GetClass(node.Identifier.ToString());
+
+            if(node.BaseList != null)
+            {
+                foreach (var n in node.BaseList.Types)
+                {
+                    try
+                    {
+                        var parentClass = _collection.GetClass(n.Type.ToString());
+                        if (parentClass != null)
+                        {
+                            cls.AddParent(parentClass);
+                        }
+                        else
+                        {
+                            cls.AddExternalParent(n.Type.ToString());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        cls.AddExternalParent(n.Type.ToString());
+                    }
+                   
+                }
+            }
+            base.VisitClassDeclaration(node);
         }
 
         public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
@@ -51,16 +88,16 @@ namespace idetector.Parser
 
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
-            var me = ClassCollection.GetClass(node.Type.ToString());
+            var me = _collection.GetClass(node.Type.ToString());
 
-            var parentClass = getParentClass(node);
-            parentClass.AddObjectCreation(me);
-            
+            if (me != null)
+            {
+                var parentClass = getParentClass(node);
+                parentClass.AddObjectCreation(me);
+            }
             base.VisitObjectCreationExpression(node);
         }
-
-
-
+        
         public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
         {
             PropertyModel propertyModel = new PropertyModel(node);
@@ -69,21 +106,26 @@ namespace idetector.Parser
             parentClass.AddProperty(propertyModel);
 
             base.VisitFieldDeclaration(node);
-        }  
-        
+        }
+
+
         public ClassCollection getCollection()
         {
-            return new ClassCollection();
+            return _collection;
         }
         
         private ClassModel getParentClass(SyntaxNode node){
             var n = node.Parent;
-
             var shouldLoop = true;
             var loops = 0;
 
+
             while (!n.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax") && shouldLoop)
             {
+                if (n.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax"))
+                {
+                    break;
+                }
                 n = n.Parent;
 
                 loops++;
@@ -95,22 +137,37 @@ namespace idetector.Parser
 
             if (shouldLoop)
             {
-                var _class = (ClassDeclarationSyntax) n;
-                var member = ClassCollection.GetClass(_class.Identifier.ToString());
+                if (n.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax"))
+                {
+                    var _class = (InterfaceDeclarationSyntax) n;
+                    var member = _collection.GetClass(_class.Identifier.ToString());
 
-                return member;
+                    return member;
+                }
+                else
+                {
+                    var _class = (ClassDeclarationSyntax) n;
+                    var member = _collection.GetClass(_class.Identifier.ToString());
+
+                    return member;
+                }
+                
+              
             }
 
             return null;
         }
 
-        public static void GenerateModels (SyntaxTree tree)
+        public static ClassCollection GenerateModels (SyntaxTree tree)
         {
-            ClassWalker w = new ClassWalker();
+            ClassCollection collection = new ClassCollection();
+            ClassWalker w = new ClassWalker(collection);
             w.Visit(tree.GetRoot());
             
-            Walker w2 = new Walker();
+            Walker w2 = new Walker(collection);
             w2.Visit(tree.GetRoot());
+
+            return collection;
         }
     }
 }

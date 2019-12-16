@@ -9,18 +9,17 @@ namespace idetector.CodeLoader
 {
     public class FileReader
     {
-        public static bool ReadSingleFile(string path)
+        public static ClassCollection ReadSingleFile(string path)
         {
             try
             {
                 var dataStream = System.IO.File.ReadAllText(path);
-                CodeParser.Parse(dataStream);
+                return CodeParser.Parse(dataStream);
             }
             catch (Exception ex)
             {
-                return false;
+                return null;
             }
-            return true;
         }
         
         private static string ReadFile(string path)

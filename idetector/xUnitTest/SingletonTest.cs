@@ -32,17 +32,17 @@ namespace xUnitTest
                     }
                 }");
         }
-        SyntaxTree noStaticGetInstancesetup()
+        SyntaxTree noPrivateConstructor()
         {
             return CSharpSyntaxTree.ParseText(@" 
                class User{
                     private static User me;
 
-                    private User(){
+                    public User(){
 
                     }
                     
-                    public  User getUser(){
+                    public static User getUser(){
                         if(this.me == null){
                             this.me = new User();
                         }
@@ -51,7 +51,7 @@ namespace xUnitTest
                     }
                 }");
         }
-        SyntaxTree noPrivateStaticSelfsetup()
+        SyntaxTree noPrivateSelf()
         {
             return CSharpSyntaxTree.ParseText(@" 
                class User{
@@ -70,39 +70,149 @@ namespace xUnitTest
                     }
                 }");
         }
+        SyntaxTree NoStaticSelf()
+        {
+            return CSharpSyntaxTree.ParseText(@" 
+               class User{
+                    private User me;
+
+                    private User(){
+
+                    }
+                    
+                    public static User getUser(){
+                        if(this.me == null){
+                            this.me = new User();
+                        }
+                        
+                        return this.me;
+                    }
+                }");
+        }
+        SyntaxTree noGetInstance()
+        {
+            return CSharpSyntaxTree.ParseText(@" 
+               class User{
+                    private static User me;
+
+                    private User(){
+
+                    }
+                    
+                    public void User getUser(){
+                        if(this.me == null){
+                            this.me = new User();
+                        }
+                    }
+                }");
+        }
+        SyntaxTree noStaticGetInstancesetup()
+        {
+            return CSharpSyntaxTree.ParseText(@" 
+               class User{
+                    private static User me;
+
+                    private User(){
+
+                    }
+                    
+                    public User getUser(){
+                        if(this.me == null){
+                            this.me = new User();
+                        }
+                        
+                        return this.me;
+                    }
+                }");
+        }
+        SyntaxTree noCreationOfSelf()
+        {
+            return CSharpSyntaxTree.ParseText(@" 
+               class User{
+                    private static User me;
+
+                    private User(){
+
+                    }
+                    
+                    public static User getUser(){
+                        if(this.me == null);
+                        
+                        return this.me;
+                    }
+                }");
+        }
 
         [Fact]
         public void Test_Singleton_Succeed()
         {
             var tree = Successsetup();
-            Walker.GenerateModels(tree);
+            var collection = Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetClass("User"));
+            Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
             Assert.Equal(100, singleton.Score());
-            
         }
+      
         [Fact]
-        public void Test_Singleton_NoStaticInstance()
+        public void Test_Singleton_NoPrivateConstructor()
         {
-            var tree = noStaticGetInstancesetup();
-            Walker.GenerateModels(tree);
+            var tree = noPrivateConstructor();
+            var collection = Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetClass("User"));
+            Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            Assert.Equal(75, singleton.Score());
-
+            Assert.NotEqual(100, singleton.Score());
         }
         [Fact]
         public void Test_Singleton_noPrivateStatic()
         {
-            var tree = noPrivateStaticSelfsetup();
-            Walker.GenerateModels(tree);
+            var tree = noPrivateSelf();
+            var collection = Walker.GenerateModels(tree);
 
-            Singleton singleton = new Singleton(ClassCollection.GetClass("User"));
+            Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            Assert.Equal(75, singleton.Score());
+            Assert.NotEqual(100, singleton.Score());
+        }
+        [Fact]
+        public void Test_Singleton_NoStaticSelf()
+        {
+            var tree = NoStaticSelf();
+            var collection = Walker.GenerateModels(tree);
 
+            Singleton singleton = new Singleton(collection.GetClass("User"));
+            singleton.Scan();
+            Assert.NotEqual(100, singleton.Score());
+        }
+        [Fact]
+        public void Test_Singleton_NoGetInstance()
+        {
+            var tree = noGetInstance();
+            var collection = Walker.GenerateModels(tree);
+
+            Singleton singleton = new Singleton(collection.GetClass("User"));
+            singleton.Scan();
+            Assert.NotEqual(100, singleton.Score());
+        }
+        [Fact]
+        public void Test_Singleton_NoStaticGetInstance()
+        {
+            var tree = noStaticGetInstancesetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Singleton singleton = new Singleton(collection.GetClass("User"));
+            singleton.Scan();
+            Assert.NotEqual(100, singleton.Score());
+        }
+        [Fact]
+        public void Test_Singleton_NoCreationOfSelf()
+        {
+            var tree = noCreationOfSelf();
+            var collection = Walker.GenerateModels(tree);
+
+            Singleton singleton = new Singleton(collection.GetClass("User"));
+            singleton.Scan();
+            Assert.NotEqual(100, singleton.Score());
         }
     }
 }

@@ -8,16 +8,12 @@ using idetector.Models;
 namespace idetector.Collections
 {
     public class ClassCollection
-    {
+    { 
+        private  Dictionary<string, ClassModel> cache = new Dictionary<string, ClassModel>();
 
-        /// <summary>
-        /// Tkey as Namespace/Classname
-        /// </summary>
-        private static Dictionary<string, ClassModel> cache = new Dictionary<string, ClassModel>();
-
-        public static void AddClass(ClassModel classModel)
+        public void AddClass(ClassModel classModel)
         {
-            if (cache.ContainsKey(classModel.Identifier))
+            if (cache.ContainsKey(classModel.Identifier.ToString()))
             {
                 cache[classModel.Identifier] = classModel;
             }
@@ -27,7 +23,7 @@ namespace idetector.Collections
             }
         }
 
-        public static ClassModel GetClass(string identifier)
+        public ClassModel GetClass(string identifier)
         {
             try
             {
@@ -39,7 +35,12 @@ namespace idetector.Collections
             }
         }
 
-        public static Dictionary<string, ClassModel> GetClasses()
+        public void Clear()
+        {
+            cache = new Dictionary<string, ClassModel>();
+        }
+        
+        public Dictionary<string, ClassModel> GetClasses()
         {
             return cache;
         }

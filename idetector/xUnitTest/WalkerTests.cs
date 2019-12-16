@@ -9,7 +9,7 @@ namespace xUnitTest
 {
     public class WalkerTests
     {
-        private void prepare()
+        private ClassCollection prepare()
         {
             SyntaxTree tree = CSharpSyntaxTree.ParseText(@"using System;
             using System.Collections;
@@ -18,6 +18,10 @@ namespace xUnitTest
  
             namespace HelloWorld
             {
+                interface Controller{
+                    int x {get; set;}
+                }
+
                 class Program : Controller
                 {
                     static void Main(string[] args , string foo){
@@ -59,20 +63,31 @@ namespace xUnitTest
                 }
             }");
 
-            Walker.GenerateModels(tree);
+            return Walker.GenerateModels(tree);
 
         }
         
         [Fact]
         public void Test_Construction()
         {
-            this.prepare();
+            var collection = this.prepare();
             
-            var cls = ClassCollection.GetClass("User");
+            var cls = collection.GetClass("User");
 
             Assert.Equal("User", cls.Identifier);
             Assert.Single(cls.getProperties());
             Assert.Equal(2, cls.getMethods().Count);
+            Assert.False(cls.IsInterface);
+        }
+        [Fact]
+        public void Test_Interface()
+        {
+            var collection = this.prepare();
+
+            var intface = collection.GetClass("Controller");
+            Assert.Equal("Controller", intface.Identifier);
+            Assert.Single(intface.getProperties());
+            Assert.True(intface.IsInterface);
         }
     }
 }

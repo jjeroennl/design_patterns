@@ -6,34 +6,39 @@ namespace idetector.Patterns
 {
     public class Singleton : IPattern
     {
-        private int _score;
+        private float _score;
         private ClassModel cls;
 
         public Singleton(ClassModel _cls)
         {
             cls = _cls;
+            PriorityCollection.ClearPriorities();
+            PriorityCollection.AddPriority("singleton", "IsPrivateConstructor", Priority.Low);
+            PriorityCollection.AddPriority("singleton", "IsStaticSelf", Priority.Low);
+            PriorityCollection.AddPriority("singleton", "IsGetInstance", Priority.Low);
+            PriorityCollection.AddPriority("singleton", "IsCreateSelf", Priority.Low);
         }
 
         public void Scan()
         {
             if (IsPrivateConstructor())
             {
-                _score += 25;
+                _score += PriorityCollection.GetPercentage("singleton", "IsPrivateConstructor");
             }
 
             if (IsStaticSelf())
             {
-                _score += 25;
+                _score += PriorityCollection.GetPercentage("singleton", "IsStaticSelf");
             }
 
             if (IsGetInstance())
             {
-                _score += 25;
+                _score += PriorityCollection.GetPercentage("singleton", "IsGetInstance");
             }
 
             if (IsCreateSelf())
             {
-                _score += 25;
+                _score += PriorityCollection.GetPercentage("singleton", "IsCreateSelf");
             }
         }
 
@@ -44,7 +49,7 @@ namespace idetector.Patterns
 
         public int Score()
         {
-            return _score;
+            return (int) _score;
         }
 
         public bool IsPrivateConstructor()

@@ -10,27 +10,43 @@ namespace idetector.Models
 {
     public class ClassModel
     {
-        private ClassDeclarationSyntax _node { get; set; }
+        private TypeDeclarationSyntax _node { get; set; }
         public string[] Modifiers { get; set; }
         public string[] Members { get; set; }
         public string[] Attributes { get; set; }
         public string Keyword { get; set; }
         public string Identifier { get; set; }
+        public bool IsInterface { get; set; } = false;
+        public bool IsAbstract { get; set; } = false;
 
         private List<MethodModel> Methods = new List<MethodModel>();
         private List<PropertyModel> Properties = new List<PropertyModel>();
+        private HashSet<ClassModel> Parents = new HashSet<ClassModel>();
         public HashSet<ClassModel> ObjectCreations = new HashSet<ClassModel>();
+        public HashSet<string> UnknownParent = new HashSet<string>();
 
         public ClassModel(ClassDeclarationSyntax node)
         {
             _node = node;
-            Keyword = _node.Keyword.ToString();
-            Identifier = _node.Identifier.ToString();
+            Keyword = node.Keyword.ToString();
+            Identifier = node.Identifier.ToString();
             
             _setMembers();
             _setAttributes();
             _setModifiers();
         }
+        public ClassModel(InterfaceDeclarationSyntax node)
+        {
+            _node = node;
+            Keyword = node.Keyword.ToString();
+            Identifier = node.Identifier.ToString();
+            IsInterface = true;
+            
+            _setMembers();
+            _setAttributes();
+            _setModifiers();
+        }
+        
 
         private void _setModifiers()
         {
@@ -41,6 +57,10 @@ namespace idetector.Models
                 for (int i = 0; i < ModifierCount; i++)
                 {
                     Modifiers[i] = _node.Modifiers[i].ToString();
+                    if (Modifiers[i].ToLower().Equals("abstract"))
+                    {
+                        IsAbstract = true;
+                    }
                 }
             }
             else Modifiers = null;
@@ -74,7 +94,7 @@ namespace idetector.Models
             else Members = null;
         }
 
-        public ClassDeclarationSyntax GetNode()
+        public TypeDeclarationSyntax GetNode()
         {
             return _node;
         }
@@ -92,6 +112,11 @@ namespace idetector.Models
         public void AddProperty(PropertyModel property)
         {
             Properties.Add(property);
+        }
+
+        public void AddParent(ClassModel classModel)
+        {
+            Parents.Add(classModel);
         }
 
         public void RemoveProperty(PropertyModel property)
@@ -112,6 +137,44 @@ namespace idetector.Models
         public List<PropertyModel> getProperties()
         {
             return Properties;
+        }
+
+        public bool HasParent(string name)
+        {
+            var hasUnknownParent = false;
+            
+            if(this.UnknownParent.Count > 0)
+            {
+                hasUnknownParent = this.UnknownParent.Any(e => e.Equals(name));
+            }
+
+            var hasKnownParent = false;
+            if (this.Parents.Count > 0)
+            {
+                hasKnownParent = this.Parents.Any(e => e.Identifier.Equals(name));
+            }
+            return hasUnknownParent || hasKnownParent;
+        }
+
+        public List<string> GetParents()
+        {
+            List<string> returnValue = new List<string>();
+
+            foreach (var parent in this.Parents)
+            {
+                returnValue.Add(parent.Identifier.ToString());
+            }
+            foreach (var parent in this.UnknownParent)
+            {
+                returnValue.Add(parent);
+            }
+
+            return returnValue;
+        }
+
+        public void AddExternalParent(string parent)
+        {
+            UnknownParent.Add(parent);
         }
     }
 }
