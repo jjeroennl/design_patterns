@@ -10,14 +10,16 @@ namespace xUnitTest
 {
     public class FacadeTest
     {
-        private ClassCollection facade;
-        private ClassCollection notFacade;
-        private ClassCollection reallyNotFacade;
+        private ClassCollection _facade;
+        private ClassCollection _notFacade;
+        private ClassCollection _reallyNotFacade;
 
         [Fact]
         void FacadeProject()
         {
-            Facade f = new Facade(this.facade);
+            registerFacade();
+            Facade f = new Facade(this._facade);
+            f.Scan();
             Assert.Equal(100, f.Score("GasPipes"));
             Assert.Equal(100, f.Score("HouseBuilderFacade"));
             Assert.Equal(0, f.Score("User"));
@@ -26,7 +28,9 @@ namespace xUnitTest
         [Fact]
         void NotFacade()
         {
-            Facade f = new Facade(this.notFacade);
+            registerFacade();
+            Facade f = new Facade(this._notFacade);
+            f.Scan();
             Assert.Equal(0, f.Score("GasPipes"));
             Assert.Equal(0, f.Score("HouseBuilderFacade"));
             Assert.Equal(0, f.Score("User"));
@@ -35,7 +39,10 @@ namespace xUnitTest
         [Fact]
         void ReallyNotFacade()
         {
-            Facade f = new Facade(this.reallyNotFacade);
+            registerFacade();
+
+            Facade f = new Facade(this._reallyNotFacade);
+            f.Scan();
             Assert.Equal(0, f.Score("Current"));
             Assert.Equal(0, f.Score("NoteBs"));
         }
@@ -44,7 +51,256 @@ namespace xUnitTest
         public void registerFacade()
         {
             var facade = CSharpSyntaxTree.ParseText(@"
-namespace idetector.Patterns
+using System;
+
+namespace FacadeExample
+{
+    public class ElectricityCables
+    {
+        public void ConnectElectricityCables()
+        {
+            var X = new HelperClass();
+            Console.WriteLine(""Electricity cables connected"");
+        }
+    }
+}﻿using System;
+
+namespace FacadeExample
+{
+    public class GasPipes
+    {
+        public void ConnectGasPipes()
+        {
+            Console.WriteLine(""Gas pipes connected"");
+        }
+    }
+}﻿namespace FacadeExample
+{
+    public class HouseBuilderFacade
+    {
+        private readonly ElectricityCables _electricityCables;
+        private readonly GasPipes _gasPipes;
+        private readonly WaterPipes _waterPipes;
+        private readonly PoolInstallation _poolInstallation;
+
+        public HouseBuilderFacade()
+        {
+            _electricityCables = new ElectricityCables();
+            _gasPipes = new GasPipes();
+            _waterPipes = new WaterPipes();
+            _poolInstallation = new PoolInstallation();
+        }
+
+        public void BuildHouse()
+        {
+            _waterPipes.ConnectPipes();
+            _gasPipes.ConnectGasPipes();
+            _electricityCables.ConnectElectricityCables();
+        }
+
+        public void BuildMansion()
+        {
+            _waterPipes.ConnectPipes();
+            _gasPipes.ConnectGasPipes();
+            _electricityCables.ConnectElectricityCables();
+            _poolInstallation.InstallPool();
+        }
+    }
+}﻿using System;
+
+namespace FacadeExample
+{
+    public class PoolInstallation
+    {
+        public void InstallPool()
+        {
+            Console.WriteLine(""Pool installed"");
+        }
+    }
+}﻿using System;
+
+namespace FacadeExample
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            var facade = new HouseBuilderFacade();
+
+            Console.WriteLine(""Building house"");
+            facade.BuildHouse();
+            Console.WriteLine(""Building mansion"");
+            facade.BuildMansion();
+
+            var X = new HelperClass();
+
+        }
+    }
+}
+﻿using System;
+
+
+namespace FacadeExample{
+    class HelperClass{
+        
+    }
+}
+
+namespace FacadeExample
+{
+    public class WaterPipes
+    {
+        public void ConnectPipes()
+        {
+            Console.WriteLine(""Water pipes connected"");
+        }
+    }
+}
+
+class User: UserParent{
+                    private static User me;
+
+                    private User(){
+
+                    }
+                    
+                    public static User getUser(){
+                        if(this.me == null){
+                        }
+                        
+                        return this.me;
+                    }
+                }
+            ");
+
+            this._facade = Walker.GenerateModels(facade);
+
+            var notFacade = CSharpSyntaxTree.ParseText(@"
+ using System;
+
+namespace FacadeExample
+{
+    public class ElectricityCables
+    {
+        public void ConnectElectricityCables()
+        {
+            var X = new HelperClass();
+            Console.WriteLine(""Electricity cables connected"");
+        }
+    }
+}﻿using System;
+
+namespace FacadeExample
+{
+    public class GasPipes
+    {
+        public void ConnectGasPipes()
+        {
+            Console.WriteLine(""Gas pipes connected"");
+        }
+    }
+}﻿namespace FacadeExample
+{
+    public class HouseBuilderFacade
+    {
+        private readonly ElectricityCables _electricityCables;
+        private readonly GasPipes _gasPipes;
+        private readonly WaterPipes _waterPipes;
+        private readonly PoolInstallation _poolInstallation;
+
+        public HouseBuilderFacade()
+        {
+            _electricityCables = new ElectricityCables();
+            _gasPipes = new GasPipes();
+            _waterPipes = new WaterPipes();
+            _poolInstallation = new PoolInstallation();
+        }
+
+        public void BuildHouse()
+        {
+            _waterPipes.ConnectPipes();
+            _gasPipes.ConnectGasPipes();
+            _electricityCables.ConnectElectricityCables();
+        }
+
+        public void BuildMansion()
+        {
+            _waterPipes.ConnectPipes();
+            _gasPipes.ConnectGasPipes();
+            _electricityCables.ConnectElectricityCables();
+            _poolInstallation.InstallPool();
+        }
+    }
+}﻿using System;
+
+namespace FacadeExample
+{
+    public class PoolInstallation
+    {
+        public void InstallPool()
+        {
+            Console.WriteLine(""Pool installed"");
+        }
+    }
+}﻿using System;
+
+namespace FacadeExample
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            var facade = new HouseBuilderFacade();
+
+            Console.WriteLine(""Building house"");
+            facade.BuildHouse();
+            Console.WriteLine(""Building mansion"");
+            facade.BuildMansion();
+        }
+    }
+}
+﻿using System;
+
+
+namespace FacadeExample{
+    class HelperClass{
+        
+    }
+}
+
+namespace FacadeExample
+{
+    public class WaterPipes
+    {
+        public void ConnectPipes()
+        {
+            Console.WriteLine(""Water pipes connected"");
+        }
+    }
+}
+
+class User: UserParent{
+                    private static User me;
+
+                    private User(){
+
+                    }
+                    
+                    public static User getUser(){
+                        if(this.me == null){
+                            var X = new HelperClass();
+                        }
+                        
+                        return this.me;
+                    }
+                }
+
+            ");
+
+            this._notFacade = Walker.GenerateModels(notFacade);
+            
+                        var reallyNotFacade = CSharpSyntaxTree.ParseText(@"
+ namespace idetector.Patterns
 { 
     class User{
             public static User me; 
@@ -178,13 +434,7 @@ public class NoteBs : NoteB{
 }
             ");
 
-            this.facade = Walker.GenerateModels(facade);
-
-            var notFacade = CSharpSyntaxTree.ParseText(@"
- 
-            ");
-
-            this.notFacade = Walker.GenerateModels(notFacade);
+            this._reallyNotFacade = Walker.GenerateModels(reallyNotFacade);
         }
     }
 }
