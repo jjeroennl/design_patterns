@@ -87,7 +87,7 @@ namespace idetector.Patterns
         /// Checking if there is a class which suffises as an 'Context' class
         /// </summary>
         /// <returns>CheckedMessage</returns>
-        private CheckedMessage ContextChecks()
+        public CheckedMessage ContextChecks()
         {
             int score = 0;
             foreach (var cls in cc.GetClasses())
@@ -115,7 +115,7 @@ namespace idetector.Patterns
         /// </summary>
         /// <param name="cls">ClassModel to check</param>
         /// <returns>CheckedMessage</returns>
-        private CheckedMessage ContextHasStrategy(ClassModel cls)
+        public CheckedMessage ContextHasStrategy(ClassModel cls)
         {
             foreach (var property in cls.getProperties())
             {
@@ -132,7 +132,7 @@ namespace idetector.Patterns
         /// </summary>
         /// <param name="cls">ClassModel to check</param>
         /// <returns>CheckedMessage</returns>
-        private CheckedMessage ContextHasPrivateStrategy(ClassModel cls)
+        public CheckedMessage ContextHasPrivateStrategy(ClassModel cls)
         {
             foreach (var property in cls.getProperties())
             {
@@ -155,7 +155,7 @@ namespace idetector.Patterns
         /// </summary>
         /// <param name="cls">ClassModel to check</param>
         /// <returns>CheckedMessage</returns>
-        private CheckedMessage ContextHasPublicConstructor(ClassModel cls)
+        public CheckedMessage ContextHasPublicConstructor(ClassModel cls)
         {
             foreach (var method in cls.getMethods())
             {
@@ -175,7 +175,7 @@ namespace idetector.Patterns
         /// </summary>
         /// <param name="cls">ClassModel to check</param>
         /// <returns>CheckedMessage</returns>
-        private CheckedMessage ContextHasStrategySetter(ClassModel cls)
+        public CheckedMessage ContextHasStrategySetter(ClassModel cls)
         {
             foreach (var property in cls.getProperties())
             {
@@ -210,7 +210,7 @@ namespace idetector.Patterns
         /// </summary>
         /// <param name="cls">ClassModel to check</param>
         /// <returns>CheckedMessage</returns>
-        private CheckedMessage ContextHasLogic(ClassModel cls)
+        public CheckedMessage ContextHasLogic(ClassModel cls)
         {
             foreach (var method in cls.getMethods())
             {
@@ -238,7 +238,7 @@ namespace idetector.Patterns
         /// 
         /// </summary>
         /// <returns>CheckedMessage</returns>
-        private CheckedMessage HasInterfaceOrAbstract()
+        public CheckedMessage HasInterfaceOrAbstract()
         {
             foreach (var cls in cc.GetClasses())
             {
@@ -255,7 +255,7 @@ namespace idetector.Patterns
         /// 
         /// </summary>
         /// <returns>CheckedMessage</returns>
-        private CheckedMessage HasConcreteClasses()
+        public CheckedMessage HasConcreteClasses()
         {
             int i = 0;
             foreach (var cls in cc.GetClasses())
@@ -274,7 +274,7 @@ namespace idetector.Patterns
         /// 
         /// </summary>
         /// <returns>CheckedMessage</returns>
-        private CheckedMessage HasRelationsBetweenConcreteClasses()
+        public CheckedMessage HasRelationsBetweenConcreteClasses()
         {
             foreach (var cls in Concretes.GetClasses())
             {
