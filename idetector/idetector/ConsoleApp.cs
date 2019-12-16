@@ -46,6 +46,13 @@ namespace idetector
             Facade f = new Facade(collection);
             f.Scan();
 
+            StateStrategy state = new StateStrategy(collection, true);
+            state.Scan();
+
+
+            StateStrategy strat = new StateStrategy(collection, false);
+            strat.Scan();
+
             foreach (var item in this.collection.GetClasses())
             {                
               
@@ -55,11 +62,11 @@ namespace idetector
                 Decorator d = new Decorator(item.Value, collection.GetClasses());
                 d.Scan();
 
-                this.printBar("Singleton", s.Score());
-                this.printBar("Decorator", d.Score());
                 this.printBar(item.Value, "Singleton", s.Score());
                 this.printBar(item.Value,"Decorator", d.Score());
                 this.printBar(item.Value,"Facade", f.Score(item.Value));
+                this.printBar(item.Value, "State", state.Score(item.Value.Identifier.ToString()));
+                this.printBar(item.Value, "Strategy", strat.Score(item.Value.Identifier.ToString()));
             }
 
             FactoryMethod fm = new FactoryMethod(collection);
@@ -88,7 +95,7 @@ namespace idetector
      
         private void printBar(ClassModel item, string name, int score)
         {
-          printbar(name, score);       
+            printBar(name, score);       
         }
     }
 }

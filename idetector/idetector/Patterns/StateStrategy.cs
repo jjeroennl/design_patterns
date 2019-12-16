@@ -9,7 +9,8 @@ namespace idetector.Patterns
 {
     public class StateStrategy : IPattern
     {
-        private float _score;
+        private float _score ;
+        private Dictionary<string, int> _scores = new Dictionary<string, int>();
         private bool IsState = false;
         private ClassCollection cc;
         private ClassCollection Concretes;
@@ -24,6 +25,7 @@ namespace idetector.Patterns
         /// <param name="state">Bool whether it should check for an state pattern</param>
         public StateStrategy(ClassCollection _cc, bool state)
         {
+
             cc = _cc;
             IsState = state;
             Concretes = new ClassCollection();
@@ -83,6 +85,19 @@ namespace idetector.Patterns
             return (int) _score;
         }
 
+
+        public int Score(string className)
+        {
+            if (this._scores.ContainsKey(className))
+            {
+                return this._scores[className];
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         /// <summary>
         /// Checking if there is a class which suffises as an 'Context' class
         /// </summary>
@@ -92,14 +107,23 @@ namespace idetector.Patterns
             int score = 0;
             foreach (var cls in cc.GetClasses())
             {
+                this._scores[cls.Value.Identifier] = 0;
+
                 if (ContextHasStrategy(cls.Value).isTrue)
                 {
                     score += 1;
                     if (ContextHasPrivateStrategy(cls.Value).isTrue) score += 1;
+                    if (ContextHasPrivateStrategy(cls.Value).isTrue) this._scores[cls.Value.Identifier] += 1;
                 }
                 if (ContextHasPublicConstructor(cls.Value).isTrue) score += 1;
+                if (ContextHasPublicConstructor(cls.Value).isTrue) this._scores[cls.Value.Identifier] += 1;
+
                 if (ContextHasStrategySetter(cls.Value).isTrue) score += 1;
+                if (ContextHasStrategySetter(cls.Value).isTrue) this._scores[cls.Value.Identifier] += 1;
+
                 if (ContextHasLogic(cls.Value).isTrue) score += 1;
+                if (ContextHasLogic(cls.Value).isTrue) this._scores[cls.Value.Identifier] += 1;
+
 
                 if (score >= 3)
                 {
