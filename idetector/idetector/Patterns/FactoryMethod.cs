@@ -24,6 +24,7 @@ namespace idetector.Patterns
             PriorityCollection.AddPriority("factorymethod", "IsInheritingAbstractFactoryClass", Priority.Low);
             PriorityCollection.AddPriority("factorymethod", "IsInheritingProductInterface", Priority.Low);
             PriorityCollection.AddPriority("factorymethod", "ConcreteFactoryIsReturningConcreteProduct", Priority.High);
+            PriorityCollection.AddPriority("factorymethod", "ConcreteFactoryHasOneMethod", Priority.Low);
         }
 
         public void Scan()
@@ -54,6 +55,10 @@ namespace idetector.Patterns
             {
                 _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteFactoryIsReturningConcreteProduct");
             }
+            if (ConcreteFactoryHasOneMethod())
+            {
+                _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteFactoryHasOneMethod");
+            }
         }
 
         public int Score()
@@ -61,7 +66,7 @@ namespace idetector.Patterns
             return _score;
         }
         #region Lists
-        public List<ClassModel> GetAbstractClasses()
+        private List<ClassModel> GetAbstractClasses()
         {
             List<ClassModel> abstractClasses = new List<ClassModel>();
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -74,7 +79,7 @@ namespace idetector.Patterns
             return abstractClasses;
         }
 
-        public List<ClassModel> GetInterfaces()
+        private List<ClassModel> GetInterfaces()
         {
             List<ClassModel> interfaces = new List<ClassModel>();
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -87,7 +92,7 @@ namespace idetector.Patterns
             return interfaces;
         }
 
-        public List<ClassModel> GetAbstractProductInterfaceClasses()
+        private List<ClassModel> GetAbstractProductInterfaceClasses()
         {
             List<ClassModel> classes = new List<ClassModel>();
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -194,6 +199,24 @@ namespace idetector.Patterns
                                     return true;
                                 }
                             }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool ConcreteFactoryHasOneMethod()
+        {
+            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            {
+                foreach (var @class in GetAbstractProductInterfaceClasses())
+                {
+                    if (cls.Value.HasParent(@class.Identifier))
+                    {
+                        if (cls.Value.getMethods().Count == 1)
+                        {
+                            return true;
                         }
                     }
                 }

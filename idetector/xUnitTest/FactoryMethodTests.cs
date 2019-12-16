@@ -229,6 +229,53 @@ namespace xUnitTest
 
         ");
         }
+        
+        SyntaxTree ConcreteFactoryHasNotOneMethodSetup()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+                abstract class Creator
+                {
+                    public abstract IProduct FactoryMethod();
+
+                    public string SomeOperation()
+                    {
+                        var product = FactoryMethod();
+                        var result = 'Creator: The same creator's code has just worked with '
+                            + product.Operation();
+
+                        return result;
+                    }
+                }
+
+                class ConcreteCreator1 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct1();
+                    }
+
+                    public int IetsAnders()
+                    {
+                        return 0;
+                    }
+                }
+
+                public interface IProduct
+                {
+                    string Operation();
+                }
+
+                class ConcreteProduct1 : IProduct
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct1}
+                        ';
+                    }
+                }
+
+        ");
+        }
 
         #region Tests for individual succeeding checks.
 
@@ -290,6 +337,16 @@ namespace xUnitTest
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
             Assert.True(factoryMethod.ConcreteFactoryIsReturningConcreteProduct());
+        }
+
+        [Fact]
+        public void Test_FactoryMethod_ConcreteFactoryHasOneMethod()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            FactoryMethod factoryMethod = new FactoryMethod(collection);
+            Assert.True(factoryMethod.ConcreteFactoryHasOneMethod());
         }
         #endregion
 
@@ -357,10 +414,20 @@ namespace xUnitTest
             FactoryMethod factoryMethod = new FactoryMethod(collection);
             Assert.False(factoryMethod.ConcreteFactoryIsReturningConcreteProduct());
         }
+
+        [Fact]
+        public void Test_FactoryMethod_ConcreteFactoryHasNotOneMethod()
+        {
+            var tree = ConcreteFactoryHasNotOneMethodSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            FactoryMethod factoryMethod = new FactoryMethod(collection);
+            Assert.False(factoryMethod.ConcreteFactoryHasOneMethod());
+        }
         #endregion
 
         [Fact]
-        public void Test_FactoryMethod_Score100()
+        public void Test_FactoryMethod_ScorePass()
         {
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
@@ -374,11 +441,12 @@ namespace xUnitTest
             Assert.True(factoryMethod.IsInheritingAbstractFactoryClass());
             Assert.True(factoryMethod.IsInheritingProductInterface());
             Assert.True(factoryMethod.ConcreteFactoryIsReturningConcreteProduct());
-            Assert.Equal(100, factoryMethod.Score());
+            Assert.True(factoryMethod.ConcreteFactoryHasOneMethod());
+            Assert.Equal(99, factoryMethod.Score());
         }
 
         [Fact]
-        public void Test_FactoryMethod_Score20()
+        public void Test_FactoryMethod_ScoreLow()
         {
             var tree = FailureSetup();
             var collection = Walker.GenerateModels(tree);
@@ -392,8 +460,9 @@ namespace xUnitTest
             Assert.False(factoryMethod.IsInheritingAbstractFactoryClass());
             Assert.False(factoryMethod.IsInheritingProductInterface());
             Assert.False(factoryMethod.ConcreteFactoryIsReturningConcreteProduct());
+            Assert.False(factoryMethod.ConcreteFactoryHasOneMethod());
 
-            Assert.Equal(20, factoryMethod.Score());
+            Assert.Equal(18, factoryMethod.Score());
         }
     }
 }
