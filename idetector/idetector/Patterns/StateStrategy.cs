@@ -10,7 +10,7 @@ namespace idetector.Patterns
     public class StateStrategy : IPattern
     {
         private float _score ;
-        private Dictionary<string, int> _scores = new Dictionary<string, int>();
+        private Dictionary<ClassModel, int> _scores = new Dictionary<ClassModel, int>();
         private bool IsState = false;
         private ClassCollection cc;
         private ClassCollection Concretes;
@@ -25,7 +25,6 @@ namespace idetector.Patterns
         /// <param name="state">Bool whether it should check for an state pattern</param>
         public StateStrategy(ClassCollection _cc, bool state)
         {
-
             cc = _cc;
             IsState = state;
             Concretes = new ClassCollection();
@@ -78,6 +77,10 @@ namespace idetector.Patterns
                     _score += PriorityCollection.GetPercentage("strategy", "ContextHasLogic");
                 }
             }
+            foreach (var item in _scores)
+            {
+                _scores[item] = _score;
+            }
         }
 
         public int Score()
@@ -86,16 +89,11 @@ namespace idetector.Patterns
         }
 
 
-        public int Score(string className)
+        public int Score(ClassModel clsmodel)
         {
-            if (this._scores.ContainsKey(className))
-            {
-                return this._scores[className];
-            }
-            else
-            {
-                return 0;
-            }
+            if (this._scores.ContainsKey(clsmodel)) return this._scores[clsmodel];
+            
+            return 0;
         }
 
         /// <summary>
@@ -105,29 +103,28 @@ namespace idetector.Patterns
         public CheckedMessage ContextChecks()
         {
             int score = 0;
+            int i = 100 / 5;
+            
             foreach (var cls in cc.GetClasses())
             {
-                this._scores[cls.Value.Identifier] = 0;
+                _scores[cls.Value] = 0;
 
                 if (ContextHasStrategy(cls.Value).isTrue)
                 {
-                    score += 1;
-                    if (ContextHasPrivateStrategy(cls.Value).isTrue) score += 1;
-                    if (ContextHasPrivateStrategy(cls.Value).isTrue) this._scores[cls.Value.Identifier] += 1;
+                    score += i;
+                    if (ContextHasPrivateStrategy(cls.Value).isTrue) score += i;
                 }
-                if (ContextHasPublicConstructor(cls.Value).isTrue) score += 1;
-                if (ContextHasPublicConstructor(cls.Value).isTrue) this._scores[cls.Value.Identifier] += 1;
+                if (ContextHasPublicConstructor(cls.Value).isTrue) score += i;
 
-                if (ContextHasStrategySetter(cls.Value).isTrue) score += 1;
-                if (ContextHasStrategySetter(cls.Value).isTrue) this._scores[cls.Value.Identifier] += 1;
+                if (ContextHasStrategySetter(cls.Value).isTrue) score += i;
 
-                if (ContextHasLogic(cls.Value).isTrue) score += 1;
-                if (ContextHasLogic(cls.Value).isTrue) this._scores[cls.Value.Identifier] += 1;
+                if (ContextHasLogic(cls.Value).isTrue) score += i;
 
 
                 if (score >= 3)
                 {
                     Context = cls.Value;
+                    _scores[Context] = score;
                     return new CheckedMessage(true);
                 }
             }
