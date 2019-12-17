@@ -11,6 +11,8 @@ pipeline {
         }
         stage('Build') { 
             steps { 
+                sh 'rm -rf idetector/vs-plugin ' 
+                sh 'cp /home/jenkinsj/actualsln.sln idetector/idetector.sln'
                 sh 'cd idetector && dotnet build' 
             }
         }
