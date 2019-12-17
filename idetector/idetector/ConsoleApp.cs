@@ -64,15 +64,13 @@ namespace idetector
                 this.printBar(item.Value, "Singleton", s.Score());
                 this.printBar(item.Value,"Decorator", d.Score());
                 this.printBar(item.Value,"Facade", f.Score(item.Value));
-                // this.printBar(item.Value, "State", state.Score(item.Value.Identifier.ToString()));
-                // this.printBar(item.Value, "Strategy", strat.Score(item.Value.Identifier.ToString()));
+                this.printBar(item.Value, "State", state.Score(item.Value));
+                this.printBar(item.Value, "Strategy", strat.Score(item.Value));
             }
 
             FactoryMethod fm = new FactoryMethod(collection);
             fm.Scan();
             printBar("FactoryMethod", fm.Score());
-            printBar("Strategy", strat.Score());
-            printBar("State", state.Score());
         }
 
         private void printBar(string name, int score)

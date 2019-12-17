@@ -77,9 +77,11 @@ namespace idetector.Patterns
                     _score += PriorityCollection.GetPercentage("strategy", "ContextHasLogic");
                 }
             }
-            foreach (var item in _scores)
+            _scores[Context] = (int) _score;
+            _scores[Interface] = (int) _score;
+            foreach (var item in Concretes.GetClasses())
             {
-                _scores[item] = _score;
+                _scores[item.Value] = (int) _score;
             }
         }
 
@@ -145,7 +147,13 @@ namespace idetector.Patterns
                     if (cc.GetClass(property.ValueType.ToString()) == Interface) return new CheckedMessage(true);
                 }
             }
-            return new CheckedMessage("There is not an 'Context' class, which contains an strategy", false);
+            
+            StringBuilder msg = new StringBuilder();
+            msg.Append("There is not an 'Context' class, which contains an ");
+            if (IsState) msg.Append("state");
+            else msg.Append("strategy");
+
+            return new CheckedMessage(msg.ToString(), false);
         }
 
         /// <summary>
@@ -168,7 +176,14 @@ namespace idetector.Patterns
                     }
                 }
             }
-            return new CheckedMessage("There is not an 'Context' class, which contains an private strategy, but an public one", false);
+
+            StringBuilder msg = new StringBuilder();
+            msg.Append("There is not an 'Context' class, which contains an private ");
+            if (IsState) msg.Append("state");
+            else msg.Append("strategy");
+            msg.Append(", but an public one");
+
+            return new CheckedMessage(msg.ToString(), false);
         }
 
         /// <summary>
@@ -188,7 +203,7 @@ namespace idetector.Patterns
                     }
                 }
             }
-            return new CheckedMessage("There is not an public constructor in the 'Context' class", false);
+            return new CheckedMessage(msg.ToString(), false);
         }
 
         /// <summary>
@@ -223,7 +238,14 @@ namespace idetector.Patterns
                     }
                 }
             }
-            return new CheckedMessage("There is not an setter for the strategy/state in the 'Context' class", false);
+
+            StringBuilder msg = new StringBuilder();
+            msg.Append("There is not an setter for the ");
+            if (IsState) msg.Append("state");
+            else msg.Append("strategy");
+            msg.Append(" in the 'Context' class");
+
+            return new CheckedMessage(msg.ToString(), false);
         }
 
         /// <summary>
@@ -252,7 +274,13 @@ namespace idetector.Patterns
                     }
                 }
             }
-            return new CheckedMessage("The 'Context' class doesn't contain any logic to call the strategies/states", false);
+
+            StringBuilder msg = new StringBuilder();
+            msg.Append("The 'Context' class doesn't contain any logic to call the ");
+            if (IsState) msg.Append("states");
+            else msg.Append("strategies");
+
+            return new CheckedMessage(msg.ToString(), false);
         }
 
         /// <summary>
@@ -269,7 +297,13 @@ namespace idetector.Patterns
                     return new CheckedMessage(true);
                 }
             }
-            return new CheckedMessage("There is not an interface or abstract class for the strategies/patterns", false);
+
+            StringBuilder msg = new StringBuilder();
+            msg.Append("There is not an interface or abstract class for the ");
+            if (IsState) msg.Append("states");
+            else msg.Append("strategies");
+
+            return new CheckedMessage(msg.ToString(), false);
         }
 
         /// <summary>
