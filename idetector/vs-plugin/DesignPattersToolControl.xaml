@@ -4,8 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
-             Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
-             Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              Name="MyToolWindow">
@@ -18,8 +16,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Orientation="Horizontal">
-            <Button Content="Scan current project" HorizontalAlignment="Left" VerticalAlignment="Top" Width="119" Click="Button_Click"/>
-            <Button x:Name="ScanFile" Content="Scan current file" HorizontalAlignment="Left" Margin="0 0 10px 0" VerticalAlignment="Top" Width="120" Click="Button_Click"/>
+            <Button Content="Scan current project" HorizontalAlignment="Left" VerticalAlignment="Top" Width="119" Click="Scan_Current_project"/>
+            <Button x:Name="ScanFile" Content="Scan current file" HorizontalAlignment="Left" Margin="0 0 10px 0" VerticalAlignment="Top" Width="120" Click="Scan_Current_file"/>
         </StackPanel>
         <Grid HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch" Name="Patterns">
             <Grid.ColumnDefinitions>

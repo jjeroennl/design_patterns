@@ -34,5 +34,50 @@ namespace vs_plugin
         {
             InitializeComponent();
         }
+
+        private void Collapse(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Expand(object sender, RoutedEventArgs e)
+        {
+        }
+
+        internal void SetFacade(int v)
+        {
+            this.IsFacade.IsChecked = v > 50;
+            this.FacadePercentage.Content = v.ToString() + "%";
+        }
+
+        internal void SetStrategy(int v)
+        {
+            this.IsStrategy.IsChecked = v > 50;
+            this.StrategyPercentage.Content = v.ToString() + "%";
+        }
+
+        internal void SetState(int v)
+        {
+            this.IsState.IsChecked = v > 50;
+            this.StatePercentage.Content = v.ToString() + "%";
+        }
+
+        internal void SetSingleton(int v)
+        {
+            this.IsSingleton.IsChecked = v > 50;
+            this.SingletonPercentage.Content = v.ToString() + "%";
+        }
+
+        internal void SetDecorator(int v)
+        {
+            this.IsDecorator.IsChecked = v > 50;
+            this.DecoratorPercentage.Content = v.ToString() + "%";
+        }
+
+        internal void SetFactoryMethod(int v)
+        {
+            this.IsFactory.IsChecked = v > 50;
+            this.FactoryPercentage.Content = v.ToString() + "%";
+        }
     }
 }
