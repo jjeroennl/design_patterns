@@ -11,6 +11,7 @@ pipeline {
         }
         stage('Build') { 
             steps { 
+                sh 'rm -rf idetector/vs-plugin ' 
                 sh 'cd idetector && dotnet build' 
             }
         }
