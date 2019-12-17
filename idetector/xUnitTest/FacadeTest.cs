@@ -48,7 +48,7 @@ namespace xUnitTest
         }
 
 
-        public void registerFacade()
+        void registerFacade()
         {
             var facade = CSharpSyntaxTree.ParseText(@"
 using System;
