@@ -712,25 +712,10 @@ namespace xUnitTest
             namespace RefactoringGuru.DesignPatterns.Strategy.Conceptual
             {
                 class Context
-                {
-                    private IStrategy _strategy;
-
-                    public Context()
-                    { }
-
-                    public Context(IStrategy strategy)
-                    { }
-
-                    public void SetStrategy(IStrategy strategy)
-                    { }
-
-                    public void DoSomeBusinessLogic()
-                    { }
-                }
+                { }
+                
                 public class IStrategy
-                {
-                    object DoAlgorithm(object data);
-                }
+                { }
 
                 class ConcreteStrategyA
                 { }

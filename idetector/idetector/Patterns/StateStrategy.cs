@@ -77,8 +77,8 @@ namespace idetector.Patterns
                     _score += PriorityCollection.GetPercentage("strategy", "ContextHasLogic");
                 }
             }
-            _scores[Context] = (int) _score;
-            _scores[Interface] = (int) _score;
+            if (Context != null) _scores[Context] = (int) _score;
+            if (Interface != null) _scores[Interface] = (int) _score;
             foreach (var item in Concretes.GetClasses())
             {
                 _scores[item.Value] = (int) _score;
@@ -126,7 +126,6 @@ namespace idetector.Patterns
                 if (score >= 3)
                 {
                     Context = cls.Value;
-                    _scores[Context] = score;
                     return new CheckedMessage(true);
                 }
             }
@@ -203,7 +202,7 @@ namespace idetector.Patterns
                     }
                 }
             }
-            return new CheckedMessage(msg.ToString(), false);
+            return new CheckedMessage("There is not an public constructor in the 'Context' class", false);
         }
 
         /// <summary>
