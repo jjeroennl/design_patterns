@@ -9,7 +9,7 @@ using System.Text;
 
 namespace idetector.Patterns
 {
-    public class FactoryMethod : IPattern
+    public class AbstractFactoryMethod : IPattern
     {
         private float _score;
         private Dictionary<ClassModel, int> _scores = new Dictionary<ClassModel, int>();
@@ -23,7 +23,7 @@ namespace idetector.Patterns
         /// Constructor for FactoryMethod.
         /// </summary>
         /// <param name="_cc">ClassCollection to check.</param>
-        public FactoryMethod(ClassCollection _cc)
+        public AbstractFactoryMethod(ClassCollection _cc)
         {
             cc = _cc;
             

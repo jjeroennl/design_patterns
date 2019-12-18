@@ -68,7 +68,7 @@ namespace idetector
                 // this.printBar(item.Value, "Strategy", strat.Score(item.Value.Identifier.ToString()));
             }
 
-            FactoryMethod fm = new FactoryMethod(collection);
+            AbstractFactoryMethod fm = new AbstractFactoryMethod(collection);
             fm.Scan();
             printBar("FactoryMethod", fm.Score());
             printBar("Strategy", strat.Score());
