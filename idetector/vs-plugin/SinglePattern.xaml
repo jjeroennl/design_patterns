@@ -1,0 +1,54 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:vs_plugin"
+             xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="vs_plugin.SinglePattern"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" HorizontalAlignment="Stretch">
+
+    <Grid Margin="0,0,0,0">
+        <Expander x:Name="PatternName1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Header="{Binding Path=HeaderTitle}" IsExpanded="False" Collapsed="Collapse" Expanded="Expand">
+                <Grid HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch" Name="Patterns">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="3*" />
+                    </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                    
+                <CheckBox x:Name="IsDecorator" Content="" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0"/>
+                <CheckBox x:Name="IsFacade" Content="" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0"/>
+                <CheckBox x:Name="IsSingleton" Content="" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0"/>
+                <CheckBox x:Name="IsState" Content="" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0"/>
+                <CheckBox x:Name="IsStrategy" Content="" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0"/>
+                <CheckBox x:Name="IsFactory" Content="" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="5" Grid.Column="0"/>
+
+                <Label Content="Decorator" HorizontalAlignment="Left" Margin="17,0,0,0" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1"/>
+                <Label x:Name="DecoratorPercentage" Content="" HorizontalAlignment="Right" Margin="17,0,24,0" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1"/>
+
+                <Label Content="Facade" HorizontalAlignment="Left" Margin="17,0,0,0" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1"/>
+                <Label x:Name="FacadePercentage" Content="" HorizontalAlignment="Right" Margin="17,0,24,0" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1"/>
+
+                <Label Content="Singleton" HorizontalAlignment="Left" Margin="17,0,0,0" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1"/>
+                <Label x:Name="SingletonPercentage" Content="" HorizontalAlignment="Right" Margin="17,0,24,0" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1"/>
+                    
+                <Label Content="State" HorizontalAlignment="Left" Margin="17,0,0,0" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1"/>
+                <Label x:Name="StatePercentage" Content="" HorizontalAlignment="Right" Margin="17,0,24,0" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1"/>
+                
+                <Label Content="Strategy" HorizontalAlignment="Left" Margin="17,0,0,0" VerticalAlignment="Center" Grid.Row="4" Grid.Column="1"/>
+                <Label x:Name="StrategyPercentage" Content="" HorizontalAlignment="Right" Margin="17,0,24,0" VerticalAlignment="Center" Grid.Row="4" Grid.Column="1"/>
+
+                <Label Content="Factory Method" HorizontalAlignment="Left" Margin="17,0,0,0" VerticalAlignment="Center" Grid.Row="5" Grid.Column="1"/>
+                <Label x:Name="FactoryPercentage" Content="" HorizontalAlignment="Right" Margin="17,0,24,0" VerticalAlignment="Center" Grid.Row="5" Grid.Column="1"/>
+            </Grid>
+        </Expander>
+    </Grid>
+</UserControl>
