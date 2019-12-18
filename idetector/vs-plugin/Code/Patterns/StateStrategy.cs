@@ -9,14 +9,14 @@ namespace idetector.Patterns
 {
     public class StateStrategy : IPattern
     {
-        private float _score;
+        private float _score ;
         private Dictionary<string, int> _scores = new Dictionary<string, int>();
         private bool IsState = false;
         private ClassCollection cc;
-        private ClassCollection concretes = new ClassCollection();
-        public ClassModel context;
-        private ClassModel interfacer;
-        private MethodModel setter;
+        private ClassCollection Concretes;
+        public ClassModel Context;
+        private ClassModel Interface;
+        private MethodModel Setter;
 
         /// <summary>
         /// Constructor for StateStrategy
@@ -25,9 +25,10 @@ namespace idetector.Patterns
         /// <param name="state">Bool whether it should check for an state pattern</param>
         public StateStrategy(ClassCollection _cc, bool state)
         {
+
             cc = _cc;
             IsState = state;
-            
+            Concretes = new ClassCollection();
             PriorityCollection.ClearPriorities();
             PriorityCollection.AddPriority("strategy", "ContextHasStrategy", Priority.High);
             PriorityCollection.AddPriority("strategy", "ContextHasStrategySetter", Priority.High);
@@ -41,8 +42,6 @@ namespace idetector.Patterns
 
         public void Scan()
         {
-            _score = 0;
-
             if (HasInterfaceOrAbstract().isTrue)
             {
                 _score += PriorityCollection.GetPercentage("strategy", "HasInterfaceOrAbstract");
@@ -57,24 +56,24 @@ namespace idetector.Patterns
             }
             if (ContextChecks().isTrue)
             {
-                if (ContextHasStrategy(context).isTrue)
+                if (ContextHasStrategy(Context).isTrue)
                 {
                     _score += PriorityCollection.GetPercentage("strategy", "ContextHasStrategy");
 
-                    if (ContextHasPrivateStrategy(context).isTrue)
+                    if (ContextHasPrivateStrategy(Context).isTrue)
                     {
                         _score += PriorityCollection.GetPercentage("strategy", "ContextHasPrivateStrategy");
                     }
-                    if (ContextHasStrategySetter(context).isTrue)
+                    if (ContextHasStrategySetter(Context).isTrue)
                     {
                         _score += PriorityCollection.GetPercentage("strategy", "ContextHasStrategySetter");
                     }
                 }
-                if (ContextHasPublicConstructor(context).isTrue)
+                if (ContextHasPublicConstructor(Context).isTrue)
                 {
                     _score += PriorityCollection.GetPercentage("strategy", "ContextHasPublicConstructor");
                 }
-                if (ContextHasLogic(context).isTrue)
+                if (ContextHasLogic(Context).isTrue)
                 {
                     _score += PriorityCollection.GetPercentage("strategy", "ContextHasLogic");
                 }
@@ -128,7 +127,7 @@ namespace idetector.Patterns
 
                 if (score >= 3)
                 {
-                    context = cls.Value;
+                    Context = cls.Value;
                     return new CheckedMessage(true);
                 }
             }
@@ -146,7 +145,7 @@ namespace idetector.Patterns
             {
                 if (cc.GetClass(property.ValueType.ToString()) != null)
                 {
-                    if (cc.GetClass(property.ValueType.ToString()) == interfacer) return new CheckedMessage(true);
+                    if (cc.GetClass(property.ValueType.ToString()) == Interface) return new CheckedMessage(true);
                 }
             }
             return new CheckedMessage("There is not an 'Context' class, which contains an strategy", false);
@@ -163,7 +162,7 @@ namespace idetector.Patterns
             {
                 if (cc.GetClass(property.ValueType.ToString()) != null)
                 {
-                    if (cc.GetClass(property.ValueType.ToString()) == interfacer)
+                    if (cc.GetClass(property.ValueType.ToString()) == Interface)
                     {
                         if (property.Modifiers.Length >= 1)
                         {
@@ -213,13 +212,13 @@ namespace idetector.Patterns
                 {
                     if (!method.isConstructor)
                     {
-                        if (interfacer != null)
+                        if (Interface != null)
                         {
-                            if (property.ValueType.ToString() == interfacer.Identifier)
+                            if (property.ValueType.ToString() == Interface.Identifier)
                             {
                                 if (method.Parameters.Contains(property.ValueType.ToString()) && method.Body.Contains(property.Identifier))
                                 {
-                                    setter = method;
+                                    Setter = method;
                                     return new CheckedMessage(true);
                                 }
                             }
@@ -245,9 +244,9 @@ namespace idetector.Patterns
                     {
                         if (cc.GetClass(property.ValueType.ToString()) != null)
                         {
-                            if (cc.GetClass(property.ValueType.ToString()) == interfacer)
+                            if (cc.GetClass(property.ValueType.ToString()) == Interface)
                             {
-                                if (setter == null || method != setter)
+                                if (Setter == null || method != Setter)
                                 {
                                     if (method.Body.Contains(property.Identifier)) return new CheckedMessage(true);
                                 }
@@ -269,7 +268,7 @@ namespace idetector.Patterns
             {
                 if (cls.Value.IsInterface || cls.Value.IsAbstract)
                 {
-                    interfacer = cls.Value;
+                    Interface = cls.Value;
                     return new CheckedMessage(true);
                 }
             }
@@ -288,9 +287,9 @@ namespace idetector.Patterns
                 i += 1;
                 foreach (string parent in cls.Value.GetParents())
                 {
-                    if (cc.GetClass(parent) == interfacer) concretes.AddClass(cls.Value);
+                    if (cc.GetClass(parent) == Interface) Concretes.AddClass(cls.Value);
                 }
-                if (cc.GetClasses().Count == i && concretes.GetClasses().Count >= 1) return new CheckedMessage(true);
+                if (cc.GetClasses().Count == i && Concretes.GetClasses().Count >= 1) return new CheckedMessage(true);
             }
             return new CheckedMessage("There are no classes that implement the abstract class or interface", false);
         }
@@ -301,13 +300,13 @@ namespace idetector.Patterns
         /// <returns>CheckedMessage</returns>
         public CheckedMessage HasRelationsBetweenConcreteClasses()
         {
-            foreach (var cls in concretes.GetClasses())
+            foreach (var cls in Concretes.GetClasses())
             {
                 foreach (var method in cls.Value.getMethods())
                 {
                     if (!method.isConstructor)
                     {
-                        foreach (var cs in concretes.GetClasses())
+                        foreach (var cs in Concretes.GetClasses())
                         {
                             if (cs.Value.Identifier != cls.Value.Identifier)
                             {
