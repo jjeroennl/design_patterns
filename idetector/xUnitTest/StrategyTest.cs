@@ -69,7 +69,7 @@ namespace xUnitTest
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.False(strategy.ContextHasPublicConstructor(strategy.Context).isTrue);
+            Assert.False(strategy.ContextHasPublicConstructor(strategy.context).isTrue);
         }
         [Fact]
         public void Test_Strategy_NoStrategySetter()
@@ -79,7 +79,7 @@ namespace xUnitTest
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.False(strategy.ContextHasStrategySetter(strategy.Context).isTrue);
+            Assert.False(strategy.ContextHasStrategySetter(strategy.context).isTrue);
         }
         [Fact]
         public void Test_Strategy_NoPrivateStrategy()
@@ -89,7 +89,7 @@ namespace xUnitTest
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.False(strategy.ContextHasPrivateStrategy(strategy.Context).isTrue);
+            Assert.False(strategy.ContextHasPrivateStrategy(strategy.context).isTrue);
         }
         [Fact]
         public void Test_Strategy_NoMethodContext()
@@ -99,7 +99,7 @@ namespace xUnitTest
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.False(strategy.ContextHasLogic(strategy.Context).isTrue);
+            Assert.False(strategy.ContextHasLogic(strategy.context).isTrue);
         }
         [Fact]
         public void Test_Strategy_RelationsBetweenStrategies()
