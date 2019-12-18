@@ -277,7 +277,72 @@ namespace xUnitTest
 
         ");
         }
+
+        SyntaxTree ConcreteProductsDontFollowOneProductInterfaceSetup()
+        {
+            return CSharpSyntaxTree.ParseText(@" 
+                abstract class Creator
+                {
+                    public abstract IProduct FactoryMethod();
+                    public abstract IProduct2 FactoryMethod();
+
+                    public string SomeOperation()
+                    {
+                        var product = FactoryMethod();
+                        var result = 'Creator: The same creator's code has just worked with '
+                            + product.Operation();
+
+                        return result;
+                    }
+                }
+
+                class ConcreteCreator1 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct1();
+                    }
+                }
+
+                class ConcreteCreator2 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct2();
+                    }
+                }
+
+                public interface IProduct
+                {
+                    string Operation();
+                }
+
+                public interface IProduct2
+                {
+                    string Operation();
+                }
+
+                class ConcreteProduct1 : IProduct
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct1}
+                        ';
+                    }
+                }
+
+                class ConcreteProduct2 : IProduct2
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct2}
+                        ';
+                    }
+                }
+        ");
+        }
         #endregion
+
 
         #region Tests for individual succeeding checks.
 
@@ -356,6 +421,17 @@ namespace xUnitTest
             FactoryMethod factoryMethod = new FactoryMethod(collection);
             factoryMethod.Scan();
             Assert.True(factoryMethod.ConcreteFactoriesHaveOneMethod().isTrue);
+        }
+
+        [Fact]
+        public void Test_FactoryMethod_ConcreteProductsFollowOneProductInterface()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
+            Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().isTrue);
         }
         #endregion
 
@@ -440,6 +516,17 @@ namespace xUnitTest
             factoryMethod.Scan();
             Assert.False(factoryMethod.ConcreteFactoriesHaveOneMethod().isTrue);
         }
+
+        [Fact]
+        public void Test_FactoryMethod_ConcreteProductsDontFollowOneProductInterface()
+        {
+            var tree = ConcreteProductsDontFollowOneProductInterfaceSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
+            Assert.False(factoryMethod.ConcreteProductsFollowOneProductInterface().isTrue);
+        }
         #endregion
 
         #region Tests for scores.
@@ -459,6 +546,7 @@ namespace xUnitTest
             Assert.True(factoryMethod.IsInheritingProductInterface().isTrue);
             Assert.True(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().isTrue);
             Assert.True(factoryMethod.ConcreteFactoriesHaveOneMethod().isTrue);
+            Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().isTrue);
             Assert.Equal(100, factoryMethod.Score());
         }
 
@@ -478,8 +566,9 @@ namespace xUnitTest
             Assert.False(factoryMethod.IsInheritingProductInterface().isTrue);
             Assert.False(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().isTrue);
             Assert.False(factoryMethod.ConcreteFactoriesHaveOneMethod().isTrue);
+            Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().isTrue);
 
-            Assert.Equal(18, factoryMethod.Score());
+            Assert.Equal(25, factoryMethod.Score());
         }
         #endregion
     }

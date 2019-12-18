@@ -16,7 +16,8 @@ namespace idetector.Patterns
         private ClassCollection cc;
         private List<ClassModel> abstractClasses = new List<ClassModel>();
         private List<ClassModel> interfaces = new List<ClassModel>();
-        private List<ClassModel> classes = new List<ClassModel>();
+        private List<ClassModel> possibleFactoryClasses = new List<ClassModel>();
+        private List<ClassModel> productInterfaces = new List<ClassModel>();
 
         /// <summary>
         /// Constructor for FactoryMethod.
@@ -33,7 +34,8 @@ namespace idetector.Patterns
             PriorityCollection.AddPriority("factorymethod", "IsInheritingAbstractFactoryClass", Priority.Low);
             PriorityCollection.AddPriority("factorymethod", "IsInheritingProductInterface", Priority.Low);
             PriorityCollection.AddPriority("factorymethod", "ConcreteFactoryIsReturningConcreteProduct", Priority.High);
-            PriorityCollection.AddPriority("factorymethod", "ConcreteFactoryHasOneMethod", Priority.Low);
+            PriorityCollection.AddPriority("factorymethod", "ConcreteFactoriesHaveOneMethod", Priority.Low);
+            PriorityCollection.AddPriority("factorymethod", "ConcreteProductsFollowOneProductInterface", Priority.Low);
         }
 
         /// <summary>
@@ -43,7 +45,8 @@ namespace idetector.Patterns
         {
             SetAbstractClasses();
             SetInterfaces();
-            SetAbstractProductInterfaceClasses();
+            SetPossibleFactoriesAndProductInterfaces();
+
             _score = 0;
 
             if (ContainsAbstractFactoryClass().isTrue)
@@ -72,10 +75,14 @@ namespace idetector.Patterns
             }
             if (ConcreteFactoriesHaveOneMethod().isTrue)
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteFactoryHasOneMethod");
+                _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteFactoriesHaveOneMethod");
+            }
+            if (ConcreteProductsFollowOneProductInterface().isTrue)
+            {
+                _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteProductsFollowOneProductInterface");
             }
 
-            foreach (var cls in classes)
+            foreach (var cls in possibleFactoryClasses)
             {
                 _scores[cls] = (int)_score;
             }
@@ -98,6 +105,11 @@ namespace idetector.Patterns
             return (int) _score;
         }
 
+        /// <summary>
+        /// Total score calculated by scan based on class.
+        /// </summary>
+        /// <param name="clsModel">ClassModel of class.</param>
+        /// <returns></returns>
         public int Score(ClassModel clsModel)
         {
             if (this._scores.ContainsKey(clsModel)) return this._scores[clsModel];
@@ -106,6 +118,9 @@ namespace idetector.Patterns
         }
 
         #region Lists
+        /// <summary>
+        /// Method to set a list of abstract classes.
+        /// </summary>
         private void SetAbstractClasses()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -117,6 +132,9 @@ namespace idetector.Patterns
             }
         }
 
+        /// <summary>
+        /// Method to set a list of interfaces.
+        /// </summary>
         private void SetInterfaces()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -128,7 +146,10 @@ namespace idetector.Patterns
             }
         }
 
-        public void SetAbstractProductInterfaceClasses()
+        /// <summary>
+        /// Method to set a list of possible factories and a list of product interfaces.
+        /// </summary>
+        public void SetPossibleFactoriesAndProductInterfaces()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
@@ -142,7 +163,8 @@ namespace idetector.Patterns
                             {
                                 if (method.ReturnType == @interface.Identifier)
                                 {
-                                    classes.Add(cls.Value);
+                                    possibleFactoryClasses.Add(cls.Value);
+                                    productInterfaces.Add(cc.GetClass(method.ReturnType));
                                 }
                             }
                         }
@@ -185,7 +207,7 @@ namespace idetector.Patterns
         /// <returns>Whether or not the check passes.</returns>
         public CheckedMessage ContainsAbstractProductInterfaceMethod()
         {
-            if (classes.Count != 0)
+            if (possibleFactoryClasses.Count != 0)
             {
                 return new CheckedMessage(true);
             }
@@ -220,7 +242,7 @@ namespace idetector.Patterns
         /// <returns>Whether or not the check passes.</returns>
         public CheckedMessage IsInheritingProductInterface()
         {
-            foreach (var @interface in interfaces)
+            foreach (var @interface in productInterfaces)
             {
                 if (@interface != null)
                 {
@@ -244,7 +266,7 @@ namespace idetector.Patterns
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
-                foreach (var @class in classes)
+                foreach (var @class in possibleFactoryClasses)
                 {
                     if (cls.Value.HasParent(@class.Identifier))
                     {
@@ -273,7 +295,7 @@ namespace idetector.Patterns
             bool ret = false;
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
-                foreach (var @class in classes)
+                foreach (var @class in possibleFactoryClasses)
                 {
                     if (cls.Value.HasParent(@class.Identifier))
                     {
@@ -289,6 +311,44 @@ namespace idetector.Patterns
                 }
             }
             return new CheckedMessage(ret);
+        }
+
+        /// <summary>
+        /// Method that checks if the concrete products follow just one product interface.
+        /// </summary>
+        /// <returns>Whether or not the check passes.</returns>
+        public CheckedMessage ConcreteProductsFollowOneProductInterface()
+        {
+            if (productInterfaces.Count != 1)
+            {
+                ClassModel temp = null;
+                foreach (var @interface in productInterfaces)
+                {
+                    if (@interface != null)
+                    {
+                        foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+                        {
+                            if (cls.Value.HasParent(@interface.Identifier))
+                            {
+                                if (temp != null && temp != @interface)
+                                {
+                                    return new CheckedMessage(false);
+                                }
+                                else
+                                {
+                                    temp = @interface;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return new CheckedMessage(true);
+            }
+
+            return new CheckedMessage(true);
         }
         #endregion
     }
