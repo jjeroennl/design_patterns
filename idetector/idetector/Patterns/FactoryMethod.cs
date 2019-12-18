@@ -12,6 +12,7 @@ namespace idetector.Patterns
     public class FactoryMethod : IPattern
     {
         private float _score;
+        private Dictionary<ClassModel, int> _scores = new Dictionary<ClassModel, int>();
         private ClassCollection cc;
         private List<ClassModel> abstractClasses = new List<ClassModel>();
         private List<ClassModel> interfaces = new List<ClassModel>();
@@ -24,6 +25,7 @@ namespace idetector.Patterns
         public FactoryMethod(ClassCollection _cc)
         {
             cc = _cc;
+            
             PriorityCollection.ClearPriorities();
             PriorityCollection.AddPriority("factorymethod", "ContainsAbstractFactoryClass", Priority.Low);
             PriorityCollection.AddPriority("factorymethod", "ContainsProductInterface", Priority.Low);
@@ -72,6 +74,19 @@ namespace idetector.Patterns
             {
                 _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteFactoryHasOneMethod");
             }
+
+            foreach (var cls in classes)
+            {
+                _scores[cls] = (int)_score;
+            }
+            foreach (var acls in abstractClasses)
+            {
+                _scores[acls] = (int)_score;
+            }
+            foreach (var inter in interfaces)
+            {
+                _scores[inter] = (int)_score;
+            }
         }
 
         /// <summary>
@@ -81,6 +96,13 @@ namespace idetector.Patterns
         public int Score()
         {
             return (int) _score;
+        }
+
+        public int Score(ClassModel clsModel)
+        {
+            if (this._scores.ContainsKey(clsModel)) return this._scores[clsModel];
+
+            return 0;
         }
 
         #region Lists
