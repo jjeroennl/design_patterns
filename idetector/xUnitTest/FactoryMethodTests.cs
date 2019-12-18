@@ -288,6 +288,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.True(factoryMethod.ContainsAbstractFactoryClass().isTrue);
         }
 
@@ -298,6 +299,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.True(factoryMethod.ContainsAbstractProductInterfaceMethod().isTrue);
         }
 
@@ -308,6 +310,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.True(factoryMethod.IsInheritingAbstractFactoryClass().isTrue);
         }
 
@@ -318,6 +321,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.True(factoryMethod.ContainsProductInterface().isTrue);
         }
 
@@ -328,6 +332,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.True(factoryMethod.IsInheritingProductInterface().isTrue);
         }
 
@@ -338,6 +343,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.True(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().isTrue);
         }
 
@@ -348,6 +354,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.True(factoryMethod.ConcreteFactoriesHaveOneMethod().isTrue);
         }
         #endregion
@@ -361,6 +368,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.False(factoryMethod.ContainsAbstractFactoryClass().isTrue);
         }
 
@@ -371,6 +379,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.True(factoryMethod.ContainsAbstractFactoryClass().isTrue);
             Assert.False(factoryMethod.ContainsAbstractProductInterfaceMethod().isTrue);
         }
@@ -382,6 +391,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.True(factoryMethod.ContainsAbstractFactoryClass().isTrue);
             Assert.False(factoryMethod.IsInheritingAbstractFactoryClass().isTrue);
         }
@@ -393,6 +403,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.False(factoryMethod.ContainsProductInterface().isTrue);
         }
 
@@ -403,6 +414,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.True(factoryMethod.ContainsProductInterface().isTrue);
             Assert.False(factoryMethod.IsInheritingProductInterface().isTrue);
         }
@@ -414,6 +426,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.False(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().isTrue);
         }
 
@@ -424,6 +437,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.False(factoryMethod.ConcreteFactoriesHaveOneMethod().isTrue);
         }
         #endregion
