@@ -1,10 +1,5 @@
-﻿using idetector.Models;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
-using System.Linq;
-using idetector.Collections;
 using idetector.Parser;
 using idetector.Patterns;
 using Xunit;
@@ -13,6 +8,8 @@ namespace xUnitTest
 {
     // The sole responsibility of a subject is to maintain a list of observers 
     // and to notify them of state changes by calling their update() operation.
+
+    // Check that subject loops through list of observers and calls a known function
 
     // The responsibility of observers is to register (and unregister) themselves on a subject (to get notified of state changes) 
     // and to update their state (synchronize their state with subject's state) when they are notified.
@@ -109,55 +106,75 @@ namespace xUnitTest
                     void Update(ISubject subject);
                 }");
         }
-
+        
         [Fact]
-        public void Test_Observer_Succeed()
+        public void Test_HasObserverInterfaceWithUpdateFunction()
         {
             var tree = SuccessTree();
             var collection = Walker.GenerateModels(tree);
 
             Observer oInterface = new Observer(collection);
-            Assert.True(oInterface.HasInterfaceWithVoidFunction());
+            Assert.True(oInterface.HasObserverInterfaceWithUpdateFunction());
         }
 
         [Fact]
-        public void Test_Observer_InterfaceWithSubscribeMethodsExists()
+        public void Test_HasObserverInterface()
         {
             var tree = SuccessTree();
             var collection = Walker.GenerateModels(tree);
 
             Observer oInterface = new Observer(collection);
-            Assert.True(oInterface.Has_Abstract_Class_Or_Interface_With_Subscriber_Functions());
+            Assert.True(oInterface.HasObserverInterface());
         }
 
         [Fact]
-        public void Test_Observer_FailToFindObserverInterface()
+        public void Test_HasUpdateFunction()
         {
-            var tree = BrokenTree();
+            var tree = SuccessTree();
             var collection = Walker.GenerateModels(tree);
 
             Observer oInterface = new Observer(collection);
-            Assert.False(oInterface.HasInterfaceWithVoidFunction());
+            Assert.True(oInterface.HasUpdateFunction());
         }
 
         [Fact]
-        public void Test_Observer_SubjectHasList()
+        public void Test_Observer_HasSubjectFunctions()
+        {
+            var tree = SuccessTree();
+            var collection = Walker.GenerateModels(tree);
+
+            Observer oInterface = new Observer(collection);
+            Assert.True(oInterface.HasSubjectFunctions());
+        }
+
+        [Fact]
+        public void Test_Observer_HasSubjectWithObserverList()
         {
             var tree = SuccessTree();
             var collection = Walker.GenerateModels(tree);
 
             Observer sClass = new Observer(collection);
-            Assert.True(sClass.HasSubjectWithList());
+            Assert.True(sClass.HasSubjectWithObserverList());
         }
 
         [Fact]
-        public void Test_Observer_SubjectHasNoList()
+        public void Test_Observer_HasNoObserverInterface()
+        {
+            var tree = BrokenTree();
+            var collection = Walker.GenerateModels(tree);
+
+            Observer oInterface = new Observer(collection);
+            Assert.False(oInterface.HasObserverInterface());
+        }
+
+        [Fact]
+        public void Test_Observer_SubjectHasNoObserverList()
         {
             var tree = BrokenTree();
             var collection = Walker.GenerateModels(tree);
 
             Observer sClass = new Observer(collection);
-            Assert.False(sClass.HasSubjectWithList());
+            Assert.False(sClass.HasSubjectWithObserverList());
         }
     }
 }

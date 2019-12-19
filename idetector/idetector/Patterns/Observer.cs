@@ -2,6 +2,7 @@
 using idetector.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace idetector.Patterns
@@ -16,6 +17,13 @@ namespace idetector.Patterns
         public Observer(ClassCollection _cc)
         {
             cc = _cc;
+            
+            PriorityCollection.ClearPriorities();
+            PriorityCollection.AddPriority("observer", "HasUpdateFunction", Priority.Low);
+            PriorityCollection.AddPriority("observer", "HasObserverInterface", Priority.Medium);
+            PriorityCollection.AddPriority("observer", "HasObserverInterfaceWithUpdateFunction", Priority.High);
+            PriorityCollection.AddPriority("observer", "HasSubjectFunctions", Priority.High);
+            PriorityCollection.AddPriority("observer", "HasSubjectWithObserverList", Priority.Medium);
         }
 
         public void Scan()
@@ -25,12 +33,11 @@ namespace idetector.Patterns
 
         public int Score()
         {
-            return _score;
+            return (int)_score;
         }
 
-        // Checks if there is an existing interface class, that contains a void function with an interface as parameter,
-        // if true it probably is an update function for the observer pattern
-        public bool HasInterfaceWithVoidFunction()
+        // Checks for existing interface with a void function that's named 'update' and has an interface as parameter
+        public bool HasObserverInterfaceWithUpdateFunction()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
@@ -40,7 +47,35 @@ namespace idetector.Patterns
                     {
                         foreach (var method in cls.Value.getMethods())
                         {
+                            if (method.ReturnType.ToLower().Equals("void") && method.Identifier.ToLower().Equals("update"))
+                            {
+                                // checks if parameter is an interface
+                                string parameters = method.Parameters.Replace("(", string.Empty).Replace(")", string.Empty);
+                                string[] paramList = parameters.Split(" ");
+                                ClassModel targetClass = cc.GetClass(paramList[0]);
+                                if (targetClass.IsInterface)
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
 
+        // Checks for existing interface with a void function that has an interface as parameter
+        public bool HasObserverInterface()
+        {
+            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            {
+                if (cls.Value.Modifiers != null)
+                {
+                    if (cls.Value.IsInterface)
+                    {
+                        foreach (var method in cls.Value.getMethods())
+                        {
                             if (method.ReturnType.ToLower().Equals("void"))
                             {
                                 // checks if parameter is an interface
@@ -59,11 +94,9 @@ namespace idetector.Patterns
             return false;
         }
 
-        // Observer pattern usually has an subscriber interface with sub/unsub methods
-        // which are both void methods with an interface as parameter.
-        public bool Has_Abstract_Class_Or_Interface_With_Subscriber_Functions()
+        // Checks if there is an interface that has a void function called 'Update'
+        public bool HasUpdateFunction()
         {
-            int voidsThatAreAbstractOrInterfaces = 0;
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
                 if (cls.Value.Modifiers != null)
@@ -72,19 +105,44 @@ namespace idetector.Patterns
                     {
                         foreach (var method in cls.Value.getMethods())
                         {
-                            if (method.ReturnType.ToLower().Equals("void"))
+                            if (method.ReturnType.ToLower().Equals("void") &&
+                                method.Identifier.ToLower().Equals("update"))
                             {
-                                // checks if parameter is an interface
-                                string parameters = method.Parameters.Replace("(", string.Empty).Replace(")", string.Empty);
-                                string[] paramList = parameters.Split(" ");
-                                ClassModel targetClass = cc.GetClass(paramList[0]);
-                                if (targetClass.IsInterface || (targetClass.Modifiers[0] == "abstract") || (targetClass.Modifiers[1] == "abstract"))
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        // Checks for a subject class that has at least 2 void functions
+        // that could indicate an observer pattern (subscribe & unsubscribe)
+        public bool HasSubjectFunctions()
+        {
+            int probability = 0;
+            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            {
+                if (cls.Value.Modifiers != null)
+                {
+                    foreach (var method in cls.Value.getMethods())
+                    {
+                        // does it have to be public idk
+                        if (method.Modifiers.Contains("public") && method.ReturnType.ToLower().Equals("void"))
+                        {
+                            // checks if parameter is an interface
+                            string parameters = method.Parameters.Replace("(", string.Empty).Replace(")", string.Empty);
+                            string[] paramList = parameters.Split(" ");
+                            ClassModel targetClass = cc.GetClass(paramList[0]);
+                            // Checks if parameter is an observer interface or abstract class
+                            if (targetClass.IsInterface || (targetClass.Modifiers.Contains("abstract")) )
+                            {
+                                probability++;
+                                if (probability == 2)
                                 {
-                                    voidsThatAreAbstractOrInterfaces++;
-                                    if (voidsThatAreAbstractOrInterfaces == 2)
-                                    {
-                                        return true;
-                                    }
+                                    return true;
                                 }
                             }
                         }
@@ -96,7 +154,7 @@ namespace idetector.Patterns
 
         // Checks if there is a class that has a list of interfaces. 
         //If true, probably a subject class with a list filled with observers
-        public bool HasSubjectWithList()
+        public bool HasSubjectWithObserverList()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
