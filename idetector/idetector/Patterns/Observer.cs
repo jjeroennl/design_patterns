@@ -3,7 +3,6 @@ using idetector.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace idetector.Patterns
 {
@@ -28,7 +27,30 @@ namespace idetector.Patterns
 
         public void Scan()
         {
-            throw new NotImplementedException();
+            if (HasUpdateFunction())
+            {
+                _score += PriorityCollection.GetPercentage("observer", "HasUpdateFunction");
+            }
+
+            if (HasObserverInterface())
+            {
+                _score += PriorityCollection.GetPercentage("observer", "HasObserverInterface");
+            }
+
+            if (HasObserverInterfaceWithUpdateFunction())
+            {
+                _score += PriorityCollection.GetPercentage("observer", "HasObserverInterfaceWithUpdateFunction");
+            }
+
+            if (HasSubjectFunctions())
+            {
+                _score += PriorityCollection.GetPercentage("observer", "HasSubjectFunctions");
+            }
+
+            if (HasSubjectWithObserverList())
+            {
+                _score += PriorityCollection.GetPercentage("observer", "HasSubjectWithObserverList");
+            }
         }
 
         public int Score()
