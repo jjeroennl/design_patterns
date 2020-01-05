@@ -28,7 +28,7 @@ namespace xUnitTest
     public class ObserverTests
     {
 
-        SyntaxTree SuccessTree()
+        SyntaxTree ObserverTree()
         {
             return CSharpSyntaxTree.ParseText(@" 
                 public interface IObserver
@@ -110,51 +110,55 @@ namespace xUnitTest
         [Fact]
         public void Test_HasObserverInterfaceWithUpdateFunction()
         {
-            var tree = SuccessTree();
+            var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
 
-            Observer oInterface = new Observer(collection);
-            Assert.True(oInterface.HasObserverInterfaceWithUpdateFunction());
+            Observer observer = new Observer(collection);
+            observer.Scan();
+            Assert.True(observer.HasObserverInterfaceWithUpdateFunction());
         }
 
         [Fact]
         public void Test_HasObserverInterface()
         {
-            var tree = SuccessTree();
+            var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
 
-            Observer oInterface = new Observer(collection);
-            Assert.True(oInterface.HasObserverInterface());
+            Observer observer = new Observer(collection);
+            observer.Scan();
+            Assert.True(observer.HasObserverInterface());
         }
 
         [Fact]
         public void Test_HasUpdateFunction()
         {
-            var tree = SuccessTree();
+            var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
 
-            Observer oInterface = new Observer(collection);
-            Assert.True(oInterface.HasUpdateFunction());
+            Observer observer = new Observer(collection);
+            Assert.True(observer.HasUpdateFunction());
         }
 
         [Fact]
         public void Test_Observer_HasSubjectFunctions()
         {
-            var tree = SuccessTree();
+            var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
 
-            Observer oInterface = new Observer(collection);
-            Assert.True(oInterface.HasSubjectFunctions());
+            Observer observer = new Observer(collection);
+            observer.Scan();
+            Assert.True(observer.HasSubjectFunctions());
         }
 
         [Fact]
         public void Test_Observer_HasSubjectWithObserverList()
         {
-            var tree = SuccessTree();
+            var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
 
-            Observer sClass = new Observer(collection);
-            Assert.True(sClass.HasSubjectWithObserverList());
+            Observer observer = new Observer(collection);
+            observer.Scan();
+            Assert.True(observer.HasSubjectWithObserverList());
         }
 
         [Fact]
@@ -163,8 +167,9 @@ namespace xUnitTest
             var tree = BrokenTree();
             var collection = Walker.GenerateModels(tree);
 
-            Observer oInterface = new Observer(collection);
-            Assert.False(oInterface.HasObserverInterface());
+            Observer observer = new Observer(collection);
+            observer.Scan();
+            Assert.False(observer.HasObserverInterface());
         }
 
         [Fact]
@@ -173,8 +178,9 @@ namespace xUnitTest
             var tree = BrokenTree();
             var collection = Walker.GenerateModels(tree);
 
-            Observer sClass = new Observer(collection);
-            Assert.False(sClass.HasSubjectWithObserverList());
+            Observer observer = new Observer(collection);
+            observer.Scan();
+            Assert.False(observer.HasSubjectWithObserverList());
         }
     }
 }

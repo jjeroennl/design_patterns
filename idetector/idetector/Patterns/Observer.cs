@@ -11,6 +11,7 @@ namespace idetector.Patterns
 
         private int _score;
         private ClassCollection cc;
+        private Dictionary<ClassModel, int> _scores = new Dictionary<ClassModel, int>();
 
 
         public Observer(ClassCollection _cc)
@@ -53,9 +54,10 @@ namespace idetector.Patterns
             }
         }
 
-        public int Score()
+        public int Score(ClassModel clsModel)
         {
-            return (int)_score;
+            if (this._scores.ContainsKey(clsModel)) return this._scores[clsModel];
+            return 0;
         }
 
         // Checks for existing interface with a void function that's named 'update' and has an interface as parameter
@@ -175,7 +177,7 @@ namespace idetector.Patterns
         }
 
         // Checks if there is a class that has a list of interfaces. 
-        //If true, probably a subject class with a list filled with observers
+        // If true, probably a subject class with a list filled with observers
         public bool HasSubjectWithObserverList()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
