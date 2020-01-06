@@ -5,8 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
-             Name="MyToolWindow">
+             Name="MyToolWindow" Height="90.4">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
@@ -16,15 +15,18 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Orientation="Horizontal">
-            <Button Content="Scan current project" HorizontalAlignment="Left" VerticalAlignment="Top" Width="119" Click="Scan_Current_project"/>
-            <Button x:Name="ScanFile" Content="Scan current file" HorizontalAlignment="Left" Margin="0 0 10px 0" VerticalAlignment="Top" Width="120" Click="Scan_Current_file"/>
+            <Button x:Name="ScanProject" Content="Scan Current Project" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="115" Click="Scan_Current_project" Background="{x:Null}" Foreground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
+            <Button x:Name="ScanFile" Content="Scan Current File" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="115" Click="Scan_Current_file" Foreground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Background="{x:Null}"/>
         </StackPanel>
-        <Grid HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch" Name="Patterns">
+        <Grid HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch" Name="Summary">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5*" />
                 <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
-            <Label Content="Placeholder uitleg" HorizontalAlignment="Left" Margin="1.667,0,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+            <Label Content="Summary" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Foreground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" FontSize="15" FontWeight="Bold"/>
+            <Label Content="Placeholder uitleg" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Foreground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Margin="0.2,23,0,0"/>
+            
+           
             <StackPanel x:Name="PatternList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></StackPanel>
         </Grid>
 
