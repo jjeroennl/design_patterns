@@ -49,7 +49,8 @@ namespace idetector.Models
             _setParent(node.Parent);
             ValueType = node.Declaration.Type.ToString();
             Type = Type.FieldSyntax;
-            Identifier = node.Declaration.Variables.ToString().Split(' ')[0];
+            string[] str = node.Declaration.ToString().Split(' ');
+            Identifier = str[str.Length - 1];
         }
 
         private void _setParent(SyntaxNode node)
