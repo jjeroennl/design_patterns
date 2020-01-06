@@ -1,4 +1,5 @@
-﻿using System;
+﻿using idetector.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,40 +45,11 @@ namespace vs_plugin
         {
         }
 
-        internal void SetFacade(int v)
+        internal void AddClass(ClassModel classobj)
         {
-            this.IsFacade.IsChecked = v > 50;
-            this.FacadePercentage.Content = v.ToString() + "%";
-        }
-
-        internal void SetStrategy(int v)
-        {
-            this.IsStrategy.IsChecked = v > 50;
-            this.StrategyPercentage.Content = v.ToString() + "%";
-        }
-
-        internal void SetState(int v)
-        {
-            this.IsState.IsChecked = v > 50;
-            this.StatePercentage.Content = v.ToString() + "%";
-        }
-
-        internal void SetSingleton(int v)
-        {
-            this.IsSingleton.IsChecked = v > 50;
-            this.SingletonPercentage.Content = v.ToString() + "%";
-        }
-
-        internal void SetDecorator(int v)
-        {
-            this.IsDecorator.IsChecked = v > 50;
-            this.DecoratorPercentage.Content = v.ToString() + "%";
-        }
-
-        internal void SetFactoryMethod(int v)
-        {
-            this.IsFactory.IsChecked = v > 50;
-            this.FactoryPercentage.Content = v.ToString() + "%";
+            var singleclass = new SingleClass();
+            singleclass.SetHandle(classobj.Identifier);
+            ClassList.Children.Add(singleclass);
         }
     }
 }

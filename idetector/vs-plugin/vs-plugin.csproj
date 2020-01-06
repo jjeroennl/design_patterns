@@ -75,6 +75,9 @@
     <Compile Include="DesignPattersToolControl.xaml.cs">
       <DependentUpon>DesignPattersToolControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SingleClass.xaml.cs">
+      <DependentUpon>SingleClass.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SinglePattern.xaml.cs">
       <DependentUpon>SinglePattern.xaml</DependentUpon>
     </Compile>
@@ -100,6 +103,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="DesignPattersToolControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SingleClass.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
