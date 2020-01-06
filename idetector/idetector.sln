@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "idetector", "idetector\idet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xUnitTest", "xUnitTest\xUnitTest.csproj", "{80BEF292-05A0-4CC8-9539-6DECA2407CCB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8B78C0E1-61D6-4F30-B38D-655F34607C06}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vs-plugin", "vs-plugin\vs-plugin.csproj", "{D353B15D-1022-4565-8D89-1FD12D3DC77F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3D9315A1-29A2-472B-8892-3828589CA416} = {3D9315A1-29A2-472B-8892-3828589CA416}
 	EndProjectSection
 EndProject
 Global
@@ -26,6 +26,10 @@ Global
 		{80BEF292-05A0-4CC8-9539-6DECA2407CCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80BEF292-05A0-4CC8-9539-6DECA2407CCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80BEF292-05A0-4CC8-9539-6DECA2407CCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D353B15D-1022-4565-8D89-1FD12D3DC77F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D353B15D-1022-4565-8D89-1FD12D3DC77F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D353B15D-1022-4565-8D89-1FD12D3DC77F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D353B15D-1022-4565-8D89-1FD12D3DC77F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
