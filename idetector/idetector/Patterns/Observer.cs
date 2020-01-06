@@ -2,14 +2,16 @@
 using idetector.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace idetector.Patterns
 {
     public class Observer : IPattern
     {
 
-        private int _score;
+        private float _score;
         private ClassCollection cc;
         private Dictionary<ClassModel, int> _scores = new Dictionary<ClassModel, int>();
 
@@ -48,10 +50,10 @@ namespace idetector.Patterns
                 _score += PriorityCollection.GetPercentage("observer", "HasSubjectFunctions");
             }
 
-            if (HasSubjectWithObserverList())
-            {
-                _score += PriorityCollection.GetPercentage("observer", "HasSubjectWithObserverList");
-            }
+            //if (HasSubjectWithObserverList())
+            //{
+            //    _score += PriorityCollection.GetPercentage("observer", "HasSubjectWithObserverList");
+            //}
         }
 
         public int Score(ClassModel clsModel)
@@ -186,8 +188,7 @@ namespace idetector.Patterns
                 {
                     foreach (var property in cls.Value.getProperties())
                     {
-                        string identifier = property.Identifier.ToString();
-
+                        string identifier = property.ValueType;
                         // Usually observers are stored in some kind of collection, most often in a list (no checks for other collection types for now)
                         if (identifier.ToLower().Contains("list"))
                         {
@@ -206,6 +207,7 @@ namespace idetector.Patterns
                     }
                 }
             }
+
             return false;
         }
     }
