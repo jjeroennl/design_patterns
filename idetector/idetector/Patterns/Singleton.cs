@@ -1,58 +1,44 @@
 ﻿using System;
+using System.Collections.Generic;
 using idetector.Collections;
 using idetector.Models;
 
 namespace idetector.Patterns
 {
+    /*ID's:
+     * SINGLETON-PRIVATE-CONSTRUCTOR
+     * SINGLETON-STATIC-SELF
+     * SINGLETON-GET-INSTANCE
+     * SINGLETON-CREATE-SELF
+     */
     public class Singleton : IPattern
     {
         private float _score;
         private ClassModel cls;
+        private List<RequirementResult> _results = new List<RequirementResult>();
 
         public Singleton(ClassModel _cls)
         {
             cls = _cls;
-            PriorityCollection.ClearPriorities();
-            PriorityCollection.AddPriority("singleton", "IsPrivateConstructor", Priority.Low);
-            PriorityCollection.AddPriority("singleton", "IsStaticSelf", Priority.Low);
-            PriorityCollection.AddPriority("singleton", "IsGetInstance", Priority.Low);
-            PriorityCollection.AddPriority("singleton", "IsCreateSelf", Priority.Low);
+
         }
 
         public void Scan()
         {
-            if (IsPrivateConstructor())
-            {
-                _score += PriorityCollection.GetPercentage("singleton", "IsPrivateConstructor");
-            }
+            _results.Add(IsPrivateConstructor());
+            _results.Add(IsStaticSelf());
+            _results.Add(IsGetInstance());
+            _results.Add(IsCreateSelf());
 
-            if (IsStaticSelf())
-            {
-                _score += PriorityCollection.GetPercentage("singleton", "IsStaticSelf");
-            }
-
-            if (IsGetInstance())
-            {
-                _score += PriorityCollection.GetPercentage("singleton", "IsGetInstance");
-            }
-
-            if (IsCreateSelf())
-            {
-                _score += PriorityCollection.GetPercentage("singleton", "IsCreateSelf");
-            }
         }
 
-        public bool IsSingleton()
+        public List<RequirementResult> GetResult()
         {
-            return _score > 59;
+            return _results;
         }
 
-        public int Score()
-        {
-            return (int) _score;
-        }
 
-        public bool IsPrivateConstructor()
+        public RequirementResult IsPrivateConstructor()
         {
             foreach (var method in cls.getMethods())
             {
@@ -62,16 +48,16 @@ namespace idetector.Patterns
                     {
                         if (modifier.ToLower().Equals("private"))
                         {
-                            return true;
+                            return new RequirementResult("SINGLETON-PRIVATE-CONSTRUCTOR", true);
                         }
                     }
                 }
             }
 
-            return false;
+            return new RequirementResult("SINGLETON-PRIVATE-CONSTRUCTOR", false); 
         }
 
-        public bool IsStaticSelf()
+        public RequirementResult IsStaticSelf()
         {
             foreach (var property in cls.getProperties())
             {
@@ -83,17 +69,17 @@ namespace idetector.Patterns
                         {
                             if (modifier.ToLower().Equals("static"))
                             {
-                                return true;
+                                return new RequirementResult("SINGLETON-STATIC-SELF", true);
                             }
                         }
                     }
                 }
             }
 
-            return false;
+            return new RequirementResult("SINGLETON-STATIC-SELF", false);
         }
 
-        public bool IsGetInstance()
+        public RequirementResult IsGetInstance()
         {
             foreach (var method in cls.getMethods())
             {
@@ -103,26 +89,26 @@ namespace idetector.Patterns
                     {
                         if (method.ReturnType.Equals(cls.Identifier))
                         {
-                            return true;
+                            return new RequirementResult("SINGLETON-GET-INSTANCE", true);
                         }
                     }
                 }
             }
 
-            return false;
+            return new RequirementResult("SINGLETON-GET-INSTANCE", false);
         }
 
-        public bool IsCreateSelf()
+        public RequirementResult IsCreateSelf()
         {
             foreach (var obj in cls.ObjectCreations)
             {
                 if (obj.Identifier.Equals(cls.Identifier))
                 {
-                    return true;
+                    return new RequirementResult("SINGLETON-CREATE-SELF", true);
                 }
             }
 
-            return false;
+            return new RequirementResult("SINGLETON-CREATE-SELF", false);
         }
     }
 }

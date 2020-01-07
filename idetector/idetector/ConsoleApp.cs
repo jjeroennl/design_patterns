@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using idetector.CodeLoader;
 using idetector.Collections;
+using idetector.Data;
 using idetector.Models;
 using idetector.Patterns;
 using idetector.Patterns.Facade;
@@ -43,6 +45,9 @@ namespace idetector
 
         private void getResult()
         {
+            Requirements reqs = new Requirements();
+            ScoreCalculator Calculator = new ScoreCalculator(reqs.GetRequirements());
+
             Facade f = new Facade(collection);
             f.Scan();
 
@@ -67,14 +72,17 @@ namespace idetector
                 Decorator d = new Decorator(item.Value, collection.GetClasses());
                 d.Scan();
 
-                this.printBar(item.Value, "Singleton", s.Score());
-                this.printBar(item.Value,"Decorator", d.Score());
+                this.printBar(item.Value, "Singleton", Calculator.GetScore("SINGLETON",s.GetResult()));
+                this.printBar(item.Value,"Decorator", Calculator.GetScore("DECORATOR", d.GetResult()));
                 this.printBar(item.Value,"Facade", f.Score(item.Value));
+
             }
-            printBar("FactoryMethod", fm.Score());
-            printBar("AbstractFactory", af.Score());
-            printBar("Strategy", strat.Score());
-            printBar("State", state.Score());
+
+            FactoryMethod fm = new FactoryMethod(collection);
+            fm.Scan();
+            printBar("FactoryMethod", Calculator.GetScore("FACTORY", fm.GetResult()));
+            printBar("Strategy", Calculator.GetScore("STRATEGY", strat.GetResult()));
+            printBar("State", Calculator.GetScore("STATE", state.GetResult()));
         }
 
         private void printBar(string name, int score)

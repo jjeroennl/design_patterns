@@ -10,7 +10,8 @@ using idetector.Collections;
 using idetector.Parser;
 using idetector.Patterns;
 using Xunit;
-
+using idetector.Data;
+using idetector;
 
 namespace xUnitTest
 {
@@ -19,42 +20,53 @@ namespace xUnitTest
         [Fact]
         public void Test_State_Succeed()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy state= new StateStrategy(collection, true);
             state.Scan();
-            Assert.Equal(100, state.Score());
+            var score = calculator.GetScore("STATE", state.GetResult());
+            Assert.Equal(100, score);
         }
         [Fact]
 
         public void Test_Nothing()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy state= new StateStrategy(collection, true);
             state.Scan();
-            Assert.NotEqual(100, state.Score());
+            var score = calculator.GetScore("STATE", state.GetResult());
+            Assert.True(score < 50);
         }
         [Fact]
         public void Test_State_NoRelationsBetweenStates()
         {
+
             var tree = RelationsBetweenStates();
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy state = new StateStrategy(collection, true);
             state.Scan();
-            Assert.True(state.HasRelationsBetweenConcreteClasses().isTrue);
+
+            Assert.True(state.HasRelationsBetweenConcreteClasses().Passed);
         }
         [Fact]
         public void Test_OnlineCode()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var collection = Walker.GenerateModels(CSharpSyntaxTree.ParseText(TestStrings.StateExample()));
 
             StateStrategy state = new StateStrategy(collection, true);
             state.Scan();
-            Assert.InRange(state.Score(), 70, 75);
+            var score = calculator.GetScore("STATE", state.GetResult());
+            Assert.InRange(score, 70, 75);
         }
 
         SyntaxTree SuccessSetup()
