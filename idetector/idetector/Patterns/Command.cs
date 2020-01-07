@@ -14,21 +14,12 @@ namespace idetector.Patterns
 
         private ClassModel commandInterface;
         private ClassCollection commands = new ClassCollection();
-        private ClassModel Invoker;
-
+        private ClassModel invoker;
+        private ClassCollection receivers =  new ClassCollection();
 
         public Command(ClassCollection _cc)
         {
             cc = _cc;
-
-            PriorityCollection.ClearPriorities();
-            PriorityCollection.AddPriority("command", "HasInterfaceOrAbstract", Priority.Medium);
-            PriorityCollection.AddPriority("command", "HasCommandClasses", Priority.Medium);
-            PriorityCollection.AddPriority("command", "CommandInheritsInterfaceFunction", Priority.Medium);
-            PriorityCollection.AddPriority("command", "CommandHasPublicConstructor", Priority.Medium);
-            PriorityCollection.AddPriority("command", "HasReceiverClass", Priority.Medium);
-            PriorityCollection.AddPriority("command", "HasInvokerClass", Priority.Medium);
-            PriorityCollection.AddPriority("command", "InvokerContainsInterfaceParameter", Priority.Medium);
 
         }
 
@@ -92,22 +83,87 @@ namespace idetector.Patterns
 
         public CheckedMessage CommandInheritsInterfaceFunction()
         {
-            return new CheckedMessage(true);
+            /*
+            int count = 0;
+            foreach (var command in commands.GetClasses())
+            {
+                if (command.)
+
+            }
+            */
+            return new CheckedMessage("Either the interface does not contain a method, or the commands do not inherit the interface method.", false);
         }
 
-        public CheckedMessage CommandHasPublicConstructor()
+        public CheckedMessage CommandsHavePublicConstructor()
         {
-            return new CheckedMessage(true);
+            int count = 0;
+            if (HasCommandClasses().isTrue)
+            {
+                foreach (var command in commands.GetClasses())
+                {
+                    foreach (var method in command.Value.getMethods())
+                    {
+                        if (method.isConstructor)
+                        {
+                            foreach (var modifier in method.Modifiers)
+                            {
+                                count += 1;
+                            }
+                        }
+                    }
+                }
+            }
+            if (commands.GetClasses().Count == count)
+            {
+                return new CheckedMessage(true);
+            } 
+            else return new CheckedMessage("Either the interface does not contain a method, or the commands do not inherit the interface method.", false);
         }
 
-        //Implement public functions
-        public CheckedMessage HasReceiverClass()
+        public CheckedMessage HasReceiverClasses()
         {
-            return new CheckedMessage(true);
+            foreach (var cls in cc.GetClasses())
+            {
+                foreach (var method in cls.Value.getMethods())
+                {
+                   if (method.Modifiers.Length >= 1)
+                     {
+                        if (method.Modifiers[0].ToLower().Equals("private"))
+                        {
+                            receivers.AddClass(cls.Value);
+                        }
+                     }
+                }
+                if (receivers.GetClasses().Count >= 1) return new CheckedMessage(true);
+            }
+            return new CheckedMessage("There are no receiver classes implemented", false);
         }
 
-        //No clue how to check yet, will have to do more research
-        public CheckedMessage HasInvokerClass()
+        public CheckedMessage CommandsUseReceiver()
+        {
+            if (HasCommandClasses().isTrue) {
+            foreach (var command in commands.GetClasses())
+            {
+                    foreach (var property in command.Value.getProperties())
+                    {
+                        if (cc.GetClass(property.ValueType.ToString()) != null)
+                        {
+                            foreach (var receiver in receivers.GetClasses())
+                            {
+                                if (cc.GetClass(property.ValueType.ToString()) == receiver.Value)
+                                {
+                                    return new CheckedMessage(true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return new CheckedMessage("None of the commands are controlled by a receiver", false);
+        }
+
+            //No clue how to check yet, will have to do more research
+            public CheckedMessage HasInvokerClass()
         {
             return new CheckedMessage(true);
         }
