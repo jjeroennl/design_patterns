@@ -14,7 +14,6 @@ namespace xUnitTest
     // The responsibility of observers is to register (and unregister) themselves on a subject (to get notified of state changes) 
     // and to update their state (synchronize their state with subject's state) when they are notified.
 
-
     // Observer interface has Update function
     // ConcreteObservers inherit update func from Observer interface
 
@@ -98,39 +97,155 @@ namespace xUnitTest
                 }");
         }
 
-        SyntaxTree BrokenTree()
+        SyntaxTree NoObserverList()
         {
             return CSharpSyntaxTree.ParseText(@" 
-                public class IObserver
+                public interface IObserver
                 {
                     void Update(ISubject subject);
+                }
+
+                public interface ISubject
+                {
+                    void Attach(IObserver observer);
+                    void Detach(IObserver observer);
+                    void Notify();
+                }
+
+                public class Subject : ISubject
+                {
+
+                    public int State { get; set; } = -0;
+
+                    public void Attach(IObserver observer)
+                    {
+                        this._observers.Add(observer);
+                    }
+
+                    public void Detach(IObserver observer)
+                    {
+                        this._observers.Remove(observer);
+                    }
+
+                    public void Notify()
+                    {
+                        foreach (var observer in _observers)
+                        {
+                            observer.Update(this);
+                        }
+                    }
+
+                    public void SomeBusinessLogic()
+                    {
+                        this.State = new Random().Next(0, 10);
+                        Thread.Sleep(15);
+                        this.Notify();
+                    }
+                }
+
+                class ConcreteObserverA : IObserver
+                {
+                    public void Update(ISubject subject)
+                    {
+                        if ((subject as Subject).State < 3)
+                        {
+                            Console.WriteLine('ConcreteObserverA: Reacted to the event.');
+                        }
+                    }
+                }
+
+                class ConcreteObserverB : IObserver
+                {
+                    public void Update(ISubject subject)
+                    {
+                        if ((subject as Subject).State == 0 || (subject as Subject).State >= 2)
+                        {
+                            Console.WriteLine('ConcreteObserverB: Reacted to the event.');
+                        }
+                    }
                 }");
         }
-        
+
+        SyntaxTree NoInterfaces()
+        {
+            return CSharpSyntaxTree.ParseText(@" 
+                public class Subject
+                {
+
+                    public int State { get; set; } = -0;
+                    private List<IObserver> _observers = new List<IObserver>();
+
+                    public void Attach(IObserver observer)
+                    {
+                        this._observers.Add(observer);
+                    }
+
+                    public void Detach(IObserver observer)
+                    {
+                        this._observers.Remove(observer);
+                    }
+
+                    public void Notify()
+                    {
+                        foreach (var observer in _observers)
+                        {
+                            observer.Update(this);
+                        }
+                    }
+
+                    public void SomeBusinessLogic()
+                    {
+                        this.State = new Random().Next(0, 10);
+                        Thread.Sleep(15);
+                        this.Notify();
+                    }
+                }
+
+                class ConcreteObserverA
+                {
+                    public void Update(ISubject subject)
+                    {
+                        if ((subject as Subject).State < 3)
+                        {
+                            Console.WriteLine('ConcreteObserverA: Reacted to the event.');
+                        }
+                    }
+                }
+
+                class ConcreteObserverB
+                {
+                    public void Update(ISubject subject)
+                    {
+                        if ((subject as Subject).State == 0 || (subject as Subject).State >= 2)
+                        {
+                            Console.WriteLine('ConcreteObserverB: Reacted to the event.');
+                        }
+                    }
+                }");
+        }
+
         [Fact]
-        public void Test_HasObserverInterfaceWithUpdateFunction()
+        public void Test_Observer_HasObserverInterfaceWithUpdateFunction()
         {
             var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            observer.Scan();
             Assert.True(observer.HasObserverInterfaceWithUpdateFunction());
         }
 
         [Fact]
-        public void Test_HasObserverInterface()
+        public void Test_Observer_HasObserverInterface()
         {
             var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            observer.Scan();
-            Assert.True(observer.HasObserverInterface());
+            Assert.True(observer.HasObserverInterfaceWithUpdateFunction());
         }
 
         [Fact]
-        public void Test_HasUpdateFunction()
+        public void Test_Observer_HasUpdateFunction()
         {
             var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
@@ -146,7 +261,6 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            observer.Scan();
             Assert.True(observer.HasSubjectFunctions());
         }
 
@@ -157,29 +271,46 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            observer.Scan();
             Assert.True(observer.HasSubjectWithObserverList());
+        }
+
+        [Fact]
+        public void Test_Observer_cObserverExtendsIObserver()
+        {
+            var tree = ObserverTree();
+            var collection = Walker.GenerateModels(tree);
+
+            Observer observer = new Observer(collection);
+            Assert.True(observer.cObserverExtendsIObserver());
+        }
+
+        [Fact]
+        public void Test_Observer_NoIObserverParent()
+        {
+            var tree = NoInterfaces();
+            var collection = Walker.GenerateModels(tree);
+
+            Observer observer = new Observer(collection);
+            Assert.False(observer.cObserverExtendsIObserver());
         }
 
         [Fact]
         public void Test_Observer_HasNoObserverInterface()
         {
-            var tree = BrokenTree();
+            var tree = NoInterfaces();
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            observer.Scan();
-            Assert.False(observer.HasObserverInterface());
+            Assert.False(observer.HasObserverInterfaceWithUpdateFunction());
         }
 
         [Fact]
         public void Test_Observer_SubjectHasNoObserverList()
         {
-            var tree = BrokenTree();
+            var tree = NoObserverList();
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            observer.Scan();
             Assert.False(observer.HasSubjectWithObserverList());
         }
     }

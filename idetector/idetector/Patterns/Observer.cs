@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace idetector.Patterns
 {
@@ -12,8 +13,9 @@ namespace idetector.Patterns
     {
 
         private float _score;
-        private ClassCollection cc;
         private Dictionary<ClassModel, int> _scores = new Dictionary<ClassModel, int>();
+        private ClassCollection cc;
+        private List<ClassModel> interfaces = new List<ClassModel>();
 
 
         public Observer(ClassCollection _cc)
@@ -22,26 +24,30 @@ namespace idetector.Patterns
             
             PriorityCollection.ClearPriorities();
             PriorityCollection.AddPriority("observer", "HasUpdateFunction", Priority.Low);
-            PriorityCollection.AddPriority("observer", "HasObserverInterface", Priority.Medium);
-            PriorityCollection.AddPriority("observer", "HasObserverInterfaceWithUpdateFunction", Priority.High);
+            PriorityCollection.AddPriority("observer", "HasObserverInterfaceWithUpdateFunction", Priority.Medium);
+            PriorityCollection.AddPriority("observer", "HasObserverInterfaceWithNamedUpdateFunction", Priority.High);
             PriorityCollection.AddPriority("observer", "HasSubjectFunctions", Priority.High);
             PriorityCollection.AddPriority("observer", "HasSubjectWithObserverList", Priority.Medium);
+            PriorityCollection.AddPriority("observer", "ConcreteObserverExtendsIObserver", Priority.Medium);
         }
 
         public void Scan()
         {
+            SetInterfaces();
+
+            _score = 0;
+
             if (HasUpdateFunction())
             {
                 _score += PriorityCollection.GetPercentage("observer", "HasUpdateFunction");
             }
 
-            if (HasObserverInterface())
+            if (HasObserverInterfaceWithNamedUpdateFunction())
             {
-                _score += PriorityCollection.GetPercentage("observer", "HasObserverInterface");
-            }
-
-            if (HasObserverInterfaceWithUpdateFunction())
-            {
+                _score += PriorityCollection.GetPercentage("observer", "HasObserverInterfaceWithNamedUpdateFunction");
+            } 
+            else if (HasObserverInterfaceWithUpdateFunction())
+            { 
                 _score += PriorityCollection.GetPercentage("observer", "HasObserverInterfaceWithUpdateFunction");
             }
 
@@ -50,10 +56,26 @@ namespace idetector.Patterns
                 _score += PriorityCollection.GetPercentage("observer", "HasSubjectFunctions");
             }
 
-            //if (HasSubjectWithObserverList())
-            //{
-            //    _score += PriorityCollection.GetPercentage("observer", "HasSubjectWithObserverList");
-            //}
+            if (HasSubjectWithObserverList())
+            {
+                _score += PriorityCollection.GetPercentage("observer", "HasSubjectWithObserverList");
+            }
+
+            if (ConcreteObserverExtendsIObserver())
+            {
+                _score += PriorityCollection.GetPercentage("observer", "ConcreteObserverExtendsIObserver");
+            }
+        }
+
+        private void SetInterfaces()
+        {
+            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            {
+                if (cls.Value.IsInterface)
+                {
+                    interfaces.Add(cls.Value);
+                }
+            }
         }
 
         public int Score(ClassModel clsModel)
@@ -63,7 +85,7 @@ namespace idetector.Patterns
         }
 
         // Checks for existing interface with a void function that's named 'update' and has an interface as parameter
-        public bool HasObserverInterfaceWithUpdateFunction()
+        public bool HasObserverInterfaceWithNamedUpdateFunction()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
@@ -92,7 +114,7 @@ namespace idetector.Patterns
         }
 
         // Checks for existing interface with a void function that has an interface as parameter
-        public bool HasObserverInterface()
+        public bool HasObserverInterfaceWithUpdateFunction()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
@@ -100,17 +122,24 @@ namespace idetector.Patterns
                 {
                     if (cls.Value.IsInterface)
                     {
-                        foreach (var method in cls.Value.getMethods())
+                        if (cls.Value.getMethods().Count > 1)
                         {
-                            if (method.ReturnType.ToLower().Equals("void"))
+                            return false;
+                        }
+                        else
+                        {
+                            foreach (var method in cls.Value.getMethods())
                             {
-                                // checks if parameter is an interface
-                                string parameters = method.Parameters.Replace("(", string.Empty).Replace(")", string.Empty);
-                                string[] paramList = parameters.Split(" ");
-                                ClassModel targetClass = cc.GetClass(paramList[0]);
-                                if (targetClass.IsInterface)
+                                if (method.ReturnType.ToLower().Equals("void"))
                                 {
-                                    return true;
+                                    // checks if parameter is an interface
+                                    string parameters = method.Parameters.Replace("(", string.Empty).Replace(")", string.Empty);
+                                    string[] paramList = parameters.Split(" ");
+                                    ClassModel targetClass = cc.GetClass(paramList[0]);
+                                    if (targetClass.IsInterface)
+                                    {
+                                        return true;
+                                    }
                                 }
                             }
                         }
@@ -203,6 +232,30 @@ namespace idetector.Patterns
                             {
                                 return true;
                             }
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        // Checks if there is a class that extends 'IObserver'
+        // names can be different though so idk if makes sense to check at all
+        public bool ConcreteObserverExtendsIObserver()
+        { 
+            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            {
+                List<string> parents = cls.Value.GetParents();
+                if (parents != null)
+                {
+                    // ervan uitgaande dat observer interface altijd IObserver heet
+                    if (parents.Contains("IObserver"))
+                    {
+                        ClassModel target = cc.GetClass(parents[0]);
+                        if (target.IsInterface)
+                        {
+                            return true;
                         }
                     }
                 }
