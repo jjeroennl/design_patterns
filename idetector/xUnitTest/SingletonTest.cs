@@ -8,6 +8,9 @@ using idetector.Collections;
 using idetector.Parser;
 using idetector.Patterns;
 using Xunit;
+using idetector;
+using idetector.Data;
+using System.Collections.Generic;
 
 namespace xUnitTest
 {
@@ -15,7 +18,7 @@ namespace xUnitTest
     {
         SyntaxTree Successsetup()
         {
-           return CSharpSyntaxTree.ParseText(@" 
+            return CSharpSyntaxTree.ParseText(@" 
                class User{
                     private static User me;
 
@@ -146,73 +149,95 @@ namespace xUnitTest
         [Fact]
         public void Test_Singleton_Succeed()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = Successsetup();
             var collection = Walker.GenerateModels(tree);
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            Assert.Equal(100, singleton.Score());
+            var score = calculator.GetScore("SINGLETON" ,singleton.GetResult());
+            Assert.Equal(100, score);
         }
-      
+
         [Fact]
         public void Test_Singleton_NoPrivateConstructor()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = noPrivateConstructor();
             var collection = Walker.GenerateModels(tree);
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            Assert.NotEqual(100, singleton.Score());
+            var score = calculator.GetScore("SINGLETON", singleton.GetResult());
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Singleton_noPrivateStatic()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = noPrivateSelf();
             var collection = Walker.GenerateModels(tree);
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            Assert.NotEqual(100, singleton.Score());
+            var score = calculator.GetScore("SINGLETON", singleton.GetResult());
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Singleton_NoStaticSelf()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = NoStaticSelf();
             var collection = Walker.GenerateModels(tree);
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            Assert.NotEqual(100, singleton.Score());
+            var score = calculator.GetScore("SINGLETON", singleton.GetResult());
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Singleton_NoGetInstance()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = noGetInstance();
             var collection = Walker.GenerateModels(tree);
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            Assert.NotEqual(100, singleton.Score());
+            var score = calculator.GetScore("SINGLETON", singleton.GetResult());
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Singleton_NoStaticGetInstance()
         {
+            Requirements r = new Requirements();
+            var x = r.GetRequirements();
+            ScoreCalculator calculator = new ScoreCalculator(x);
             var tree = noStaticGetInstancesetup();
             var collection = Walker.GenerateModels(tree);
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            Assert.NotEqual(100, singleton.Score());
+            var score = calculator.GetScore("SINGLETON", singleton.GetResult());
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Singleton_NoCreationOfSelf()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = noCreationOfSelf();
             var collection = Walker.GenerateModels(tree);
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            Assert.NotEqual(100, singleton.Score());
+            var score = calculator.GetScore("SINGLETON", singleton.GetResult());
+            Assert.NotEqual(100, score);
         }
     }
 }

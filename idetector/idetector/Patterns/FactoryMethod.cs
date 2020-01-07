@@ -11,6 +11,17 @@ namespace idetector.Patterns
 {
     public class FactoryMethod : IPattern
     {
+
+        /*ID's:
+         *FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS
+         *FACTORY-CONTAINS-PRODUCT-INTERFACE
+         *FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD
+         *FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS
+         *FACTORY-INHERITING-PRODUCT-INTERFACE
+         *FACTORY-RETURNS-PRODUCT
+         */
+        private List<RequirementResult> _results = new List<RequirementResult>();
+
         private float _score;
         private Dictionary<ClassModel, int> _scores = new Dictionary<ClassModel, int>();
         private ClassCollection cc;
@@ -19,97 +30,33 @@ namespace idetector.Patterns
         private List<ClassModel> possibleFactoryClasses = new List<ClassModel>();
         private List<ClassModel> productInterfaces = new List<ClassModel>();
 
-        /// <summary>
-        /// Constructor for FactoryMethod.
-        /// </summary>
-        /// <param name="_cc">ClassCollection to check.</param>
+
         public FactoryMethod(ClassCollection _cc)
         {
             cc = _cc;
-            
-            PriorityCollection.ClearPriorities();
-            PriorityCollection.AddPriority("factorymethod", "ContainsAbstractFactoryClass", Priority.Low);
-            PriorityCollection.AddPriority("factorymethod", "ContainsProductInterface", Priority.Low);
-            PriorityCollection.AddPriority("factorymethod", "ContainsAbstractProductInterfaceMethod", Priority.High);
-            PriorityCollection.AddPriority("factorymethod", "IsInheritingAbstractFactoryClass", Priority.Low);
-            PriorityCollection.AddPriority("factorymethod", "IsInheritingProductInterface", Priority.Low);
-            PriorityCollection.AddPriority("factorymethod", "ConcreteFactoryIsReturningConcreteProduct", Priority.High);
-            PriorityCollection.AddPriority("factorymethod", "ConcreteFactoriesHaveOneMethod", Priority.Low);
-            PriorityCollection.AddPriority("factorymethod", "ConcreteProductsFollowOneProductInterface", Priority.Low);
         }
 
-        /// <summary>
-        /// Scan method to calculate score based on check methods.
-        /// </summary>
         public void Scan()
         {
             SetAbstractClasses();
             SetInterfaces();
             SetPossibleFactoriesAndProductInterfaces();
 
-            _score = 0;
+            _results.Add(ContainsAbstractFactoryClass());
+            _results.Add(ContainsProductInterface());
+            _results.Add(ContainsAbstractProductInterfaceMethod());
+            _results.Add(IsInheritingAbstractFactoryClass());
+            _results.Add(IsInheritingProductInterface());
+            _results.Add(ConcreteFactoryIsReturningConcreteProduct());
 
-            if (ContainsAbstractFactoryClass().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ContainsAbstractFactoryClass");
-            }
-            if (ContainsProductInterface().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ContainsProductInterface");
-            }
-            if (ContainsAbstractProductInterfaceMethod().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ContainsAbstractProductInterfaceMethod");
-            }
-            if (IsInheritingAbstractFactoryClass().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("factorymethod", "IsInheritingAbstractFactoryClass");
-            }
-            if (IsInheritingProductInterface().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("factorymethod", "IsInheritingProductInterface");
-            }
-            if (ConcreteFactoryIsReturningConcreteProduct().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteFactoryIsReturningConcreteProduct");
-            }
-            if (ConcreteFactoriesHaveOneMethod().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteFactoriesHaveOneMethod");
-            }
-            if (ConcreteProductsFollowOneProductInterface().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteProductsFollowOneProductInterface");
-            }
-
-            foreach (var cls in possibleFactoryClasses)
-            {
-                _scores[cls] = (int)_score;
-            }
-            foreach (var acls in abstractClasses)
-            {
-                _scores[acls] = (int)_score;
-            }
-            foreach (var inter in interfaces)
-            {
-                _scores[inter] = (int)_score;
-            }
         }
 
-        /// <summary>
-        /// Total score calculated by scan.
-        /// </summary>
-        /// <returns>Float of total score cast to integer.</returns>
-        public int Score()
+        public List<RequirementResult> GetResult()
         {
-            return (int) _score;
+            return _results;
         }
 
-        /// <summary>
-        /// Total score calculated by scan based on class.
-        /// </summary>
-        /// <param name="clsModel">ClassModel of class.</param>
-        /// <returns></returns>
+
         public int Score(ClassModel clsModel)
         {
             if (this._scores.ContainsKey(clsModel)) return this._scores[clsModel];
@@ -118,9 +65,7 @@ namespace idetector.Patterns
         }
 
         #region Lists
-        /// <summary>
-        /// Method to set a list of abstract classes.
-        /// </summary>
+
         private void SetAbstractClasses()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -132,9 +77,7 @@ namespace idetector.Patterns
             }
         }
 
-        /// <summary>
-        /// Method to set a list of interfaces.
-        /// </summary>
+
         private void SetInterfaces()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -146,9 +89,7 @@ namespace idetector.Patterns
             }
         }
 
-        /// <summary>
-        /// Method to set a list of possible factories and a list of product interfaces.
-        /// </summary>
+
         public void SetPossibleFactoriesAndProductInterfaces()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -175,50 +116,35 @@ namespace idetector.Patterns
         #endregion
 
         #region Checks
-        /// <summary>
-        /// Method that checks if there's any abstract (factory) classes present.
-        /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage ContainsAbstractFactoryClass()
+        public RequirementResult ContainsAbstractFactoryClass()
         {
             if (abstractClasses.Count != 0)
             {
-                return new CheckedMessage(true);
+                return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", true);
             }
-            return new CheckedMessage(false);
+            return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", false);
         }
 
-        /// <summary>
-        /// Method that checks if there's any (product) interfaces present.
-        /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage ContainsProductInterface()
+        public RequirementResult ContainsProductInterface()
         {
-            if (interfaces.Count != 0)
+            if (abstractClasses.Count == 0)
             {
-                return new CheckedMessage(true);
+                return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", false);
             }
-            return new CheckedMessage(false);
+            return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", true);
         }
 
-        /// <summary>
-        /// Method that checks if there's any classes present that have an abstract method with the return type of a product interface.
-        /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage ContainsAbstractProductInterfaceMethod()
+        public RequirementResult ContainsAbstractProductInterfaceMethod()
         {
-            if (possibleFactoryClasses.Count != 0)
+            if (interfaces.Count == 0)
             {
-                return new CheckedMessage(true);
+                return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", false);
             }
-            return new CheckedMessage(false);
+
+            return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", true);
         }
 
-        /// <summary>
-        /// Method that checks if there's any classes that inherit an abstract (factory) class.
-        /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage IsInheritingAbstractFactoryClass()
+        public RequirementResult IsInheritingAbstractFactoryClass()
         {
             if (abstractClasses != null)
             {
@@ -228,19 +154,15 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.HasParent(abstractClass.Identifier))
                         {
-                            return new CheckedMessage(true);
+                            return new RequirementResult("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", true);
                         }
                     }
                 }
             }
-            return new CheckedMessage(false);
+            return new RequirementResult("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", false);
         }
 
-        /// <summary>
-        /// Method that checks if there's any classes that inherit a (product) interface.
-        /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage IsInheritingProductInterface()
+        public RequirementResult IsInheritingProductInterface()
         {
             foreach (var @interface in productInterfaces)
             {
@@ -250,19 +172,15 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.HasParent(@interface.Identifier))
                         {
-                            return new CheckedMessage(true);
+                            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", true);
                         }
                     }
                 }
             }
-            return new CheckedMessage(false);
+            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", false);
         }
 
-        /// <summary>
-        /// Method that checks if there's a concrete factory that returns a concrete product.
-        /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage ConcreteFactoryIsReturningConcreteProduct()
+        public RequirementResult ConcreteFactoryIsReturningConcreteProduct()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
@@ -276,21 +194,19 @@ namespace idetector.Patterns
                             {
                                 if (method.ReturnType == @interface.Identifier)
                                 {
-                                    return new CheckedMessage(true);
+                                    return new RequirementResult("FACTORY-RETURNS-PRODUCT", true);
+
                                 }
                             }
                         }
                     }
                 }
             }
-            return new CheckedMessage(false);
+                        return new RequirementResult("FACTORY-RETURNS-PRODUCT", false);
         }
 
-        /// <summary>
-        /// Method that checks if the concrete factories have just one method.
-        /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage ConcreteFactoriesHaveOneMethod()
+
+        public RequirementResult ConcreteFactoriesHaveOneMethod()
         {
             bool ret = false;
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -301,7 +217,7 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.getMethods().Count != 1)
                         {
-                            return new CheckedMessage(false);
+                            return new RequirementResult("FACTORY-ONE-METHOD",false);
                         }
                         else
                         {
@@ -310,14 +226,11 @@ namespace idetector.Patterns
                     }
                 }
             }
-            return new CheckedMessage(ret);
+            return new RequirementResult("FACTORY-ONE-METHOD", ret);
         }
 
-        /// <summary>
-        /// Method that checks if the concrete products follow just one product interface.
-        /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage ConcreteProductsFollowOneProductInterface()
+
+        public RequirementResult ConcreteProductsFollowOneProductInterface()
         {
             if (productInterfaces.Count != 1)
             {
@@ -332,7 +245,7 @@ namespace idetector.Patterns
                             {
                                 if (temp != null && temp != @interface)
                                 {
-                                    return new CheckedMessage(false);
+                                    return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false);
                                 }
                                 else
                                 {
@@ -343,12 +256,7 @@ namespace idetector.Patterns
                     }
                 }
             }
-            else
-            {
-                return new CheckedMessage(true);
-            }
-
-            return new CheckedMessage(true);
+            return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", true);
         }
         #endregion
     }

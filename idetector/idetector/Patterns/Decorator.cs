@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-
 using idetector.Collections;
 using idetector.Models;
 using System.Linq;
@@ -11,88 +10,67 @@ namespace idetector.Patterns
 {
     public class Decorator : IPattern
     {
+        //ID's:
+        //DECORATOR-BASE-HAS-CHILDREN
+        //DECORATOR-BASE-CHILDREN-TYPES
+        //DECORATOR-HAS-CHILDREN
+        //DECORATOR-HAS-BASE-PROPERTY
+        //DECORATOR-CONSTRUCTOR-SETS-COMPONENT
+        //DECORATOR-CONCRETE-CALLS-BASE
+        
         private ClassModel _cls;
         private Dictionary<string, ClassModel> _collection;
         private List<ClassModel> _children = new List<ClassModel>();
         private ClassModel _decoratorInterface;
         private List<ClassModel> _decorators = new List<ClassModel>();
         private List<ClassModel> _bases = new List<ClassModel>();
-        private float _score = 0;
+        private bool isDecorator = false;
+
+        private List<RequirementResult> _results = new List<RequirementResult>();
 
         public Decorator(ClassModel cls, Dictionary<string, ClassModel> collection)
         {
             _collection = collection;
             _cls = cls;
-            PriorityCollection.ClearPriorities();
-            PriorityCollection.AddPriority("decorator", "checkChildren", Priority.Low);
-            PriorityCollection.AddPriority("decorator", "findDecorators", Priority.Low);
-            PriorityCollection.AddPriority("decorator", "decoratorBaseHasComponent", Priority.Low);
-            PriorityCollection.AddPriority("decorator", "constructorSetsComponent", Priority.Low);
-            PriorityCollection.AddPriority("decorator", "DecoratorCallsBase", Priority.Low);
         }
 
         public void Scan()
         {
-            if (_cls.IsInterface || _cls.IsAbstract)
-            {
-                if (checkChildren().isTrue)
-                {
-                    _score += PriorityCollection.GetPercentage("decorator", "checkChildren");
-
-                    if (findDecorators().isTrue)
-                    { 
-                        _score += PriorityCollection.GetPercentage("decorator", "findDecorators");
-                        if (decoratorBaseHasComponent().isTrue)
-                        {
-                            _score += PriorityCollection.GetPercentage("decorator", "decoratorBaseHasComponent");
-                        }
-
-                        if (constructorSetsComponent().isTrue)
-                        {
-                            _score += PriorityCollection.GetPercentage("decorator", "constructorSetsComponent");
-                        }
-
-                        if (DecoratorCallsBase().isTrue)
-                        {
-                            _score += PriorityCollection.GetPercentage("decorator", "DecoratorCallsBase");
-                        }
-                    }
-                }
-                
-            }
+            _results.Add(checkChildren());
+            _results.Add(checkChildrenType());
+            _results.Add(findDecorators());
+            _results.Add(decoratorHasBaseProperty());
+            _results.Add(constructorSetsComponent());
+            _results.Add(DecoratorCallsBase());
         }
 
-        public int Score()
+        public List<RequirementResult> GetResult()
         {
-            return (int) _score;
+            return _results;
         }
 
 
-        /// <summary>
-        /// Checks if interface has children
-        /// </summary>
-        /// <returns>CheckedMessage</returns>
-        private CheckedMessage checkChildren()
+        private RequirementResult checkChildren()
         {
-            List<ClassModel> list = new List<ClassModel>();
+            List<ClassModel> children = new List<ClassModel>();
             foreach (var item in _collection.Values)
             {
                 if (item.HasParent(_cls.Identifier))
                 {
-                    list.Add(item);
+                    children.Add(item);
                 }
             }
 
-            if (list.Count > 1)
+            if (children.Count < 1)
             {
-                _children = list;
-                return checkChildrenType();
+                return new RequirementResult("DECORATOR-BASE-HAS-CHILDREN", false);
             }
 
-            return new CheckedMessage("The class did not have enough children to qualify", false, _cls.Identifier);
+            _children = children;
+            return new RequirementResult("DECORATOR-BASE-HAS-CHILDREN", true);
         }
 
-        private CheckedMessage checkChildrenType()
+        private RequirementResult checkChildrenType()
         {
             var i = 0;
             foreach (var child in _children)
@@ -106,106 +84,117 @@ namespace idetector.Patterns
                 {
                     _bases.Add(child);
                 }
-
             }
 
             if (i != 1)
             {
-                return new CheckedMessage("Decorator pattern does not allow multiple base decorator classes", false,
-                    _cls.Identifier);
+                return new RequirementResult("DECORATOR-BASE-CHILDREN-TYPES", false);
             }
 
-            return new CheckedMessage(true);
-
+            return new RequirementResult( "DECORATOR-BASE-CHILDREN-TYPES", true);
         }
 
-        private CheckedMessage decoratorBaseHasComponent()
+        private RequirementResult decoratorHasBaseProperty()
         {
-            foreach (var property in _decoratorInterface.getProperties())
+            if (_decoratorInterface != null)
             {
-                if (property.ValueType.Equals(_cls.Identifier))
+                int i = 0;
+                foreach (var property in _decoratorInterface.getProperties())
                 {
-                    return new CheckedMessage(true);
-                }
-            }
-
-            return new CheckedMessage("The base decorator did not have a property/field of type: " + _cls.Identifier,
-                false, _decoratorInterface.Identifier);
-        }
-
-        private CheckedMessage constructorSetsComponent()
-        {
-            foreach (var item in _decoratorInterface.getMethods())
-            {
-                if (item.Parameters.Contains(_cls.Identifier))
-                {
-                    int count = 0;
-                    foreach (var decorator in _decorators)
+                    if (property.ValueType.Equals(_cls.Identifier))
                     {
-                        bool triggered = false;
-                        
-                        foreach (var method in decorator.getMethods())
-                        {
-                            if (method.isConstructor)
-                            {
-                                count++;
-                                if (!method.Parameters.Contains(_cls.Identifier))
-                                {
-                                    triggered = true;
-                                }
-
-                            }
-                        }
-
-                        if (!triggered && (count >= _decorators.Count))
-                        {
-                            return new CheckedMessage(true);
-
-                        }
-                        return new CheckedMessage("One or more decorator does not take a " + _cls.Identifier + "as parameter", false, decorator.Identifier);
+                        i++;
                     }
+                }
 
+                if (i < 1)
+                {
+                    return new RequirementResult("DECORATOR-HAS-BASE-PROPERTY", false);
                 }
             }
-            return new CheckedMessage("The decorator base does not take a value of " + _cls.Identifier + "as parameter", false, _decoratorInterface.Identifier);
+            
+
+            return new RequirementResult("DECORATOR-HAS-BASE-PROPERTY", true);
         }
 
-        private CheckedMessage findDecorators()
+        private RequirementResult constructorSetsComponent()
         {
-            foreach (var item in _collection.Values)
+            if (_decoratorInterface != null)
             {
-                if (item.HasParent(_decoratorInterface.Identifier))
+                foreach (var item in _decoratorInterface.getMethods())
                 {
-                    _decorators.Add(item);
+                    if (item.Parameters.Contains(_cls.Identifier))
+                    {
+                        int count = 0;
+                        foreach (var decorator in _decorators)
+                        {
+                            bool triggered = false;
+
+                            foreach (var method in decorator.getMethods())
+                            {
+                                if (method.isConstructor)
+                                {
+                                    count++;
+                                    if (!method.Parameters.Contains(_cls.Identifier))
+                                    {
+                                        triggered = true;
+                                    }
+                                }
+                            }
+
+                            if (!triggered && (count >= _decorators.Count))
+                            {
+                                return new RequirementResult("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", true);
+                            }
+                            return new RequirementResult("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", false);
+                        }
+                    }
                 }
             }
+            return new RequirementResult("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", false);
+        }
 
+        private RequirementResult findDecorators()
+        {
+            if (_decoratorInterface != null)
+            {
+                foreach (var item in _collection.Values)
+                {
+                    if (item.HasParent(_decoratorInterface.Identifier))
+                    {
+                        _decorators.Add(item);
+                    }
+                }
+
+                if (_decorators.Count < 1)
+                {
+                    return new RequirementResult("DECORATOR-HAS-CHILDREN", false);
+                }
+            }
+            return new RequirementResult("DECORATOR-HAS-CHILDREN", true);
+        }
+
+        private RequirementResult DecoratorCallsBase()
+        {
             if (_decorators.Count > 0)
             {
-                return new CheckedMessage(true);
-            }
-
-            return new CheckedMessage("the base decorator does not have any children", false,
-                _decoratorInterface.Identifier);
-        }
-
-        private CheckedMessage DecoratorCallsBase()
-        {
-            foreach (var decorator in _decorators)
-            {
-                foreach (var method in decorator.getMethods())
+                foreach (var decorator in _decorators)
                 {
-                    if (method.isConstructor)
+                    foreach (var method in decorator.getMethods())
                     {
-                        var node = (ConstructorDeclarationSyntax) method.getNode();
-                        if (!node.Initializer.ThisOrBaseKeyword.ToString().ToLower().Equals("base"))
+                        if (method.isConstructor)
                         {
-                            return new CheckedMessage("Not all decorators call the base constructor", false, decorator.Identifier);
+                            var node = (ConstructorDeclarationSyntax)method.getNode();
+                            if (!node.Initializer.ThisOrBaseKeyword.ToString().ToLower().Equals("base"))
+                            {
+                                return new RequirementResult("DECORATOR-CONCRETE-CALLS-BASE", false);
+                            }
                         }
                     }
                 }
             }
-            return new CheckedMessage(true);
+
+            return new RequirementResult("DECORATOR-CONCRETE-CALLS-BASE", true);
         }
     }
 }
