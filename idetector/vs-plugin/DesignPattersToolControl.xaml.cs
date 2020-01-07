@@ -1,4 +1,9 @@
-﻿namespace vs_plugin
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Documents;
+using idetector.Models;
+
+namespace vs_plugin
 {
     using EnvDTE;
     using idetector.CodeLoader;
@@ -80,6 +85,13 @@
 
         private void AddClasses(ClassCollection collection)
         {
+            List<ClassModel> stateList = new List<ClassModel>();
+            List<ClassModel> strategyList = new List<ClassModel>();
+            List<ClassModel> facadeList = new List<ClassModel>();
+            List<ClassModel> factoryList = new List<ClassModel>();
+            List<ClassModel> singletonList = new List<ClassModel>();
+            List<ClassModel> decoratorList = new List<ClassModel>();
+
             Facade f = new Facade(collection);
             f.Scan();
 
@@ -89,7 +101,6 @@
 
             StateStrategy strat = new StateStrategy(collection, false);
             strat.Scan();
-
 
             FactoryMethod fm = new FactoryMethod(collection);
             fm.Scan();
@@ -102,18 +113,52 @@
                 idetector.Patterns.Decorator d = new idetector.Patterns.Decorator(item.Value, collection.GetClasses());
                 d.Scan();
 
-                SinglePattern p = new SinglePattern();
-                p.SetFacade(f.Score(item.Key.ToString()));
-                p.SetStrategy(strat.Score(item.Key.ToString()));
-                p.SetState(state.Score(item.Key.ToString()));
-                p.SetSingleton(s.Score());
-                p.SetDecorator(d.Score());
-                p.SetFactoryMethod(0);
+                if (f.Score(item.Value) >= 50)
+                {
+                    facadeList.Add(item.Value);
+                }
+                if (strat.Score(item.Key) >= 50)
+                {
+                    strategyList.Add(item.Value);
+                }
+                if (state.Score(item.Key) >= 50)
+                {
+                    stateList.Add(item.Value);
+                }
 
+                if (s.Score() >= 50)
+                {
+                    singletonList.Add(item.Value);
+                }
 
-                p.SetHandle(item.Key.ToString());
-                PatternList.Children.Add(p);
+                if (d.Score() >= 50)
+                {
+                    decoratorList.Add(item.Value);
+                }
             }
+
+            PatternList.Children.Clear();
+
+  
+            this.PopulatePattern("decorator", decoratorList);
+            
+            this.PopulatePattern("facade", facadeList);
+            this.PopulatePattern("factory", factoryList);
+            this.PopulatePattern("singleton", singletonList);
+            this.PopulatePattern("state", stateList);
+            this.PopulatePattern("strategory", strategyList);
+        }
+
+        private void PopulatePattern(string pattern, List<ClassModel> classList)
+        {
+            SinglePattern p = new SinglePattern();
+            p.SetHandle(pattern?.First().ToString().ToUpper() + pattern?.Substring(1).ToLower()); ;
+            foreach (var cls in classList)
+            {
+                p.AddClass(cls);
+            }
+
+            this.PatternList.Children.Add(p);
         }
 
         private void Scan_Current_project(object sender, RoutedEventArgs e)
