@@ -12,10 +12,14 @@ namespace idetector.Patterns
     public class AbstractFactoryMethod : IPattern
     {
         private float _score;
+        private bool isMethod;
+        private ClassModel ifactory;
+
         private Dictionary<ClassModel, int> _scores = new Dictionary<ClassModel, int>();
         private ClassCollection cc;
         private List<ClassModel> abstractClasses = new List<ClassModel>();
         private List<ClassModel> interfaces = new List<ClassModel>();
+        private List<ClassModel> parents = new List<ClassModel>();
         private List<ClassModel> possibleFactoryClasses = new List<ClassModel>();
         private List<ClassModel> productInterfaces = new List<ClassModel>();
 
@@ -23,19 +27,21 @@ namespace idetector.Patterns
         /// Constructor for FactoryMethod.
         /// </summary>
         /// <param name="_cc">ClassCollection to check.</param>
-        public AbstractFactoryMethod(ClassCollection _cc)
+        public AbstractFactoryMethod(ClassCollection _cc, bool ismthd)
         {
             cc = _cc;
-            
+            isMethod = ismthd;
+            ifactory = null;
+
             PriorityCollection.ClearPriorities();
-            PriorityCollection.AddPriority("factorymethod", "ContainsAbstractFactoryClass", Priority.Low);
-            PriorityCollection.AddPriority("factorymethod", "ContainsProductInterface", Priority.Low);
-            PriorityCollection.AddPriority("factorymethod", "ContainsAbstractProductInterfaceMethod", Priority.High);
-            PriorityCollection.AddPriority("factorymethod", "IsInheritingAbstractFactoryClass", Priority.Low);
-            PriorityCollection.AddPriority("factorymethod", "IsInheritingProductInterface", Priority.Low);
-            PriorityCollection.AddPriority("factorymethod", "ConcreteFactoryIsReturningConcreteProduct", Priority.High);
-            PriorityCollection.AddPriority("factorymethod", "ConcreteFactoriesHaveOneMethod", Priority.Low);
-            PriorityCollection.AddPriority("factorymethod", "ConcreteProductsFollowOneProductInterface", Priority.Low);
+            PriorityCollection.AddPriority("factory", "ContainsIFactoryClass", Priority.Low);
+            PriorityCollection.AddPriority("factory", "ContainsProductInterface", Priority.Low);
+            PriorityCollection.AddPriority("factory", "ContainsAbstractProductInterfaceMethod", Priority.High);
+            PriorityCollection.AddPriority("factory", "IsInheritingFactoryClass", Priority.Low);
+            PriorityCollection.AddPriority("factory", "IsInheritingProductInterface", Priority.Low);
+            PriorityCollection.AddPriority("factory", "ConcreteFactoryIsReturningConcreteProduct", Priority.High);
+            PriorityCollection.AddPriority("factory", "ConcreteProductsFollowOneProductInterface", Priority.Low);
+            PriorityCollection.AddPriority("factory", "HasMultipleMethods", Priority.Low);
         }
 
         /// <summary>
@@ -45,41 +51,43 @@ namespace idetector.Patterns
         {
             SetAbstractClasses();
             SetInterfaces();
+            SetParents();
+            SetIFactoryClass();
             SetPossibleFactoriesAndProductInterfaces();
 
             _score = 0;
 
-            if (ContainsAbstractFactoryClass().isTrue)
+            if (ContainsIFactoryClass().isTrue)
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ContainsAbstractFactoryClass");
+                _score += PriorityCollection.GetPercentage("factory", "ContainsIFactoryClass");
             }
             if (ContainsProductInterface().isTrue)
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ContainsProductInterface");
+                _score += PriorityCollection.GetPercentage("factory", "ContainsProductInterface");
             }
             if (ContainsAbstractProductInterfaceMethod().isTrue)
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ContainsAbstractProductInterfaceMethod");
+                _score += PriorityCollection.GetPercentage("factory", "ContainsAbstractProductInterfaceMethod");
             }
-            if (IsInheritingAbstractFactoryClass().isTrue)
+            if (IsInheritingFactoryClass().isTrue)
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "IsInheritingAbstractFactoryClass");
+                _score += PriorityCollection.GetPercentage("factory", "IsInheritingFactoryClass");
             }
             if (IsInheritingProductInterface().isTrue)
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "IsInheritingProductInterface");
+                _score += PriorityCollection.GetPercentage("factory", "IsInheritingProductInterface");
             }
             if (ConcreteFactoryIsReturningConcreteProduct().isTrue)
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteFactoryIsReturningConcreteProduct");
-            }
-            if (ConcreteFactoriesHaveOneMethod().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteFactoriesHaveOneMethod");
+                _score += PriorityCollection.GetPercentage("factory", "ConcreteFactoryIsReturningConcreteProduct");
             }
             if (ConcreteProductsFollowOneProductInterface().isTrue)
             {
-                _score += PriorityCollection.GetPercentage("factorymethod", "ConcreteProductsFollowOneProductInterface");
+                _score += PriorityCollection.GetPercentage("factory", "ConcreteProductsFollowOneProductInterface");
+            }
+            if (HasMultipleMethods().isTrue)
+            {
+                _score += PriorityCollection.GetPercentage("factory", "HasMultipleMethods");
             }
 
             foreach (var cls in possibleFactoryClasses)
@@ -146,6 +154,56 @@ namespace idetector.Patterns
             }
         }
 
+        private void SetParents()
+        {
+            foreach (var cls in cc.GetClasses())
+            {
+                if (cls.Value.GetParents().Count > 0)
+                {
+                    foreach (var prnt in cls.Value.GetParents())
+                    {
+                        if(!parents.Contains(cc.GetClass(prnt)))
+                        {
+                            parents.Add(cc.GetClass(prnt));
+                        }
+                    }
+                }
+            }
+        }
+
+        public void SetIFactoryClass()
+        {
+            foreach (var ifctr in parents)
+            {
+                foreach (var property in ifctr.getProperties())
+                {
+                    foreach (var prnt in parents)
+                    {
+                        if (prnt != ifctr)
+                        {
+                            if (property.ValueType.Equals(prnt.Identifier))
+                            {
+                                ifactory = ifctr;
+                            }
+                        }
+                    }
+                }
+                foreach (var method in ifctr.getMethods())
+                {
+                    foreach (var prnt in parents)
+                    {
+                        if (prnt != ifctr)
+                        {
+                            if (method.ReturnType.Equals(prnt.Identifier))
+                            {
+                                ifactory = ifctr;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Method to set a list of possible factories and a list of product interfaces.
         /// </summary>
@@ -155,17 +213,14 @@ namespace idetector.Patterns
             {
                 foreach (var method in cls.Value.getMethods())
                 {
-                    foreach (var modifier in method.Modifiers)
+                    if (cls.Value.IsAbstract || cls.Value.IsInterface)
                     {
-                        if (modifier.ToLower().Equals("abstract"))
+                        foreach (var @interface in interfaces)
                         {
-                            foreach (var @interface in interfaces)
+                            if (method.ReturnType == @interface.Identifier)
                             {
-                                if (method.ReturnType == @interface.Identifier)
-                                {
-                                    possibleFactoryClasses.Add(cls.Value);
-                                    productInterfaces.Add(cc.GetClass(method.ReturnType));
-                                }
+                                possibleFactoryClasses.Add(cls.Value);
+                                productInterfaces.Add(cc.GetClass(method.ReturnType));
                             }
                         }
                     }
@@ -176,16 +231,13 @@ namespace idetector.Patterns
 
         #region Checks
         /// <summary>
-        /// Method that checks if there's any abstract (factory) classes present.
+        /// Method that checks if there's any (abstract) factory classes present.
         /// </summary>
         /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage ContainsAbstractFactoryClass()
+        public CheckedMessage ContainsIFactoryClass()
         {
-            if (abstractClasses.Count != 0)
-            {
-                return new CheckedMessage(true);
-            }
-            return new CheckedMessage(false);
+            if (ifactory != null) return new CheckedMessage(true);
+            return new CheckedMessage("There is no factory interface detected", false);
         }
 
         /// <summary>
@@ -198,7 +250,7 @@ namespace idetector.Patterns
             {
                 return new CheckedMessage(true);
             }
-            return new CheckedMessage(false);
+            return new CheckedMessage("There are no interfaces detected for the products", false);
         }
 
         /// <summary>
@@ -215,18 +267,18 @@ namespace idetector.Patterns
         }
 
         /// <summary>
-        /// Method that checks if there's any classes that inherit an abstract (factory) class.
+        /// Method that checks if there's any classes that inherit an (abstract) factory class.
         /// </summary>
         /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage IsInheritingAbstractFactoryClass()
+        public CheckedMessage IsInheritingFactoryClass()
         {
-            if (abstractClasses != null)
+            if (parents != null)
             {
                 foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
                 {
-                    foreach (var abstractClass in abstractClasses)
+                    foreach (var prnt in parents)
                     {
-                        if (cls.Value.HasParent(abstractClass.Identifier))
+                        if (cls.Value.HasParent(prnt.Identifier))
                         {
                             return new CheckedMessage(true);
                         }
@@ -287,33 +339,6 @@ namespace idetector.Patterns
         }
 
         /// <summary>
-        /// Method that checks if the concrete factories have just one method.
-        /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage ConcreteFactoriesHaveOneMethod()
-        {
-            bool ret = false;
-            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
-            {
-                foreach (var @class in possibleFactoryClasses)
-                {
-                    if (cls.Value.HasParent(@class.Identifier))
-                    {
-                        if (cls.Value.getMethods().Count != 1)
-                        {
-                            return new CheckedMessage(false);
-                        }
-                        else
-                        {
-                            ret = true;
-                        }
-                    }
-                }
-            }
-            return new CheckedMessage(ret);
-        }
-
-        /// <summary>
         /// Method that checks if the concrete products follow just one product interface.
         /// </summary>
         /// <returns>Whether or not the check passes.</returns>
@@ -332,7 +357,14 @@ namespace idetector.Patterns
                             {
                                 if (temp != null && temp != @interface)
                                 {
-                                    return new CheckedMessage(false);
+                                    if (isMethod)
+                                    {
+                                        return new CheckedMessage("Concrete products can't have multiple product interfaces in Factory Method", false);
+                                    }
+                                    else
+                                    {
+                                        return new CheckedMessage(true);
+                                    }
                                 }
                                 else
                                 {
@@ -343,12 +375,50 @@ namespace idetector.Patterns
                     }
                 }
             }
-            else
+            else if (isMethod)
             {
                 return new CheckedMessage(true);
             }
+            else
+            {
+                return new CheckedMessage("Must have multiple product interfaces for Abstract Factory", false);
+            }
 
             return new CheckedMessage(true);
+        }
+
+        /// <summary>
+        /// Checking to see if the IFactory has multiple methods
+        /// </summary>
+        /// <returns>Whether it is allowed to have multiple methods and if it has it</returns>
+        public CheckedMessage HasMultipleMethods()
+        {
+            int count = 0;
+
+            if(ifactory != null)
+            {
+                if (ifactory.getMethods().Count() > 1)
+                {
+                    foreach (var method in ifactory.getMethods())
+                    {
+                        foreach (var prnt in parents)
+                        {
+                            if (method.ReturnType.Equals(prnt.Identifier))
+                            {
+                                count += 1;
+                            }
+                        }
+                    }
+                }
+                if (count > 1)
+                {
+                    if (isMethod) return new CheckedMessage("There are multiple methods in the factory interface, which isn't allowed in Factory Method", false);
+                    else return new CheckedMessage(true);
+                }
+                if (isMethod) return new CheckedMessage(true);
+                else return new CheckedMessage("There is only one method which should only be the case in a Factory Method pattern", false);
+            }
+            return new CheckedMessage("There is no factory interface detected", false);
         }
         #endregion
     }

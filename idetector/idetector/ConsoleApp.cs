@@ -52,6 +52,12 @@ namespace idetector
             StateStrategy strat = new StateStrategy(collection, false);
             strat.Scan();
 
+            AbstractFactoryMethod fm = new AbstractFactoryMethod(collection, true);
+            fm.Scan();
+
+            AbstractFactoryMethod af = new AbstractFactoryMethod(collection, false);
+            af.Scan();
+
             foreach (var item in this.collection.GetClasses())
             {                
               
@@ -67,10 +73,8 @@ namespace idetector
                 // this.printBar(item.Value, "State", state.Score(item.Value.Identifier.ToString()));
                 // this.printBar(item.Value, "Strategy", strat.Score(item.Value.Identifier.ToString()));
             }
-
-            AbstractFactoryMethod fm = new AbstractFactoryMethod(collection);
-            fm.Scan();
-            printBar("FactoryMethod", fm.Score());
+            printBar("Factory Method", fm.Score());
+            printBar("Abstract Factory", af.Score());
             printBar("Strategy", strat.Score());
             printBar("State", state.Score());
         }
