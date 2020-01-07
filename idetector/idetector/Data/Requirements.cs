@@ -50,7 +50,9 @@ namespace idetector.Data
              *FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD
              *FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS
              *FACTORY-INHERITING-PRODUCT-INTERFACE
-             *FACTORY-RETURNS-PRODUCT
+             *FACTORY-RETURNS-PRODUCT         
+             *FACTORY-ONE-METHOD
+             *FACTORY-ONE-PRODUCT-INTERFACE
              */
             List<PatternRequirement> factoryreqs = new List<PatternRequirement>();
             factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", 1, ""));
@@ -59,6 +61,8 @@ namespace idetector.Data
             factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", 1, ""));
             factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-PRODUCT-INTERFACE", 1, ""));
             factoryreqs.Add(new PatternRequirement("FACTORY-RETURNS-PRODUCT", 1, ""));
+            factoryreqs.Add(new PatternRequirement("FACTORY-ONE-METHOD", 1, ""));
+            factoryreqs.Add(new PatternRequirement("FACTORY-ONE-PRODUCT-INTERFACE", 1, ""));
             PatternRequirements.Add("FACTORY", factoryreqs);
 
             /*ID's:

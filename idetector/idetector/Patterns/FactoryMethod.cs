@@ -38,6 +38,9 @@ namespace idetector.Patterns
 
         public void Scan()
         {
+            SetAbstractClasses();
+            SetInterfaces();
+            SetPossibleFactoriesAndProductInterfaces();
 
             _results.Add(ContainsAbstractFactoryClass());
             _results.Add(ContainsProductInterface());
@@ -124,7 +127,7 @@ namespace idetector.Patterns
 
         public RequirementResult ContainsProductInterface()
         {
-            if (GetInterfaces().Count == 0)
+            if (abstractClasses.Count == 0)
             {
                 return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", false);
             }
@@ -133,7 +136,7 @@ namespace idetector.Patterns
 
         public RequirementResult ContainsAbstractProductInterfaceMethod()
         {
-            if (GetAbstractProductInterfaceClasses().Count == 0)
+            if (interfaces.Count == 0)
             {
                 return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", false);
             }
@@ -203,7 +206,7 @@ namespace idetector.Patterns
         }
 
 
-        public CheckedMessage ConcreteFactoriesHaveOneMethod()
+        public RequirementResult ConcreteFactoriesHaveOneMethod()
         {
             bool ret = false;
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -214,7 +217,7 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.getMethods().Count != 1)
                         {
-                            return new CheckedMessage(false);
+                            return new RequirementResult("FACTORY-ONE-METHOD",false);
                         }
                         else
                         {
@@ -223,11 +226,11 @@ namespace idetector.Patterns
                     }
                 }
             }
-            return new CheckedMessage(ret);
+            return new RequirementResult("FACTORY-ONE-METHOD", ret);
         }
 
 
-        public CheckedMessage ConcreteProductsFollowOneProductInterface()
+        public RequirementResult ConcreteProductsFollowOneProductInterface()
         {
             if (productInterfaces.Count != 1)
             {
@@ -242,7 +245,7 @@ namespace idetector.Patterns
                             {
                                 if (temp != null && temp != @interface)
                                 {
-                                    return new CheckedMessage(false);
+                                    return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false);
                                 }
                                 else
                                 {
@@ -253,7 +256,7 @@ namespace idetector.Patterns
                     }
                 }
             }
-            return new CheckedMessage(true);
+            return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", true);
         }
         #endregion
     }

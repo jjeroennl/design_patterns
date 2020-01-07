@@ -24,7 +24,7 @@ namespace idetector.Patterns
         private bool IsState = false;
         private ClassCollection cc;
 
-        private ClassCollection concretes = new ClassCollection();
+        private ClassCollection Concretes = new ClassCollection();
         public ClassModel Context;
         private ClassModel Interface;
         private MethodModel Setter;
@@ -75,8 +75,10 @@ namespace idetector.Patterns
                     {
                         if (cc.GetClass(property.ValueType.ToString()) == Interface)
                         {
-                          context = cls.Value;
-                          return new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true);
+                            if (cc.GetClass(property.ValueType.ToString()) == Interface)
+                            {
+                                return new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true);
+                            }
                         }
                     }
 
@@ -154,9 +156,9 @@ namespace idetector.Patterns
 
                     foreach (var method in cls.getMethods())
                     {
-                        if (interfacer != null)
+                        if (Interface != null)
                         {
-                            if (property.ValueType.ToString() == interfacer.Identifier)
+                            if (property.ValueType.ToString() == Interface.Identifier)
                             {
                                 if (property.ValueType.ToString() == Interface.Identifier)
                                 {
@@ -229,7 +231,7 @@ namespace idetector.Patterns
                 i += 1;
                 foreach (string parent in cls.Value.GetParents())
                 {
-                    if (cc.GetClass(parent) == interfacer) concretes.AddClass(cls.Value);
+                    if (cc.GetClass(parent) == Interface) Concretes.AddClass(cls.Value);
                 }
 
                 if (cc.GetClasses().Count == i && Concretes.GetClasses().Count >= 1)
@@ -243,13 +245,13 @@ namespace idetector.Patterns
 
         public RequirementResult HasRelationsBetweenConcreteClasses()
         {
-            foreach (var cls in concretes.GetClasses())
+            foreach (var cls in Concretes.GetClasses())
             {
                 foreach (var method in cls.Value.getMethods())
                 {
                     if (!method.isConstructor)
                     {
-                        foreach (var cs in concretes.GetClasses())
+                        foreach (var cs in Concretes.GetClasses())
                         {
                             if (cs.Value.Identifier != cls.Value.Identifier)
                             {
