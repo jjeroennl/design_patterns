@@ -99,18 +99,7 @@ namespace xUnitTest
         {
             return CSharpSyntaxTree.ParseText(@"
                 class Creator
-                {
-                    public abstract IProduct FactoryMethod();
-
-                    public string SomeOperation()
-                    {
-                        var product = FactoryMethod();
-                        var result = 'Creator: The same creator's code has just worked with '
-                            + product.Operation();
-
-                        return result;
-                    }
-                }
+                { }
         ");
         }
 
@@ -437,7 +426,7 @@ namespace xUnitTest
         #region Tests for individual failing checks.
 
         [Fact]
-        public void Test_FactoryMethod_MissingAbstractFactoryClassSetup()
+        public void Test_FactoryMethod_MissingFactoryClassSetup()
         {
             var tree = MissingAbstractFactoryClassSetup();
             var collection = Walker.GenerateModels(tree);
@@ -566,14 +555,14 @@ namespace xUnitTest
 
             Assert.False(factoryMethod.ContainsIFactoryClass().Passed);
             Assert.True(factoryMethod.ContainsProductInterface().Passed);
-            Assert.False(factoryMethod.ContainsAbstractProductInterfaceMethod().Passed);
+            Assert.True(factoryMethod.ContainsAbstractProductInterfaceMethod().Passed);
             Assert.False(factoryMethod.IsInheritingFactoryClass().Passed);
             Assert.False(factoryMethod.IsInheritingProductInterface().Passed);
             Assert.False(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().Passed);
             Assert.False(factoryMethod.HasMultipleMethods().Passed);
             Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().Passed);
 
-            Assert.Equal(16, score);
+            Assert.Equal(33, score);
         }
         #endregion
     }

@@ -1,4 +1,6 @@
-﻿using idetector.Collections;
+﻿using idetector;
+using idetector.Collections;
+using idetector.Data;
 using idetector.Parser;
 using idetector.Patterns;
 using Microsoft.CodeAnalysis;
@@ -147,10 +149,23 @@ namespace xUnitTest
         {
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
 
             AbstractFactoryMethod abstractFactory = new AbstractFactoryMethod(collection, false);
             abstractFactory.Scan();
-            Assert.Equal(100, abstractFactory.Score());
+            int score = calculator.GetScore("FACTORY", abstractFactory.GetResult());
+
+            Assert.True(abstractFactory.ContainsIFactoryClass().Passed);
+            Assert.True(abstractFactory.ContainsProductInterface().Passed);
+            Assert.True(abstractFactory.ContainsAbstractProductInterfaceMethod().Passed);
+            Assert.True(abstractFactory.IsInheritingFactoryClass().Passed);
+            Assert.True(abstractFactory.IsInheritingProductInterface().Passed);
+            Assert.True(abstractFactory.ConcreteFactoryIsReturningConcreteProduct().Passed);
+            Assert.True(abstractFactory.HasMultipleMethods().Passed);
+            Assert.True(abstractFactory.ConcreteProductsFollowOneProductInterface().Passed);
+
+            Assert.Equal(100, score);
         }
 
         #region Tests for individual succeeding checks.

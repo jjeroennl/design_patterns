@@ -16,13 +16,12 @@ namespace idetector.Patterns
          *FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS
          *FACTORY-CONTAINS-PRODUCT-INTERFACE
          *FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD
-         *FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS
          *FACTORY-INHERITING-PRODUCT-INTERFACE
          *FACTORY-RETURNS-PRODUCT
+         *FACTORY-MULTIPLE-METHODS
          */
         private List<RequirementResult> _results = new List<RequirementResult>();
 
-        private float _score;
         private bool isMethod;
         private ClassModel ifactory;
 
@@ -35,10 +34,10 @@ namespace idetector.Patterns
         private List<ClassModel> productInterfaces = new List<ClassModel>();
 
 
-        public FactoryMethod(ClassCollection _cc)
+        public AbstractFactoryMethod(ClassCollection _cc, bool ismethod)
         {
             cc = _cc;
-            isMethod = ismthd;
+            isMethod = ismethod;
             ifactory = null;
         }
 
@@ -50,12 +49,12 @@ namespace idetector.Patterns
             SetIFactoryClass();
             SetPossibleFactoriesAndProductInterfaces();
 
-            _results.Add(ContainsAbstractFactoryClass());
+            _results.Add(ContainsIFactoryClass());
             _results.Add(ContainsProductInterface());
             _results.Add(ContainsAbstractProductInterfaceMethod());
-            _results.Add(IsInheritingAbstractFactoryClass());
             _results.Add(IsInheritingProductInterface());
             _results.Add(ConcreteFactoryIsReturningConcreteProduct());
+            _results.Add(HasMultipleMethods());
 
         }
 
@@ -117,6 +116,55 @@ namespace idetector.Patterns
                 }
             }
         }
+        private void SetParents()
+        {
+            foreach (var cls in cc.GetClasses())
+            {
+                if (cls.Value.GetParents().Count > 0)
+                {
+                    foreach (var prnt in cls.Value.GetParents())
+                    {
+                        if (!parents.Contains(cc.GetClass(prnt)))
+                        {
+                            parents.Add(cc.GetClass(prnt));
+                        }
+                    }
+                }
+            }
+        }
+
+        public void SetIFactoryClass()
+        {
+            foreach (var ifctr in parents)
+            {
+                foreach (var property in ifctr.getProperties())
+                {
+                    foreach (var prnt in parents)
+                    {
+                        if (prnt != ifctr)
+                        {
+                            if (property.ValueType.Equals(prnt.Identifier))
+                            {
+                                ifactory = ifctr;
+                            }
+                        }
+                    }
+                }
+                foreach (var method in ifctr.getMethods())
+                {
+                    foreach (var prnt in parents)
+                    {
+                        if (prnt != ifctr)
+                        {
+                            if (method.ReturnType.Equals(prnt.Identifier))
+                            {
+                                ifactory = ifctr;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         #endregion
 
         #region Checks
@@ -124,15 +172,15 @@ namespace idetector.Patterns
         /// Method that checks if there's any (abstract) factory classes present.
         /// </summary>
         /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage ContainsIFactoryClass()
+        public RequirementResult ContainsIFactoryClass()
         {
             if (ifactory != null) return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", true);
-            return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", true);
+            return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", false);
         }
 
         public RequirementResult ContainsProductInterface()
         {
-            if (abstractClasses.Count == 0)
+            if (abstractClasses.Count == 0 && interfaces.Count == 0)
             {
                 return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", false);
             }
@@ -207,14 +255,14 @@ namespace idetector.Patterns
                     }
                 }
             }
-                        return new RequirementResult("FACTORY-RETURNS-PRODUCT", false);
+            return new RequirementResult("FACTORY-RETURNS-PRODUCT", false);
         }
 
         /// <summary>
         /// Method that checks if the concrete products follow just one product interface.
         /// </summary>
         /// <returns>Whether or not the check passes.</returns>
-        public CheckedMessage ConcreteProductsFollowOneProductInterface()
+        public RequirementResult ConcreteProductsFollowOneProductInterface()
         {
             if (productInterfaces.Count != 1)
             {
@@ -263,7 +311,7 @@ namespace idetector.Patterns
         /// Checking to see if the IFactory has multiple methods
         /// </summary>
         /// <returns>Whether it is allowed to have multiple methods and if it has it</returns>
-        public CheckedMessage HasMultipleMethods()
+        public RequirementResult HasMultipleMethods()
         {
             int count = 0;
 
@@ -284,13 +332,13 @@ namespace idetector.Patterns
                 }
                 if (count > 1)
                 {
-                    if (isMethod) return new CheckedMessage("There are multiple methods in the factory interface, which isn't allowed in Factory Method", false);
-                    else return new CheckedMessage(true);
+                    if (isMethod) return new RequirementResult("FACTORY-MULTIPLE-METHODS", false);
+                    else return new RequirementResult("FACTORY-MULTIPLE-METHODS", true);
                 }
-                if (isMethod) return new CheckedMessage(true);
-                else return new CheckedMessage("There is only one method which should only be the case in a Factory Method pattern", false);
+                if (isMethod) return new RequirementResult("FACTORY-MULTIPLE-METHODS", true);
+                else return new RequirementResult("FACTORY-MULTIPLE-METHODS", false);
             }
-            return new CheckedMessage("There is no factory interface detected", false);
+            return new RequirementResult("FACTORY-MULTIPLE-METHODS", false);
         }
         #endregion
     }
