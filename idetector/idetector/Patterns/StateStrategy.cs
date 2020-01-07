@@ -23,17 +23,20 @@ namespace idetector.Patterns
         private Dictionary<string, int> _scores = new Dictionary<string, int>();
         private bool IsState = false;
         private ClassCollection cc;
-        private ClassCollection Concretes;
+
+        private ClassCollection concretes = new ClassCollection();
         public ClassModel Context;
         private ClassModel Interface;
         private MethodModel Setter;
         private List<RequirementResult> _results = new List<RequirementResult>();
+
 
         public StateStrategy(ClassCollection _cc, bool state)
         {
             cc = _cc;
             IsState = state;
             Concretes = new ClassCollection();
+
         }
 
         public void Scan()
@@ -67,18 +70,22 @@ namespace idetector.Patterns
             {
                 foreach (var property in cls.getProperties())
                 {
+
                     if (cc.GetClass(property.ValueType.ToString()) != null)
                     {
                         if (cc.GetClass(property.ValueType.ToString()) == Interface)
                         {
-                            return new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true);
+                          context = cls.Value;
+                          return new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true);
                         }
                     }
+
                 }
             }
 
             return new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", false);
-        }
+          }
+
 
 
         public RequirementResult ContextHasPrivateStrategy(ClassModel cls)
@@ -147,9 +154,9 @@ namespace idetector.Patterns
 
                     foreach (var method in cls.getMethods())
                     {
-                        if (!method.isConstructor)
+                        if (interfacer != null)
                         {
-                            if (Interface != null)
+                            if (property.ValueType.ToString() == interfacer.Identifier)
                             {
                                 if (property.ValueType.ToString() == Interface.Identifier)
                                 {
@@ -222,7 +229,7 @@ namespace idetector.Patterns
                 i += 1;
                 foreach (string parent in cls.Value.GetParents())
                 {
-                    if (cc.GetClass(parent) == Interface) Concretes.AddClass(cls.Value);
+                    if (cc.GetClass(parent) == interfacer) concretes.AddClass(cls.Value);
                 }
 
                 if (cc.GetClasses().Count == i && Concretes.GetClasses().Count >= 1)
@@ -236,13 +243,13 @@ namespace idetector.Patterns
 
         public RequirementResult HasRelationsBetweenConcreteClasses()
         {
-            foreach (var cls in Concretes.GetClasses())
+            foreach (var cls in concretes.GetClasses())
             {
                 foreach (var method in cls.Value.getMethods())
                 {
                     if (!method.isConstructor)
                     {
-                        foreach (var cs in Concretes.GetClasses())
+                        foreach (var cs in concretes.GetClasses())
                         {
                             if (cs.Value.Identifier != cls.Value.Identifier)
                             {

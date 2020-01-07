@@ -14,9 +14,10 @@ namespace xUnitTest
 {
     public class FactoryMethodTests
     {
+        #region Syntax Trees
         SyntaxTree SuccessSetup()
         {
-            return CSharpSyntaxTree.ParseText(@" 
+            return CSharpSyntaxTree.ParseText(@"
                 abstract class Creator
                 {
                     public abstract IProduct FactoryMethod();
@@ -71,10 +72,10 @@ namespace xUnitTest
                 }
         ");
         }
-        
+
         SyntaxTree FailureSetup()
         {
-            return CSharpSyntaxTree.ParseText(@" 
+            return CSharpSyntaxTree.ParseText(@"
                 abstract class Creator
                 {
                     public string SomeOperation()
@@ -96,7 +97,7 @@ namespace xUnitTest
 
         SyntaxTree MissingAbstractFactoryClassSetup()
         {
-            return CSharpSyntaxTree.ParseText(@" 
+            return CSharpSyntaxTree.ParseText(@"
                 class Creator
                 {
                     public abstract IProduct FactoryMethod();
@@ -112,10 +113,10 @@ namespace xUnitTest
                 }
         ");
         }
-        
+
         SyntaxTree MissingAbstractProductInterfaceMethodSetup()
         {
-            return CSharpSyntaxTree.ParseText(@" 
+            return CSharpSyntaxTree.ParseText(@"
                 abstract class Creator
                 {
                     public string SomeOperation()
@@ -129,10 +130,10 @@ namespace xUnitTest
                 }
         ");
         }
-        
+
         SyntaxTree IsNotInheritingAbstractFactoryClassSetup()
         {
-            return CSharpSyntaxTree.ParseText(@" 
+            return CSharpSyntaxTree.ParseText(@"
                 abstract class Creator
                 {
                     public abstract IProduct FactoryMethod();
@@ -157,7 +158,7 @@ namespace xUnitTest
 
         ");
         }
-        
+
         SyntaxTree MissingProductInterfaceSetup()
         {
             return CSharpSyntaxTree.ParseText(@"
@@ -167,7 +168,7 @@ namespace xUnitTest
                 }
         ");
         }
-        
+
         SyntaxTree IsNotInheritingProductInterfaceSetup()
         {
             return CSharpSyntaxTree.ParseText(@"
@@ -192,7 +193,7 @@ namespace xUnitTest
 
         ");
         }
-        
+
         SyntaxTree ConcreteFactoryIsNotReturningConcreteProductSetup()
         {
             return CSharpSyntaxTree.ParseText(@"
@@ -231,6 +232,119 @@ namespace xUnitTest
 
         ");
         }
+
+        SyntaxTree ConcreteFactoriesDoNotHaveOneMethodSetup()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+                abstract class Creator
+                {
+                    public abstract IProduct FactoryMethod();
+
+                    public string SomeOperation()
+                    {
+                        var product = FactoryMethod();
+                        var result = 'Creator: The same creator's code has just worked with '
+                            + product.Operation();
+
+                        return result;
+                    }
+                }
+
+                class ConcreteCreator1 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct1();
+                    }
+
+                    public int IetsAnders()
+                    {
+                        return 0;
+                    }
+                }
+
+                public interface IProduct
+                {
+                    string Operation();
+                }
+
+                class ConcreteProduct1 : IProduct
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct1}
+                        ';
+                    }
+                }
+
+        ");
+        }
+
+        SyntaxTree ConcreteProductsDontFollowOneProductInterfaceSetup()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+                abstract class Creator
+                {
+                    public abstract IProduct FactoryMethod();
+                    public abstract IProduct2 FactoryMethod();
+
+                    public string SomeOperation()
+                    {
+                        var product = FactoryMethod();
+                        var result = 'Creator: The same creator's code has just worked with '
+                            + product.Operation();
+
+                        return result;
+                    }
+                }
+
+                class ConcreteCreator1 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct1();
+                    }
+                }
+
+                class ConcreteCreator2 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct2();
+                    }
+                }
+
+                public interface IProduct
+                {
+                    string Operation();
+                }
+
+                public interface IProduct2
+                {
+                    string Operation();
+                }
+
+                class ConcreteProduct1 : IProduct
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct1}
+                        ';
+                    }
+                }
+
+                class ConcreteProduct2 : IProduct2
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct2}
+                        ';
+                    }
+                }
+        ");
+        }
+        #endregion
+
 
         #region Tests for individual succeeding checks.
 
@@ -291,7 +405,31 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+
             Assert.True(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().Passed);
+
+        }
+
+        [Fact]
+        public void Test_FactoryMethod_ConcreteFactoryHasOneMethod()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
+            Assert.True(factoryMethod.ConcreteFactoriesHaveOneMethod().Passed);
+        }
+
+        [Fact]
+        public void Test_FactoryMethod_ConcreteProductsFollowOneProductInterface()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
+            Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().Passed);
         }
         #endregion
 
@@ -357,12 +495,37 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+
             Assert.False(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().Passed);
+
+        }
+
+        [Fact]
+        public void Test_FactoryMethod_ConcreteFactoryHasNotOneMethod()
+        {
+            var tree = ConcreteFactoriesDoNotHaveOneMethodSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
+            Assert.False(factoryMethod.ConcreteFactoriesHaveOneMethod().Passed);
+        }
+
+        [Fact]
+        public void Test_FactoryMethod_ConcreteProductsDontFollowOneProductInterface()
+        {
+            var tree = ConcreteProductsDontFollowOneProductInterfaceSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
+            Assert.False(factoryMethod.ConcreteProductsFollowOneProductInterface().Passed);
         }
         #endregion
 
+        #region Tests for scores.
         [Fact]
-        public void Test_FactoryMethod_Score100()
+        public void Test_FactoryMethod_ScorePass()
         {
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
@@ -379,6 +542,8 @@ namespace xUnitTest
             Assert.True(factoryMethod.IsInheritingAbstractFactoryClass().Passed);
             Assert.True(factoryMethod.IsInheritingProductInterface().Passed);
             Assert.True(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().Passed);
+            Assert.True(factoryMethod.ConcreteFactoriesHaveOneMethod().Passed);
+            Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().Passed);
             Assert.Equal(100, score);
         }
 
@@ -400,8 +565,11 @@ namespace xUnitTest
             Assert.False(factoryMethod.IsInheritingAbstractFactoryClass().Passed);
             Assert.False(factoryMethod.IsInheritingProductInterface().Passed);
             Assert.False(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().Passed);
+            Assert.False(factoryMethod.ConcreteFactoriesHaveOneMethod().Passed);
+            Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().Passed);
 
             Assert.Equal(33, score);
         }
+        #endregion
     }
 }

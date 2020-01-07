@@ -11,6 +11,7 @@ namespace idetector.Patterns
 {
     public class FactoryMethod : IPattern
     {
+
         /*ID's:
          *FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS
          *FACTORY-CONTAINS-PRODUCT-INTERFACE
@@ -19,9 +20,16 @@ namespace idetector.Patterns
          *FACTORY-INHERITING-PRODUCT-INTERFACE
          *FACTORY-RETURNS-PRODUCT
          */
-        private int _score;
-        private ClassCollection cc;
         private List<RequirementResult> _results = new List<RequirementResult>();
+
+        private float _score;
+        private Dictionary<ClassModel, int> _scores = new Dictionary<ClassModel, int>();
+        private ClassCollection cc;
+        private List<ClassModel> abstractClasses = new List<ClassModel>();
+        private List<ClassModel> interfaces = new List<ClassModel>();
+        private List<ClassModel> possibleFactoryClasses = new List<ClassModel>();
+        private List<ClassModel> productInterfaces = new List<ClassModel>();
+
 
         public FactoryMethod(ClassCollection _cc)
         {
@@ -30,6 +38,7 @@ namespace idetector.Patterns
 
         public void Scan()
         {
+
             _results.Add(ContainsAbstractFactoryClass());
             _results.Add(ContainsProductInterface());
             _results.Add(ContainsAbstractProductInterfaceMethod());
@@ -44,14 +53,18 @@ namespace idetector.Patterns
             return _results;
         }
 
-        public int Score()
+
+        public int Score(ClassModel clsModel)
         {
-            return _score;
+            if (this._scores.ContainsKey(clsModel)) return this._scores[clsModel];
+
+            return 0;
         }
+
         #region Lists
-        public List<ClassModel> GetAbstractClasses()
+
+        private void SetAbstractClasses()
         {
-            List<ClassModel> abstractClasses = new List<ClassModel>();
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
                 if (cls.Value.IsAbstract)
@@ -59,12 +72,11 @@ namespace idetector.Patterns
                     abstractClasses.Add(cls.Value);
                 }
             }
-            return abstractClasses;
         }
 
-        public List<ClassModel> GetInterfaces()
+
+        private void SetInterfaces()
         {
-            List<ClassModel> interfaces = new List<ClassModel>();
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
                 if (cls.Value.IsInterface)
@@ -72,12 +84,11 @@ namespace idetector.Patterns
                     interfaces.Add(cls.Value);
                 }
             }
-            return interfaces;
         }
 
-        public List<ClassModel> GetAbstractProductInterfaceClasses()
+
+        public void SetPossibleFactoriesAndProductInterfaces()
         {
-            List<ClassModel> classes = new List<ClassModel>();
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
                 foreach (var method in cls.Value.getMethods())
@@ -86,25 +97,25 @@ namespace idetector.Patterns
                     {
                         if (modifier.ToLower().Equals("abstract"))
                         {
-                            foreach (var @interface in GetInterfaces())
+                            foreach (var @interface in interfaces)
                             {
                                 if (method.ReturnType == @interface.Identifier)
                                 {
-                                    classes.Add(cls.Value);
+                                    possibleFactoryClasses.Add(cls.Value);
+                                    productInterfaces.Add(cc.GetClass(method.ReturnType));
                                 }
                             }
                         }
                     }
                 }
             }
-            return classes;
         }
         #endregion
 
         #region Checks
         public RequirementResult ContainsAbstractFactoryClass()
         {
-            if (GetAbstractClasses().Count != 0)
+            if (abstractClasses.Count != 0)
             {
                 return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", true);
             }
@@ -132,11 +143,11 @@ namespace idetector.Patterns
 
         public RequirementResult IsInheritingAbstractFactoryClass()
         {
-            if (GetAbstractClasses() != null)
+            if (abstractClasses != null)
             {
                 foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
                 {
-                    foreach (var abstractClass in GetAbstractClasses())
+                    foreach (var abstractClass in abstractClasses)
                     {
                         if (cls.Value.HasParent(abstractClass.Identifier))
                         {
@@ -150,7 +161,7 @@ namespace idetector.Patterns
 
         public RequirementResult IsInheritingProductInterface()
         {
-            foreach (var @interface in GetInterfaces())
+            foreach (var @interface in productInterfaces)
             {
                 if (@interface != null)
                 {
@@ -170,24 +181,79 @@ namespace idetector.Patterns
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
-                foreach (var @class in GetAbstractProductInterfaceClasses())
+                foreach (var @class in possibleFactoryClasses)
                 {
                     if (cls.Value.HasParent(@class.Identifier))
                     {
                         foreach (var method in cls.Value.getMethods())
                         {
-                            foreach (var @interface in GetInterfaces())
+                            foreach (var @interface in interfaces)
                             {
                                 if (method.ReturnType == @interface.Identifier)
                                 {
                                     return new RequirementResult("FACTORY-RETURNS-PRODUCT", true);
+
                                 }
                             }
                         }
                     }
                 }
             }
-            return new RequirementResult("FACTORY-RETURNS-PRODUCT", false);
+                        return new RequirementResult("FACTORY-RETURNS-PRODUCT", false);
+        }
+
+
+        public CheckedMessage ConcreteFactoriesHaveOneMethod()
+        {
+            bool ret = false;
+            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            {
+                foreach (var @class in possibleFactoryClasses)
+                {
+                    if (cls.Value.HasParent(@class.Identifier))
+                    {
+                        if (cls.Value.getMethods().Count != 1)
+                        {
+                            return new CheckedMessage(false);
+                        }
+                        else
+                        {
+                            ret = true;
+                        }
+                    }
+                }
+            }
+            return new CheckedMessage(ret);
+        }
+
+
+        public CheckedMessage ConcreteProductsFollowOneProductInterface()
+        {
+            if (productInterfaces.Count != 1)
+            {
+                ClassModel temp = null;
+                foreach (var @interface in productInterfaces)
+                {
+                    if (@interface != null)
+                    {
+                        foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+                        {
+                            if (cls.Value.HasParent(@interface.Identifier))
+                            {
+                                if (temp != null && temp != @interface)
+                                {
+                                    return new CheckedMessage(false);
+                                }
+                                else
+                                {
+                                    temp = @interface;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return new CheckedMessage(true);
         }
         #endregion
     }
