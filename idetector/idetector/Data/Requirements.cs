@@ -85,6 +85,21 @@ namespace idetector.Data
             strategyreqs.Add(new PatternRequirement("STATE-STRATEGY-CONCRETE-CLASS", 1, ""));
             PatternRequirements.Add("STRATEGY", strategyreqs);
 
+            /*ID's:
+             * OBSERVER-HAS-INTERFACE-WITH-NAMED-UPDATE-FUNCTION
+             * OBSERVER-HAS-INTERFACE-WITH-UPDATE-FUNCTION
+             * OBSERVER-HAS-SUBJECT-FUNCTIONS
+             * OBSERVER-HAS-SUBJECT-WITH-OBSERVER-LIST
+             * OBSERVER-CONCRETE-OBSERVER-EXTENDS-IOBSERVERS
+             */
+            List<PatternRequirement> observerreqs = new List<PatternRequirement>();
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-INTERFACE-WITH-NAMED-UPDATE-FUNCTION", 1, "No interface with a void function named Update exists."));
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-INTERFACE-WITH-UPDATE-FUNCTION", 1, "No interface with a void function exists."));
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-SUBJECT-FUNCTIONS", 1, "No interface with correlating subject functions exists."));
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-SUBJECT-WITH-OBSERVER-LIST", 1, "No interface with a list of interfaces exists."));
+            observerreqs.Add(new PatternRequirement("OBSERVER-CONCRETE-OBSERVER-EXTENDS-IOBSERVERS", 1, "There arent any classes that extend IObserver."));
+            PatternRequirements.Add("OBSERVER", observerreqs);
+
 
             var statereqs = strategyreqs;
             statereqs.Add(new PatternRequirement("STATE-CONCRETE-CLASS-RELATIONS", 10, ""));

@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using idetector;
+using idetector.Data;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using idetector.Parser;
 using idetector.Patterns;
@@ -171,7 +173,6 @@ namespace xUnitTest
             return CSharpSyntaxTree.ParseText(@" 
                 public class Subject
                 {
-
                     public int State { get; set; } = -0;
                     private List<IObserver> _observers = new List<IObserver>();
 
@@ -227,91 +228,110 @@ namespace xUnitTest
         [Fact]
         public void Test_Observer_HasObserverInterfaceWithUpdateFunction()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            Assert.True(observer.HasObserverInterfaceWithUpdateFunction());
+            observer.Scan();
+            var score = calculator.GetScore("OBSERVER", observer.GetResult());
+            Assert.Equal(100, score);
         }
 
         [Fact]
         public void Test_Observer_HasObserverInterface()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            Assert.True(observer.HasObserverInterfaceWithUpdateFunction());
-        }
-
-        [Fact]
-        public void Test_Observer_HasUpdateFunction()
-        {
-            var tree = ObserverTree();
-            var collection = Walker.GenerateModels(tree);
-
-            Observer observer = new Observer(collection);
-            Assert.True(observer.HasUpdateFunction());
+            observer.Scan();
+            var score = calculator.GetScore("OBSERVER", observer.GetResult());
+            Assert.Equal(100, score);
         }
 
         [Fact]
         public void Test_Observer_HasSubjectFunctions()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            Assert.True(observer.HasSubjectFunctions());
+            observer.Scan();
+            var score = calculator.GetScore("OBSERVER", observer.GetResult());
+            Assert.Equal(100, score);
         }
 
         [Fact]
         public void Test_Observer_HasSubjectWithObserverList()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            Assert.True(observer.HasSubjectWithObserverList());
+            observer.Scan();
+            var score = calculator.GetScore("OBSERVER", observer.GetResult());
+            Assert.Equal(100, score);
         }
 
         [Fact]
-        public void Test_Observer_cObserverExtendsIObserver()
+        public void Test_Observer_ConcreteObserverExtendsIObserver()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            Assert.True(observer.cObserverExtendsIObserver());
+            observer.Scan();
+            var score = calculator.GetScore("OBSERVER", observer.GetResult());
+            Assert.Equal(100, score);
         }
 
         [Fact]
         public void Test_Observer_NoIObserverParent()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = NoInterfaces();
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            Assert.False(observer.cObserverExtendsIObserver());
+            var score = calculator.GetScore("OBSERVER", observer.GetResult());
+            Assert.NotEqual(100, score);
         }
 
         [Fact]
         public void Test_Observer_HasNoObserverInterface()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = NoInterfaces();
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            Assert.False(observer.HasObserverInterfaceWithUpdateFunction());
+            var score = calculator.GetScore("OBSERVER", observer.GetResult());
+            Assert.NotEqual(100, score);
         }
 
         [Fact]
         public void Test_Observer_SubjectHasNoObserverList()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = NoObserverList();
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
-            Assert.False(observer.HasSubjectWithObserverList());
+            var score = calculator.GetScore("OBSERVER", observer.GetResult());
+            Assert.NotEqual(100, score);
         }
     }
 }

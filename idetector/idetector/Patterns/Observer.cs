@@ -3,6 +3,7 @@ using idetector.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,19 +17,12 @@ namespace idetector.Patterns
         private Dictionary<ClassModel, int> _scores = new Dictionary<ClassModel, int>();
         private ClassCollection cc;
         private List<ClassModel> interfaces = new List<ClassModel>();
+        private List<RequirementResult> _results = new List<RequirementResult>();
 
 
         public Observer(ClassCollection _cc)
         {
             cc = _cc;
-            
-            PriorityCollection.ClearPriorities();
-            PriorityCollection.AddPriority("observer", "HasUpdateFunction", Priority.Low);
-            PriorityCollection.AddPriority("observer", "HasObserverInterfaceWithUpdateFunction", Priority.Medium);
-            PriorityCollection.AddPriority("observer", "HasObserverInterfaceWithNamedUpdateFunction", Priority.High);
-            PriorityCollection.AddPriority("observer", "HasSubjectFunctions", Priority.High);
-            PriorityCollection.AddPriority("observer", "HasSubjectWithObserverList", Priority.Medium);
-            PriorityCollection.AddPriority("observer", "ConcreteObserverExtendsIObserver", Priority.Medium);
         }
 
         public void Scan()
@@ -37,34 +31,21 @@ namespace idetector.Patterns
 
             _score = 0;
 
-            if (HasUpdateFunction())
-            {
-                _score += PriorityCollection.GetPercentage("observer", "HasUpdateFunction");
-            }
+            // doet bijna hetzelfde
+            // 1 checkt of er een interface is met een void function genaamd update die een interface als parameter heeft
+            // 2 checkt of er een interface is met een void function die een interface als parameter heeft
+            _results.Add(HasObserverInterfaceWithUpdateFunction());
+            _results.Add(HasObserverInterfaceWithNamedUpdateFunction());
 
-            if (HasObserverInterfaceWithNamedUpdateFunction())
-            {
-                _score += PriorityCollection.GetPercentage("observer", "HasObserverInterfaceWithNamedUpdateFunction");
-            } 
-            else if (HasObserverInterfaceWithUpdateFunction())
-            { 
-                _score += PriorityCollection.GetPercentage("observer", "HasObserverInterfaceWithUpdateFunction");
-            }
+            _results.Add(HasSubjectWithObserverList());
+            _results.Add(HasSubjectFunctions());
+            _results.Add(ConcreteObserverExtendsIObserver());
 
-            if (HasSubjectFunctions())
-            {
-                _score += PriorityCollection.GetPercentage("observer", "HasSubjectFunctions");
-            }
+        }
 
-            if (HasSubjectWithObserverList())
-            {
-                _score += PriorityCollection.GetPercentage("observer", "HasSubjectWithObserverList");
-            }
-
-            if (ConcreteObserverExtendsIObserver())
-            {
-                _score += PriorityCollection.GetPercentage("observer", "ConcreteObserverExtendsIObserver");
-            }
+        public List<RequirementResult> GetResult()
+        {
+            return _results;
         }
 
         private void SetInterfaces()
@@ -85,7 +66,7 @@ namespace idetector.Patterns
         }
 
         // Checks for existing interface with a void function that's named 'update' and has an interface as parameter
-        public bool HasObserverInterfaceWithNamedUpdateFunction()
+        public RequirementResult HasObserverInterfaceWithNamedUpdateFunction()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
@@ -103,18 +84,18 @@ namespace idetector.Patterns
                                 ClassModel targetClass = cc.GetClass(paramList[0]);
                                 if (targetClass.IsInterface)
                                 {
-                                    return true;
+                                    return new RequirementResult("OBSERVER-HAS-INTERFACE-WITH-NAMED-UPDATE-FUNCTION", true);
                                 }
                             }
                         }
                     }
                 }
             }
-            return false;
+            return new RequirementResult("OBSERVER-HAS-INTERFACE-WITH-NAMED-UPDATE-FUNCTION", false);
         }
 
         // Checks for existing interface with a void function that has an interface as parameter
-        public bool HasObserverInterfaceWithUpdateFunction()
+        public RequirementResult HasObserverInterfaceWithUpdateFunction()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
@@ -124,7 +105,7 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.getMethods().Count > 1)
                         {
-                            return false;
+                            return new RequirementResult("OBSERVER-HAS-INTERFACE-WITH-UPDATE-FUNCTION", false);
                         }
                         else
                         {
@@ -138,7 +119,7 @@ namespace idetector.Patterns
                                     ClassModel targetClass = cc.GetClass(paramList[0]);
                                     if (targetClass.IsInterface)
                                     {
-                                        return true;
+                                        return new RequirementResult("OBSERVER-HAS-INTERFACE-WITH-UPDATE-FUNCTION", true);
                                     }
                                 }
                             }
@@ -146,36 +127,12 @@ namespace idetector.Patterns
                     }
                 }
             }
-            return false;
+            return new RequirementResult("OBSERVER-HAS-INTERFACE-WITH-UPDATE-FUNCTION", false);
         }
-
-        // Checks if there is an interface that has a void function called 'Update'
-        public bool HasUpdateFunction()
-        {
-            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
-            {
-                if (cls.Value.Modifiers != null)
-                {
-                    if (cls.Value.IsInterface)
-                    {
-                        foreach (var method in cls.Value.getMethods())
-                        {
-                            if (method.ReturnType.ToLower().Equals("void") &&
-                                method.Identifier.ToLower().Equals("update"))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
-
+        
         // Checks for a subject class that has at least 2 void functions
         // that could indicate an observer pattern (subscribe & unsubscribe)
-        public bool HasSubjectFunctions()
+        public RequirementResult HasSubjectFunctions()
         {
             int probability = 0;
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -197,19 +154,19 @@ namespace idetector.Patterns
                                 probability++;
                                 if (probability == 2)
                                 {
-                                    return true;
+                                    return new RequirementResult("OBSERVER-HAS-SUBJECT-FUNCTIONS", true);
                                 }
                             }
                         }
                     }
                 }
             }
-            return false;
+            return new RequirementResult("OBSERVER-HAS-SUBJECT-FUNCTIONS", false);
         }
 
         // Checks if there is a class that has a list of interfaces. 
         // If true, probably a subject class with a list filled with observers
-        public bool HasSubjectWithObserverList()
+        public RequirementResult HasSubjectWithObserverList()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
@@ -226,23 +183,26 @@ namespace idetector.Patterns
 
                             string target = identifier.Substring(pFrom, pTo - pFrom);
 
-                            ClassModel targetClass = cc.GetClass(target);
+                            ClassModel targetClass = cc.GetClass("IObserver");
+
+                            // not sure if it has to be a list of interfaces or a list of classes that extend an interface but
+                            // example code had a list of interfaces 
 
                             if (targetClass.IsInterface)
                             {
-                                return true;
+                                return new RequirementResult("OBSERVER-HAS-SUBJECT-WITH-OBSERVER-LIST", true);
                             }
                         }
                     }
                 }
             }
 
-            return false;
+            return new RequirementResult("OBSERVER-HAS-SUBJECT-WITH-OBSERVER-LIST", false);
         }
 
         // Checks if there is a class that extends 'IObserver'
         // names can be different though so idk if makes sense to check at all
-        public bool ConcreteObserverExtendsIObserver()
+        public RequirementResult ConcreteObserverExtendsIObserver()
         { 
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
@@ -250,18 +210,20 @@ namespace idetector.Patterns
                 if (parents != null)
                 {
                     // ervan uitgaande dat observer interface altijd IObserver heet
+                    // misschien aanpassen naar het checken van interface implemention en dan kijken of die interface weer voldoet aan
+                    // de observer interface requirements ofzo
                     if (parents.Contains("IObserver"))
                     {
                         ClassModel target = cc.GetClass(parents[0]);
                         if (target.IsInterface)
                         {
-                            return true;
+                            return new RequirementResult("OBSERVER-CONCRETE-OBSERVER-EXTENDS-IOBSERVERS", true);
                         }
                     }
                 }
             }
 
-            return false;
+            return new RequirementResult("OBSERVER-CONCRETE-OBSERVER-EXTENDS-IOBSERVERS", false);
         }
     }
 }
