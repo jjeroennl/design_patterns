@@ -12,7 +12,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Image Source="Logo.png" />
+        <Image Source="Resources/Logo.png" />
         <StackPanel Grid.Row="2" >
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                 <StackPanel x:Name="ScanButtons" VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Horizontal" Grid.ColumnSpan="2">

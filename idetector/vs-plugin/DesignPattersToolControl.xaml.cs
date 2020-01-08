@@ -17,6 +17,7 @@ namespace vs_plugin
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
+    using vs_plugin.Code;
 
     /// <summary>
     /// Interaction logic for ToolWindow1Control.
@@ -31,6 +32,12 @@ namespace vs_plugin
         public ToolWindow1Control()
         {
             this.InitializeComponent();
+
+            UIHandler.StackPanels.Add(ModeButtons);
+            UIHandler.StackPanels.Add(ScanButtons);
+            UIHandler.StackPanels.Add(Summary);
+            UIHandler.StackPanels.Add(SummaryCondition);
+            UIHandler.StackPanels.Add(MoreInfo);
         }
 
         public ClassCollection GetOpenWindowText()
@@ -183,35 +190,9 @@ namespace vs_plugin
         /// </summary>
         private void SwitchMode_Click(object sender, RoutedEventArgs e)
         {
-            SolidColorBrush color = (isLight) ? new SolidColorBrush(Colors.White) : new SolidColorBrush(Colors.Black);
-
-            List<StackPanel> stackPanels = new List<StackPanel>();
-            stackPanels.Add(ModeButtons);
-            stackPanels.Add(ScanButtons);
-            stackPanels.Add(Summary);
-            stackPanels.Add(SummaryCondition);
-            stackPanels.Add(MoreInfo);
-            foreach (StackPanel stackPanel in stackPanels)
-            {
-                foreach (var item in stackPanel.Children)
-                {
-                    if (item is Control)
-                    {
-                        Control control = (Control)item;
-                        control.Foreground = color;
-                    }
-                }
-            }
-            ConditionIcon.Foreground = new SolidColorBrush(Colors.Red);
-
+            UIHandler.SwitchMode();
             SolidColorBrush otherTheme = (isLight) ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(Colors.White);
             SwitchMode.Background = otherTheme;
-
-            isLight = !isLight;
-        }
-
-        private void SwitchMode_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
 
         }
     }
