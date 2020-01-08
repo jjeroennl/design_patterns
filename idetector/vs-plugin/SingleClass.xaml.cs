@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using vs_plugin.Code;
 
 namespace vs_plugin
 {
@@ -29,6 +30,8 @@ namespace vs_plugin
         {
             TextBlock textBlock = new TextBlock();
             textBlock.Text = handle;
+
+            UIHandler.ControlItems.Add(textBlock);
 
             ClassName.Header = textBlock;
         }
