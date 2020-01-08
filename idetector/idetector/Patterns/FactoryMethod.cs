@@ -19,6 +19,8 @@ namespace idetector.Patterns
          *FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS
          *FACTORY-INHERITING-PRODUCT-INTERFACE
          *FACTORY-RETURNS-PRODUCT
+         *FACTORY-ONE-METHOD
+         *FACTORY-ONE-PRODUCT-INTERFACE
          */
         private List<RequirementResult> _results = new List<RequirementResult>();
 
