@@ -459,6 +459,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             FactoryMethod factoryMethod = new FactoryMethod(collection);
+            factoryMethod.Scan();
             Assert.True(factoryMethod.ContainsAbstractFactoryClass().Passed);
             Assert.False(factoryMethod.ContainsAbstractProductInterfaceMethod().Passed);
         }
