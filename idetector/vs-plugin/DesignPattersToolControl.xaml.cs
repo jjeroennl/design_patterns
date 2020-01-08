@@ -33,11 +33,29 @@ namespace vs_plugin
         {
             this.InitializeComponent();
 
-            UIHandler.StackPanels.Add(ModeButtons);
-            UIHandler.StackPanels.Add(ScanButtons);
-            UIHandler.StackPanels.Add(Summary);
-            UIHandler.StackPanels.Add(SummaryCondition);
-            UIHandler.StackPanels.Add(MoreInfo);
+            InitializeCustomUI();
+        }
+
+        public void InitializeCustomUI()
+        {
+            List<StackPanel> StackPanels = new List<StackPanel>();
+
+            StackPanels.Add(ModeButtons);
+            StackPanels.Add(ScanButtons);
+            StackPanels.Add(Summary);
+            StackPanels.Add(SummaryCondition);
+            StackPanels.Add(MoreInfo);
+
+            foreach (StackPanel stackPanel in StackPanels)
+            {
+                foreach (var item in stackPanel.Children)
+                {
+                    if (item is Control)
+                    {
+                        UIHandler.ControlItems.Add((Control)item);
+                    }
+                }
+            }
         }
 
         public ClassCollection GetOpenWindowText()
