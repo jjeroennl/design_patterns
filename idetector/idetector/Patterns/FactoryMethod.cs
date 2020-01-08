@@ -144,7 +144,6 @@ namespace idetector.Patterns
             {
                 return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", false);
             }
-            Console.WriteLine(interfaces.Count);
             return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", true);
         }
 

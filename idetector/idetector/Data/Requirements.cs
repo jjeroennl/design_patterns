@@ -95,7 +95,6 @@ namespace idetector.Data
         }
         public Dictionary<string, List<PatternRequirement>> GetRequirements()
         {
-            Console.WriteLine("hoi");
             return PatternRequirements;
         }
 
