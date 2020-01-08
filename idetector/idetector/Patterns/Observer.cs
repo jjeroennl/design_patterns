@@ -187,12 +187,8 @@ namespace idetector.Patterns
 
                             // not sure if it has to be a list of interfaces or a list of classes that extend an interface but
                             // example code had a list of interfaces 
-
-                            if (targetClass.IsInterface)
-                            {
-                                return new RequirementResult("OBSERVER-HAS-SUBJECT-WITH-OBSERVER-LIST", true);
+                            return new RequirementResult("OBSERVER-HAS-SUBJECT-WITH-OBSERVER-LIST", true);
                             }
-                        }
                     }
                 }
             }
