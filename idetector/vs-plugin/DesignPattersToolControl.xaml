@@ -5,45 +5,48 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
              mc:Ignorable="d"
-             Name="MyToolWindow" MinHeight="150">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="9*" />
-            <ColumnDefinition Width="2*"/>
-        </Grid.ColumnDefinitions>
+             Name="MyToolWindow">
+    <Grid x:Name="idetectorPlugin" >
         <Grid.RowDefinitions>
-            <RowDefinition Height="32px" />
+            <RowDefinition Height="45" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <StackPanel  VerticalAlignment="Stretch" HorizontalAlignment="Left" Orientation="Horizontal" Grid.ColumnSpan="2">
-            <Button x:Name="ScanProject" Content="Scan Current Project" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="120" Click="Scan_Current_project" Background="{x:Null}" Foreground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
-            <Button x:Name="ScanFile" Content="Scan Current File" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="100" Click="Scan_Current_file" Foreground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Background="{x:Null}"/>
-        </StackPanel>
 
-        <Grid HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch" Name="DesignPatterns" Grid.ColumnSpan="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
+        <Image Source="Logo.png" />
+        <StackPanel Grid.Row="2" >
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                <StackPanel x:Name="ScanButtons" VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Horizontal" Grid.ColumnSpan="2">
+                    <Button x:Name="ScanProject" Content="Scan Current Project" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="120" Click="Scan_Current_project" Background="{x:Null}" />
+                    <Button x:Name="ScanFile" Content="Scan Current File" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="100" Click="Scan_Current_file" Background="{x:Null}"/>
+                </StackPanel>
+            </StackPanel>
+            <Grid HorizontalAlignment="Stretch" MinHeight="150" Grid.Row="2"  VerticalAlignment="Stretch" Name="DesignPatterns" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
 
-            <StackPanel x:Name="PatternList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0.4,-0.4"></StackPanel>
+                <StackPanel x:Name="PatternList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0.4,-0.4"></StackPanel>
 
-            <StackPanel x:Name="Summary" Grid.Column="1">
-                <StackPanel HorizontalAlignment="Left" Orientation="Vertical">
-                    <Label Content="Summary" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" FontSize="20" FontWeight="Bold" Grid.ColumnSpan="2"/>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="⚠️" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" FontSize="15" Foreground="#FFCA0000"/>
-                        <Label Content="Condition" Margin="-7,0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" FontWeight="Bold" FontSize="15"/>
+                <StackPanel Grid.Column="2">
+                    <StackPanel x:Name="Summary"  HorizontalAlignment="Left" Orientation="Vertical">
+                        <Label x:Name="SummaryHeader" Content="Summary" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Grid.ColumnSpan="2"/>
+                        <StackPanel x:Name="SummaryCondition" Orientation="Horizontal">
+                            <Label x:Name="ConditionIcon" Content="⚠️" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" FontSize="15" Foreground="Red"/>
+                            <Label Content="Condition" Margin="-7,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" FontSize="15"/>
+                        </StackPanel>
+                        <Label x:Name="ConditionText" Content="Placeholder text" HorizontalAlignment="Left" VerticalAlignment="Top" />
+
+                    </StackPanel>
+                    <StackPanel x:Name="MoreInfo" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" >
+                        <Label Content="More info..." FontStyle="Italic"/>
+
+                        <StackPanel x:Name="ModeButtons" VerticalAlignment="Top" HorizontalAlignment="Right" Orientation="Horizontal" Grid.ColumnSpan="2">
+                            <Button x:Name="SwitchMode" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="20" Height="10" Click="SwitchMode_Click" Background="White" />
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
-                
-                <Label Content="Placeholder text" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
-
-            </StackPanel>
-            <Label Content="More info..." Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" FontStyle="Italic"/>
-
-
-        </Grid>
-
+            </Grid>
+        </StackPanel>
     </Grid>
 </UserControl>

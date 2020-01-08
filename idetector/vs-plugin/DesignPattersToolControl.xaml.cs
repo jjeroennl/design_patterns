@@ -16,12 +16,15 @@ namespace vs_plugin
     using System;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Media;
 
     /// <summary>
     /// Interaction logic for ToolWindow1Control.
     /// </summary>
     public partial class ToolWindow1Control : UserControl
     {
+        private bool isLight = true;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ToolWindow1Control"/> class.
         /// </summary>
@@ -173,6 +176,43 @@ namespace vs_plugin
             }
 
             this.AddClasses(collection); ;
+        }
+
+        /// <summary>
+        /// Changes plugin colors.
+        /// </summary>
+        private void SwitchMode_Click(object sender, RoutedEventArgs e)
+        {
+            SolidColorBrush color = (isLight) ? new SolidColorBrush(Colors.White) : new SolidColorBrush(Colors.Black);
+
+            List<StackPanel> stackPanels = new List<StackPanel>();
+            stackPanels.Add(ModeButtons);
+            stackPanels.Add(ScanButtons);
+            stackPanels.Add(Summary);
+            stackPanels.Add(SummaryCondition);
+            stackPanels.Add(MoreInfo);
+            foreach (StackPanel stackPanel in stackPanels)
+            {
+                foreach (var item in stackPanel.Children)
+                {
+                    if (item is Control)
+                    {
+                        Control control = (Control)item;
+                        control.Foreground = color;
+                    }
+                }
+            }
+            ConditionIcon.Foreground = new SolidColorBrush(Colors.Red);
+
+            SolidColorBrush otherTheme = (isLight) ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(Colors.White);
+            SwitchMode.Background = otherTheme;
+
+            isLight = !isLight;
+        }
+
+        private void SwitchMode_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+
         }
     }
 }

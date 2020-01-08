@@ -116,6 +116,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Logo.png" />
     <Content Include="Resources\ToolWindow1Command.png" />
     <VSCTCompile Include="vs_pluginPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
