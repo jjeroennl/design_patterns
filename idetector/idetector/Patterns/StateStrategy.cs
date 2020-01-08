@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace idetector.Patterns
 {
     /*ID's:
+     * STATE-STRATEGY-HAS-CONTEXT
      * STATE-STRATEGY-CONTEXT-HAS-STRATEGY
      * STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY
      * STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR
@@ -31,10 +32,10 @@ namespace idetector.Patterns
         private List<RequirementResult> _results = new List<RequirementResult>();
 
 
-        public StateStrategy(ClassCollection _cc, bool state)
+        public StateStrategy(ClassCollection _cc, bool isState)
         {
             cc = _cc;
-            IsState = state;
+            IsState = isState;
             Concretes = new ClassCollection();
 
         }
@@ -42,8 +43,9 @@ namespace idetector.Patterns
         public void Scan()
         {
             _results.Add(HasInterfaceOrAbstract());
+            _results.Add(ContextChecks());
             _results.Add(HasConcreteClasses());
-            if (IsState)
+            if (!IsState)
             {
                 _results.Add(HasRelationsBetweenConcreteClasses());
             }
@@ -64,52 +66,47 @@ namespace idetector.Patterns
             return (int) _score;
         }
 
-
-        public int Score(ClassModel clsmodel)
-        {
-            if (this._scores.ContainsKey(clsmodel)) return this._scores[clsmodel];
-            
-            return 0;
-        }
-
         /// <summary>
         /// Checking if there is a class which suffises as an 'Context' class
         /// </summary>
         /// <returns>CheckedMessage</returns>
-        public CheckedMessage ContextChecks()
+        public RequirementResult ContextChecks()
         {
             int score = 0;
             int i = 100 / 5;
-            
+
             foreach (var cls in cc.GetClasses())
             {
-                _scores[cls.Value] = 0;
-
-                if (ContextHasStrategy(cls.Value).isTrue)
+                if (ContextHasStrategy(cls.Value).Passed)
                 {
                     score += i;
-                    if (ContextHasPrivateStrategy(cls.Value).isTrue) score += i;
+                    if (ContextHasPrivateStrategy(cls.Value).Passed) score += i;
                 }
-                if (ContextHasPublicConstructor(cls.Value).isTrue) score += i;
+                if (ContextHasPublicConstructor(cls.Value).Passed) score += i;
 
-                if (ContextHasStrategySetter(cls.Value).isTrue) score += i;
+                if (ContextHasStrategySetter(cls.Value).Passed) score += i;
 
-                if (ContextHasLogic(cls.Value).isTrue) score += i;
+                if (ContextHasLogic(cls.Value).Passed) score += i;
+
+                if (score >= 50)
+                {
+                    Context = cls.Value;
+                    return new RequirementResult("STATE-STRATEGY-HAS-CONTEXT", true);
+                }
+            }
+            return new RequirementResult("STATE-STRATEGY-HAS-CONTEXT", false);
+        }
         private RequirementResult ContextHasStrategy(ClassModel cls)
         {
             if (cls != null)
             {
                 foreach (var property in cls.getProperties())
                 {
-
                     if (cc.GetClass(property.ValueType.ToString()) != null)
                     {
                         if (cc.GetClass(property.ValueType.ToString()) == Interface)
                         {
-                            if (cc.GetClass(property.ValueType.ToString()) == Interface)
-                            {
-                                return new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true);
-                            }
+                            return new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true);
                         }
                     }
 
@@ -118,8 +115,6 @@ namespace idetector.Patterns
 
             return new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", false);
           }
-
-
 
         public RequirementResult ContextHasPrivateStrategy(ClassModel cls)
         {
@@ -191,10 +186,10 @@ namespace idetector.Patterns
                         {
                             if (property.ValueType.ToString() == Interface.Identifier)
                             {
-                                if (property.ValueType.ToString() == Interface.Identifier)
+                                if (method.Parameters.Contains(property.ValueType.ToString()) &&
+                                    method.Body.Contains(property.Identifier))
                                 {
-                                    if (method.Parameters.Contains(property.ValueType.ToString()) &&
-                                        method.Body.Contains(property.Identifier))
+                                    if (!method.isConstructor)
                                     {
                                         Setter = method;
                                         return new RequirementResult("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", true);
@@ -219,16 +214,13 @@ namespace idetector.Patterns
                     {
                         foreach (var property in cls.getProperties())
                         {
-                            if (cc.GetClass(property.ValueType.ToString()) != null)
+                            if (cc.GetClass(property.ValueType.ToString()) == Interface)
                             {
-                                if (cc.GetClass(property.ValueType.ToString()) == Interface)
+                                if (Setter == null || method != Setter)
                                 {
-                                    if (Setter == null || method != Setter)
+                                    if (method.Body.Contains(property.Identifier))
                                     {
-                                        if (method.Body.Contains(property.Identifier))
-                                        {
-                                            return new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", true);
-                                        }
+                                        return new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", true);
                                     }
                                 }
                             }
@@ -288,7 +280,7 @@ namespace idetector.Patterns
                             {
                                 if (method.Body.Contains(cs.Value.Identifier))
                                 {
-                                    return new RequirementResult("STATE-CONCRETE-CLASS-RELATIONS", false);
+                                    return new RequirementResult("STRATEGY-CONCRETE-CLASS-RELATIONS", false);
 
                                 }
                             }
@@ -296,7 +288,7 @@ namespace idetector.Patterns
                     }
                 }
             }
-            return new RequirementResult("STATE-CONCRETE-CLASS-RELATIONS", true);
+            return new RequirementResult("STRATEGY-CONCRETE-CLASS-RELATIONS", true);
         }
     }
 }
