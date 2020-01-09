@@ -20,11 +20,35 @@ namespace idetector.Patterns.Helper
                 if (property.ValueType.Equals(type))
                 {
                     if (modifiers == null) return true;
-                    
+
                     return modifiers.All(m => property.HasModifier(m));
                 }
 
             return false;
+        }
+
+        /// <summary>
+        ///     Get the given class has a property of the given type and (optionally) the given modifiers
+        /// </summary>
+        /// <param name="cls">ClassModel Object</param>
+        /// <param name="type">Returntype of property</param>
+        /// <param name="modifiers">(optional) A list of modifiers of property</param>
+        /// <returns>True or False</returns>
+        public static List<PropertyModel> ClassGetPropertiesOfType(ClassModel cls, string type,
+            string[] modifiers = null)
+        {
+            List<PropertyModel> properties = new List<PropertyModel>();
+            foreach (var property in cls.getProperties())
+                if (property.ValueType.Equals(type))
+                {
+                    if (modifiers == null) continue;
+                    if (modifiers.All(m => property.HasModifier(m)))
+                    {
+                        properties.Add(property);
+                    }
+                }
+
+            return properties;
         }
 
         /// <summary>
@@ -49,6 +73,31 @@ namespace idetector.Patterns.Helper
                     e.ReturnType == type
                     && (e.isConstructor && allowConstructor || e.isConstructor == false && !allowConstructor));
         }
+
+        /// <summary>
+        ///     Get the given class has a method of the given type and (optionally) the given modifiers
+        /// </summary>
+        /// <param name="cls">ClassModel Object</param>
+        /// <param name="type">Returntype of property</param>
+        /// <param name="modifiers">(optional) A list of modifiers of property</param>
+        /// <param name="allowConstructor">Whether or not a constructor may be considered as a method</param>
+        /// <returns>True or False</returns>
+        public static List<MethodModel> ClassGetMethodOfType(ClassModel cls, string type, string[] modifiers = null)
+        {
+            List<MethodModel> methodList = new List<MethodModel>();
+            if (modifiers != null)
+            {
+                foreach (var method in cls.getMethods().Where(
+                    e =>
+                        modifiers.All(e.HasModifier)
+                        && e.ReturnType == type)){
+                    methodList.Add(method);
+                }
+            }
+            
+            return methodList;
+        }
+
 
         /// <summary>
         ///     Check if the given class has a method of the given type and (optionally) the given modifiers
@@ -84,7 +133,6 @@ namespace idetector.Patterns.Helper
             foreach (var obj in cls.ObjectCreations)
                 if (obj.Identifier.Equals(type))
                     return true;
-
             return false;
         }
 
@@ -94,7 +142,7 @@ namespace idetector.Patterns.Helper
             foreach (var cls in collection.GetClasses())
             {
                 if (cls.Value.IsAbstract)
-                {                
+                {
                     classes.Add(cls.Value);
                 }
             }

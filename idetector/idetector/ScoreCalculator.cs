@@ -52,5 +52,15 @@ namespace idetector
             val = (int)score;
             return val;
         }
+        
+        public Dictionary<string, int> GetScore(string pattern, Dictionary<string, List<RequirementResult>> results)
+        {
+            var scores = new Dictionary<string, int>();
+            foreach (var result in results)
+            {
+                scores.Add(result.Key, GetScore(pattern, result.Value));
+            }
+            return scores;
+        }
     }
 }

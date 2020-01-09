@@ -6,13 +6,19 @@ namespace idetector.Models
     {
         public string Id;
         public bool Passed;
-        public ClassModel Cls;
+        public ClassModel @Class;
+        public MethodModel @Method;
 
-        public RequirementResult(string id, bool passed, ClassModel cls)
+        public RequirementResult(string id, bool passed, ClassModel cls, MethodModel mthd = null)
         {
             Id = id;
             Passed = passed;
-            Cls = cls;
+            @Class = cls;
+
+            if (mthd == null)
+            {
+                @Method = mthd;
+            }
         }
     }
 }
