@@ -21,7 +21,7 @@ namespace idetector.Models
 
         private List<MethodModel> Methods = new List<MethodModel>();
         private List<PropertyModel> Properties = new List<PropertyModel>();
-        private HashSet<ClassModel> Parents = new HashSet<ClassModel>();
+        public HashSet<ClassModel> Parents = new HashSet<ClassModel>();
         public HashSet<ClassModel> ObjectCreations = new HashSet<ClassModel>();
         public HashSet<string> UnknownParent = new HashSet<string>();
 
