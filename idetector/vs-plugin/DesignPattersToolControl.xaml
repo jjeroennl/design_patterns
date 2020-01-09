@@ -6,7 +6,7 @@
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
              mc:Ignorable="d"
              Name="MyToolWindow">
-    <Grid x:Name="idetectorPlugin" >
+    <Grid x:Name="idetectorPlugin" VerticalAlignment="Stretch" >
         <Grid.RowDefinitions>
             <RowDefinition Height="45" />
             <RowDefinition Height="*" />
@@ -20,31 +20,37 @@
                     <Button x:Name="ScanFile" Content="Scan Current File" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="100" Click="Scan_Current_file" Background="{x:Null}"/>
                 </StackPanel>
             </StackPanel>
-            <Grid HorizontalAlignment="Stretch" MinHeight="150" Grid.Row="2"  VerticalAlignment="Stretch" Name="DesignPatterns" Grid.ColumnSpan="2">
+            <Grid HorizontalAlignment="Stretch" Grid.Row="2" VerticalAlignment="Stretch" Name="DesignPatterns" Grid.ColumnSpan="2" Height="auto">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel x:Name="PatternList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0.4,-0.4"></StackPanel>
+                <StackPanel x:Name="PatternList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></StackPanel>
 
                 <StackPanel Grid.Column="2">
-                    <StackPanel x:Name="Summary"  HorizontalAlignment="Left" Orientation="Vertical">
-                        <Label x:Name="SummaryHeader" Content="Summary" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Grid.ColumnSpan="2"/>
+                    <StackPanel x:Name="Summary"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Orientation="Vertical">
+                        <Label x:Name="SummaryHeader" Content="Summary" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Grid.ColumnSpan="2"/>
                         <StackPanel x:Name="SummaryCondition" Orientation="Horizontal">
                             <Label x:Name="ConditionIcon" Content="⚠️" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" FontSize="15" Foreground="Red"/>
-                            <Label Content="Condition" Margin="-7,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" FontSize="15"/>
+                            <Label Content="Condition" Margin="-7,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontWeight="Bold" FontSize="15"/>
+
                         </StackPanel>
-                        <Label x:Name="ConditionText" Content="Placeholder text" HorizontalAlignment="Left" VerticalAlignment="Top" />
+
+                        <Canvas x:Name="Canvas" Height="{Binding ElementName=ConditionText, Path=ActualHeight}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <TextBlock x:Name="ConditionText" Text="Placeholder text"
+                            Width="{Binding ElementName=Canvas, Path=ActualWidth}"
+                            TextWrapping="WrapWithOverflow"/>
+                        </Canvas>
+
+                        <StackPanel x:Name="MoreInfo" Margin="0,10,0,0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" >
+
+                            <Label Content="More info..." FontStyle="Italic"/>
+                            <Button x:Name="SwitchMode" HorizontalAlignment="Right" VerticalAlignment="Top" MinWidth="20" Height="10" Click="SwitchMode_Click" Background="White" />
+                        </StackPanel>
 
                     </StackPanel>
-                    <StackPanel x:Name="MoreInfo" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" >
-                        <Label Content="More info..." FontStyle="Italic"/>
 
-                        <StackPanel x:Name="ModeButtons" VerticalAlignment="Top" HorizontalAlignment="Right" Orientation="Horizontal" Grid.ColumnSpan="2">
-                            <Button x:Name="SwitchMode" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="20" Height="10" Click="SwitchMode_Click" Background="White" />
-                        </StackPanel>
-                    </StackPanel>
                 </StackPanel>
             </Grid>
         </StackPanel>

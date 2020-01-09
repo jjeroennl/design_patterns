@@ -13,11 +13,16 @@ namespace vs_plugin.Code
     {
         public static bool IsLight { get; set; } = true;
         public static List<UIElement> ControlItems = new List<UIElement>();
-
+        static SolidColorBrush color = new SolidColorBrush(Colors.Black);
         public static void SwitchMode()
         {
-            SolidColorBrush color = (IsLight) ? new SolidColorBrush(Colors.White) : new SolidColorBrush(Colors.Black);
+            color = (IsLight) ? new SolidColorBrush(Colors.White) : new SolidColorBrush(Colors.Black);
 
+            IsLight = !IsLight;
+        }
+
+        public static void UpdateColors()
+        {
             foreach (var item in ControlItems)
             {
                 if (item is Control)
@@ -40,11 +45,7 @@ namespace vs_plugin.Code
                         textBlock.Foreground = color;
                     }
                 }
-
-                
             }
-
-            IsLight = !IsLight;
         }
     }
 }

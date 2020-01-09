@@ -30,9 +30,7 @@ namespace vs_plugin
         {
             TextBlock textBlock = new TextBlock();
             textBlock.Text = handle;
-
             UIHandler.ControlItems.Add(textBlock);
-
             ClassName.Header = textBlock;
         }
     }

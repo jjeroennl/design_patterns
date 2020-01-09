@@ -22,14 +22,14 @@ namespace vs_plugin
     /// </summary>
     public partial class SinglePattern : UserControl
     {
-        private string Test;
-
         public void SetHandle(string handle)
         {
             TextBlock textBlock = new TextBlock();
             textBlock.Text = handle;
             UIHandler.ControlItems.Add(textBlock);
             PatternName1.Header = textBlock;
+
+            UIHandler.UpdateColors();
         }
 
         public SinglePattern()

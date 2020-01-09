@@ -24,8 +24,6 @@ namespace vs_plugin
     /// </summary>
     public partial class ToolWindow1Control : UserControl
     {
-        private bool isLight = true;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ToolWindow1Control"/> class.
         /// </summary>
@@ -40,7 +38,6 @@ namespace vs_plugin
         {
             List<StackPanel> StackPanels = new List<StackPanel>();
 
-            StackPanels.Add(ModeButtons);
             StackPanels.Add(ScanButtons);
             StackPanels.Add(Summary);
             StackPanels.Add(SummaryCondition);
@@ -51,11 +48,12 @@ namespace vs_plugin
                 foreach (var item in stackPanel.Children)
                 {
                     if (item is Control)
-                    {
                         UIHandler.ControlItems.Add((Control)item);
-                    }
+                    if (item is TextBlock)
+                        UIHandler.ControlItems.Add((TextBlock)item);
                 }
             }
+            UIHandler.ControlItems.Add(ConditionText);
         }
 
         public ClassCollection GetOpenWindowText()
@@ -106,9 +104,9 @@ namespace vs_plugin
                 return;
             }
 
-            this.AddClasses(collection); ;
+            this.AddClasses(collection);
 
-
+            UIHandler.UpdateColors();
         }
 
         private void AddClasses(ClassCollection collection)
@@ -200,7 +198,8 @@ namespace vs_plugin
                 return;
             }
 
-            this.AddClasses(collection); ;
+            this.AddClasses(collection);
+            UIHandler.UpdateColors();
         }
 
         /// <summary>
@@ -209,9 +208,17 @@ namespace vs_plugin
         private void SwitchMode_Click(object sender, RoutedEventArgs e)
         {
             UIHandler.SwitchMode();
-            SolidColorBrush otherTheme = (isLight) ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(Colors.White);
+            UIHandler.UpdateColors();
+            SolidColorBrush otherTheme = (UIHandler.IsLight) ? new SolidColorBrush(Colors.White) : new SolidColorBrush(Colors.Black);
             SwitchMode.Background = otherTheme;
 
+            UpdateConditionText("yeaaaaaaaaa this is my aaaaaaaaaaaa man");
+        }
+
+        private void UpdateConditionText(string text)
+        {
+            ConditionText.Text = text;
+            ConditionText.TextWrapping = TextWrapping.Wrap;
         }
     }
 }
