@@ -10,7 +10,8 @@ using idetector.Collections;
 using idetector.Parser;
 using idetector.Patterns;
 using Xunit;
-
+using idetector.Data;
+using idetector;
 
 namespace xUnitTest
 {
@@ -21,10 +22,13 @@ namespace xUnitTest
         {
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
 
             StateStrategy state= new StateStrategy(collection, true);
             state.Scan();
-            Assert.Equal(100, state.Score());
+            var score = calculator.GetScore("STATE", state.GetResult());
+            Assert.Equal(100, score);
         }
         [Fact]
 
@@ -32,29 +36,37 @@ namespace xUnitTest
         {
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
 
             StateStrategy state= new StateStrategy(collection, true);
             state.Scan();
-            Assert.NotEqual(100, state.Score());
+            var score = calculator.GetScore("STATE", state.GetResult());
+            Assert.InRange(score, 0, 75);
         }
         [Fact]
         public void Test_State_NoRelationsBetweenStates()
         {
+
             var tree = RelationsBetweenStates();
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy state = new StateStrategy(collection, true);
             state.Scan();
-            Assert.True(state.HasRelationsBetweenConcreteClasses().isTrue);
+
+            Assert.True(state.HasRelationsBetweenConcreteClasses().Passed);
         }
         [Fact]
         public void Test_OnlineCode()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var collection = Walker.GenerateModels(CSharpSyntaxTree.ParseText(TestStrings.StateExample()));
 
             StateStrategy state = new StateStrategy(collection, true);
             state.Scan();
-            Assert.InRange(state.Score(), 70, 75);
+            var score = calculator.GetScore("STATE", state.GetResult());
+            Assert.InRange(score, 80, 90);
         }
 
         SyntaxTree SuccessSetup()
@@ -200,15 +212,16 @@ namespace xUnitTest
                     public Context()
                     { }
 
-                    public Context(IState state)
+                    public Context()
                     { }
 
-                    public void SetState(IState state)
+                    public void SetState()
                     { }
 
                     public void DoSomeBusinessLogic()
                     { }
                 }
+
                 public class IState
                 {
                     object DoAlgorithm(object data);
