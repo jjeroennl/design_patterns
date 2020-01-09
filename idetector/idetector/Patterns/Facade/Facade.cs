@@ -12,7 +12,7 @@ namespace idetector.Patterns.Facade
         private ClassCollection collection;
         private int _score = 0;
         private List<ClassModel> results = new List<ClassModel>();
-        private Dictionary<string, int> _scores;
+        private Dictionary<string, int> _result;
 
         public Facade(ClassCollection collection)
         {

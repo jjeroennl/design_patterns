@@ -29,7 +29,7 @@ namespace idetector.Patterns
         public ClassModel Context;
         private List<ClassModel> interfaces;
         private MethodModel Setter;
-        private List<RequirementResult> _results = new List<RequirementResult>();
+        private Dictionary<string, List<RequirementResult>> _results = new Dictionary<string, List<RequirementResult>>();
 
 
         public StateStrategy(ClassCollection _cc, bool isState)
@@ -43,8 +43,8 @@ namespace idetector.Patterns
 
         public void Scan()
         {
-            _results.Add(HasInterfaceOrAbstract());
-            _results.Add(ContextChecks());
+            HasInterfaceOrAbstract();
+            ContextChecks();
             _results.Add(HasConcreteClasses());
             if (!IsState)
             {
@@ -57,7 +57,7 @@ namespace idetector.Patterns
             _results.Add(ContextHasLogic(Context));
         }
 
-        public List<RequirementResult> GetResult()
+        public Dictionary<string, RequirementResult> GetResult()
         {
             return _results;
         }
@@ -237,21 +237,17 @@ namespace idetector.Patterns
             return new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", false);
         }
 
-        public RequirementResult HasInterfaceOrAbstract()
+        public void HasInterfaceOrAbstract()
         {
             foreach (var cls in cc.GetClasses())
             {
                 if (cls.Value.IsInterface || cls.Value.IsAbstract)
                 {
                     interfaces.Add(cls.Value);
+                    _results.Add(cls.Value.Identifier, new List<RequirementResult>());
+                    _results[cls.Value.Identifier].Add( new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true, cls.Value));
                 }
             }
-            if (interfaces.Count > 0)
-            {
-                return new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true);
-            }
-
-            return new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", false);
         }
 
 
@@ -264,7 +260,12 @@ namespace idetector.Patterns
                 foreach (string parent in cls.Value.GetParents())
                 {
                     foreach (ClassModel @interface in interfaces)
-                    if (cc.GetClass(parent) == @interface) Concretes.AddClass(cls.Value);
+                        if (cc.GetClass(parent) == @interface)
+                        {
+                            Concretes.AddClass(cls.Value);
+                            _results[@interface.Identifier].Add( new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true, cls.Value));
+
+                        }
                 }
 
                 if (cc.GetClasses().Count == i && Concretes.GetClasses().Count >= 1)
