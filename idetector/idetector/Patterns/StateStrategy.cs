@@ -29,7 +29,7 @@ namespace idetector.Patterns
         public ClassModel Context;
         private List<ClassModel> interfaces;
         private MethodModel Setter;
-        private  Dictionary<string, RequirementResult> _results = new  Dictionary<string, RequirementResult>();
+        private Dictionary<string, List<RequirementResult>> _results = new Dictionary<string, List<RequirementResult>>();
 
 
         public StateStrategy(ClassCollection _cc, bool isState)
@@ -44,7 +44,7 @@ namespace idetector.Patterns
         public void Scan()
         {
             HasInterfaceOrAbstract();
-            _results.Add(ContextChecks());
+            ContextChecks();
             _results.Add(HasConcreteClasses());
             if (!IsState)
             {
@@ -244,11 +244,8 @@ namespace idetector.Patterns
                 if (cls.Value.IsInterface || cls.Value.IsAbstract)
                 {
                     interfaces.Add(cls.Value);
-                    _results.Add(cls.Value.Identifier, new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true));
-                }
-                else
-                {
-                    _results.Add(cls.Value.Identifier, new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", false));
+                    _results.Add(cls.Value.Identifier, new List<RequirementResult>());
+                    _results[cls.Value.Identifier].Add( new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true, cls.Value));
                 }
             }
         }
@@ -263,7 +260,12 @@ namespace idetector.Patterns
                 foreach (string parent in cls.Value.GetParents())
                 {
                     foreach (ClassModel @interface in interfaces)
-                    if (cc.GetClass(parent) == @interface) Concretes.AddClass(cls.Value);
+                        if (cc.GetClass(parent) == @interface)
+                        {
+                            Concretes.AddClass(cls.Value);
+                            _results[@interface.Identifier].Add( new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true, cls.Value));
+
+                        }
                 }
 
                 if (cc.GetClasses().Count == i && Concretes.GetClasses().Count >= 1)

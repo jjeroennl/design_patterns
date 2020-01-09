@@ -6,6 +6,6 @@ namespace idetector.Patterns
     public interface IPattern
     {
         void Scan();
-        Dictionary<string, RequirementResult> GetResults();
+        Dictionary<string, List<RequirementResult>> GetResults();
     }
 }
