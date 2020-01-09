@@ -44,6 +44,7 @@ namespace idetector.Data
             decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-CALLS-BASE", 1, "The concrete decorators call the base decorator's constructor"));
             PatternRequirements.Add("DECORATOR", decoratorreqs);
 
+            //ABSTRACT FACTORY METHOD
             /*ID's:
              *FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS
              *FACTORY-CONTAINS-PRODUCT-INTERFACE
@@ -51,21 +52,18 @@ namespace idetector.Data
              *FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS
              *FACTORY-INHERITING-PRODUCT-INTERFACE
              *FACTORY-RETURNS-PRODUCT         
-             *FACTORY-ONE-METHOD
-             *FACTORY-ONE-PRODUCT-INTERFACE
+             *FACTORY-MULTIPLE-METHODS
              */
             List<PatternRequirement> factoryreqs = new List<PatternRequirement>();
             factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", 1, ""));
             factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-PRODUCT-INTERFACE", 1, ""));
             factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", 1, ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", 1, ""));
             factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-PRODUCT-INTERFACE", 1, ""));
             factoryreqs.Add(new PatternRequirement("FACTORY-RETURNS-PRODUCT", 1, ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-ONE-METHOD", 1, ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-ONE-PRODUCT-INTERFACE", 1, ""));
+            factoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS", 1, ""));
             PatternRequirements.Add("FACTORY", factoryreqs);
 
-            //STATE STRATEGY
+            //STATESTRATEGY
             /*ID's:
              * STATE-STRATEGY-HAS-CONTEXT
              * STATE-STRATEGY-CONTEXT-HAS-STRATEGY
