@@ -14,6 +14,10 @@ namespace vs_plugin.Code
         public static ToolWindow1Control ToolWindow1Control { get; set; }
         public static SinglePattern SinglePattern { get; set; }
 
+        /// <summary>
+        /// Calls main page to update summary based on selected item.
+        /// </summary>
+        /// <param name="expander"></param>
         public static void SummarySelection(Expander expander)
         {
             ToolWindow1Control.UpdateSummary(expander.Name);
