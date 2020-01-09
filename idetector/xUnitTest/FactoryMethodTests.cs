@@ -339,7 +339,7 @@ namespace xUnitTest
         {
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
-
+            
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
             Assert.True(factoryMethod.ContainsIFactoryClass().Passed);
@@ -350,7 +350,7 @@ namespace xUnitTest
         {
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
-
+            
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
             Assert.True(factoryMethod.ContainsAbstractProductInterfaceMethod().Passed);
@@ -397,6 +397,7 @@ namespace xUnitTest
 
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
+
             Assert.True(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().Passed);
         }
 
@@ -465,7 +466,7 @@ namespace xUnitTest
         {
             var tree = MissingProductInterfaceSetup();
             var collection = Walker.GenerateModels(tree);
-
+            
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
             Assert.False(factoryMethod.ContainsProductInterface().Passed);
@@ -528,7 +529,6 @@ namespace xUnitTest
 
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
-            int score = calculator.GetScore("FACTORY", factoryMethod.GetResult());
 
             Assert.True(factoryMethod.ContainsIFactoryClass().Passed);
             Assert.True(factoryMethod.ContainsProductInterface().Passed);
@@ -538,9 +538,14 @@ namespace xUnitTest
             Assert.True(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().Passed);
             Assert.True(factoryMethod.HasMultipleMethods().Passed);
             Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().Passed);
+
+            
+            int score = calculator.GetScore("FACTORY", factoryMethod.GetResult());
+
+
             Assert.Equal(100, score);
         }
-
+        
         [Fact]
         public void Test_FactoryMethod_Score33()
         {

@@ -55,7 +55,6 @@ namespace idetector.Patterns
             _results.Add(IsInheritingProductInterface());
             _results.Add(ConcreteFactoryIsReturningConcreteProduct());
             _results.Add(HasMultipleMethods());
-
         }
 
         public List<RequirementResult> GetResult()
@@ -193,7 +192,6 @@ namespace idetector.Patterns
             {
                 return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", false);
             }
-
             return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", true);
         }
 
