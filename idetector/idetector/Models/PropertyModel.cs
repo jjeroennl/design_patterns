@@ -79,5 +79,10 @@ namespace idetector.Models
             return (PropertyDeclarationSyntax) _node;
         }
         
+        public bool HasModifier(string modifier)
+        {
+            return Modifiers.Any(e => e.Equals(modifier));
+        }
+        
     }
 }
