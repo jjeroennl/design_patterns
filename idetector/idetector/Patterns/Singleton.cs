@@ -16,7 +16,7 @@ namespace idetector.Patterns
     {
         private float _score;
         private ClassModel cls;
-        private List<RequirementResult> _results = new List<RequirementResult>();
+        private Dictionary<string, RequirementResult> _results = new Dictionary<string, RequirementResult>();
 
         public Singleton(ClassModel _cls)
         {
@@ -25,13 +25,13 @@ namespace idetector.Patterns
 
         public void Scan()
         {
-            _results.Add(IsPrivateConstructor());
-            _results.Add(IsStaticSelf());
-            _results.Add(IsGetInstance());
-            _results.Add(IsCreateSelf());
+            _results.Add(cls.Identifier, IsPrivateConstructor());
+            _results.Add(cls.Identifier, IsStaticSelf());
+            _results.Add(cls.Identifier, IsGetInstance());
+            _results.Add(cls.Identifier, IsCreateSelf());
         }
 
-        public List<RequirementResult> GetResult()
+        public Dictionary<string, RequirementResult> GetResults()
         {
             return _results;
         }

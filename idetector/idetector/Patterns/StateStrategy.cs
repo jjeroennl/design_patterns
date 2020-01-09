@@ -29,7 +29,7 @@ namespace idetector.Patterns
         public ClassModel Context;
         private List<ClassModel> interfaces;
         private MethodModel Setter;
-        private List<RequirementResult> _results = new List<RequirementResult>();
+        private  Dictionary<string, RequirementResult> _results = new  Dictionary<string, RequirementResult>();
 
 
         public StateStrategy(ClassCollection _cc, bool isState)
@@ -43,7 +43,7 @@ namespace idetector.Patterns
 
         public void Scan()
         {
-            _results.Add(HasInterfaceOrAbstract());
+            HasInterfaceOrAbstract();
             _results.Add(ContextChecks());
             _results.Add(HasConcreteClasses());
             if (!IsState)
@@ -57,7 +57,7 @@ namespace idetector.Patterns
             _results.Add(ContextHasLogic(Context));
         }
 
-        public List<RequirementResult> GetResult()
+        public Dictionary<string, RequirementResult> GetResult()
         {
             return _results;
         }
@@ -237,21 +237,20 @@ namespace idetector.Patterns
             return new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", false);
         }
 
-        public RequirementResult HasInterfaceOrAbstract()
+        public void HasInterfaceOrAbstract()
         {
             foreach (var cls in cc.GetClasses())
             {
                 if (cls.Value.IsInterface || cls.Value.IsAbstract)
                 {
                     interfaces.Add(cls.Value);
+                    _results.Add(cls.Value.Identifier, new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true));
+                }
+                else
+                {
+                    _results.Add(cls.Value.Identifier, new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", false));
                 }
             }
-            if (interfaces.Count > 0)
-            {
-                return new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true);
-            }
-
-            return new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", false);
         }
 
 
