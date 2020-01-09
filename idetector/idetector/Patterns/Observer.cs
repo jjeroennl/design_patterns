@@ -19,6 +19,7 @@ namespace idetector.Patterns
         private readonly ClassCollection cc;
         private List<string> interfaces = new List<string>();
         private List<RequirementResult> _results = new List<RequirementResult>();
+        private ClassModel observerClass;
 
 
         public Observer(ClassCollection _cc)
@@ -31,9 +32,6 @@ namespace idetector.Patterns
             _score = 0;
             _results.Clear();
             _results.Add(HasObserverInterface());
-            _results.Add(HasObserverRelations());
-
-
         }
 
         public List<RequirementResult> GetResult()
@@ -53,16 +51,20 @@ namespace idetector.Patterns
             {
                 if (cls.Value.Modifiers != null)
                 {
-                    if (cls.Value.IsInterface)
+                    if (cls.Value.IsInterface || cls.Value.IsAbstract)
                     {
-                        // check of naam IObserver is?
-                        // check of de interface een void functie heeft die een interface als parameter heeft?
-                        // check of de naam van bovenstaande functie update is? @justin
-
-                        return new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", true);
+                        foreach (var method in cls.Value.getMethods())
+                        {
+                            if (method.ReturnType == "void" && !method.Modifiers.Contains("private"))
+                            {
+                                observerClass = cls.Value;
+                                return new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", true);
+                            }
+                        }
                     }
                 }
             }
+
             return new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false);
         }
 
@@ -73,13 +75,34 @@ namespace idetector.Patterns
             {
                 List<string> parents = cls.Value.GetParents();
 
+                // get all classes that extend the observer interface
+                // API: get all interfaces from tree
+                if (parents != null && parents.Contains(observerClass.Identifier))
+                {
+                    interfaces.Add(cls.Value.Identifier);
+                    Debug.WriteLine("Added: " + cls.Value.Identifier);
+                }
 
-                    // get all classes that extend the observer interface
-                    // API: get all interfaces from tree
-                    if (parents != null && parents.Contains("IObserver"))
+                foreach (var property in cls.Value.getProperties())
+                {
+                    // if method.valuetype = ienumerable
+                    // save collection
+                    string t1 = property.ValueType;
+
+                    if (t1.Contains("<"))
                     {
-                        interfaces.Add(cls.Value.Identifier);
+                        int index = t1.LastIndexOf("<");
+
+                        t1 = property.ValueType.Substring(0, index);
                     }
+
+                    Debug.WriteLine("Class name: " + property.Parent);
+                    Debug.WriteLine("Identifier: " + property.Identifier);
+                    Debug.WriteLine("ValueType: " + property.ValueType);
+                    Debug.WriteLine("t1: " + t1);
+                    Debug.WriteLine("====================");
+                    Debug.WriteLine(" ");
+                }
             }
 
             // Op zoek naar collection
@@ -87,12 +110,11 @@ namespace idetector.Patterns
             // Checken of die IEnumerable alle interfaces die we hebben gevonden bevat
             // API: check if type of checked attribute is IEnumerable
 
-            if (interfaces.Count > 0)
-            {
-                return new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", true);
+            if (interfaces.Count > 77)
+                {
+                    return new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", true);
+                }
+                return new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", false);
             }
-            return new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", false);
-        }
-
     }
 }

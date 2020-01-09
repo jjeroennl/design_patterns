@@ -287,6 +287,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
+            observer.Scan();
             Assert.True(observer.HasObserverRelations().Passed);
         }
 
