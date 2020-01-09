@@ -19,7 +19,7 @@ namespace idetector.Patterns
         //DECORATOR-CONCRETE-CALLS-BASE
         
         private ClassModel _cls;
-        private Dictionary<string, ClassModel> _collection;
+        private ClassCollection _collection;
         private List<ClassModel> _children = new List<ClassModel>();
         private ClassModel _decoratorInterface;
         private List<ClassModel> _decorators = new List<ClassModel>();
@@ -28,19 +28,25 @@ namespace idetector.Patterns
 
         private List<RequirementResult> _results = new List<RequirementResult>();
 
-        public Decorator(ClassModel cls, Dictionary<string, ClassModel> collection)
+        public Decorator(ClassModel cls, ClassCollection collection)
         {
             _collection = collection;
             _cls = cls;
         }
+        public Decorator(ClassCollection collection)
+        {
+            _collection = collection;
+            _cls = getInterfaces(_collection);
+        }
 
         public void Scan()
         {
-            _results.Add(checkChildren());
-            _results.Add(checkChildrenType());
-            _results.Add(findDecorators());
-            _results.Add(decoratorHasBaseProperty());
-            _results.Add(constructorSetsComponent());
+            _cls = getInterfaces(_collection);
+            _results.Add(CheckChildren());
+            _results.Add(CheckAbstractChild());
+            _results.Add(FindDecorators());
+            _results.Add(DecoratorHasBaseProperty());
+            _results.Add(ConstructorSetsComponent());
             _results.Add(DecoratorCallsBase());
         }
 
@@ -49,8 +55,14 @@ namespace idetector.Patterns
             return _results;
         }
 
+        private ClassModel getInterfaces(ClassCollection cc)
+        {
+            
+        } 
+        
 
-        private RequirementResult checkChildren()
+
+        public RequirementResult CheckChildren()
         {
             List<ClassModel> children = new List<ClassModel>();
             foreach (var item in _collection.Values)
@@ -70,7 +82,7 @@ namespace idetector.Patterns
             return new RequirementResult("DECORATOR-BASE-HAS-CHILDREN", true);
         }
 
-        private RequirementResult checkChildrenType()
+        public RequirementResult CheckAbstractChild()
         {
             var i = 0;
             foreach (var child in _children)
@@ -94,7 +106,7 @@ namespace idetector.Patterns
             return new RequirementResult( "DECORATOR-BASE-CHILDREN-TYPES", true);
         }
 
-        private RequirementResult decoratorHasBaseProperty()
+        public RequirementResult DecoratorHasBaseProperty()
         {
             if (_decoratorInterface != null)
             {
@@ -117,7 +129,7 @@ namespace idetector.Patterns
             return new RequirementResult("DECORATOR-HAS-BASE-PROPERTY", true);
         }
 
-        private RequirementResult constructorSetsComponent()
+        public RequirementResult ConstructorSetsComponent()
         {
             if (_decoratorInterface != null)
             {
@@ -154,7 +166,7 @@ namespace idetector.Patterns
             return new RequirementResult("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", false);
         }
 
-        private RequirementResult findDecorators()
+        public RequirementResult FindDecorators()
         {
             if (_decoratorInterface != null)
             {
@@ -174,7 +186,7 @@ namespace idetector.Patterns
             return new RequirementResult("DECORATOR-HAS-CHILDREN", true);
         }
 
-        private RequirementResult DecoratorCallsBase()
+        public RequirementResult DecoratorCallsBase()
         {
             if (_decorators.Count > 0)
             {
