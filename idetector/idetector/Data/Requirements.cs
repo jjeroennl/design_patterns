@@ -65,6 +65,7 @@ namespace idetector.Data
 
             //STATESTRATEGY
             /*ID's:
+             * STATE-STRATEGY-HAS-CONTEXT
              * STATE-STRATEGY-CONTEXT-HAS-STRATEGY
              * STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY
              * STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR
@@ -74,20 +75,21 @@ namespace idetector.Data
              * STATE-STRATEGY-CONCRETE-CLASS
              * STATE-CONCRETE-CLASS-RELATIONS
              */
-            List<PatternRequirement> strategyreqs = new List<PatternRequirement>();
-            strategyreqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", 1, ""));
-            strategyreqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", 1, ""));
-            strategyreqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", 1, ""));
-            strategyreqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", 1, ""));
-            strategyreqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-LOGIC", 1, ""));
-            strategyreqs.Add(new PatternRequirement("STATE-STRATEGY-INTERFACE-ABSTRACT", 1, ""));
-            strategyreqs.Add(new PatternRequirement("STATE-STRATEGY-CONCRETE-CLASS", 1, ""));
-            PatternRequirements.Add("STRATEGY", strategyreqs);
-
-
-            var statereqs = strategyreqs;
-            statereqs.Add(new PatternRequirement("STATE-CONCRETE-CLASS-RELATIONS", 10, ""));
+            List<PatternRequirement> statereqs = new List<PatternRequirement>();
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-HAS-CONTEXT", 3, ""));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", 2, ""));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", 1, ""));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", 1, ""));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", 1, ""));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-LOGIC", 1, ""));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-INTERFACE-ABSTRACT", 2, ""));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONCRETE-CLASS", 2, ""));
             PatternRequirements.Add("STATE", statereqs);
+
+
+            var strategyreqs = new List<PatternRequirement>(statereqs);
+            strategyreqs.Add(new PatternRequirement("STRATEGY-CONCRETE-CLASS-RELATIONS", 2, ""));
+            PatternRequirements.Add("STRATEGY", strategyreqs);
 
 
 

@@ -75,7 +75,6 @@ namespace idetector
                 this.printBar(item.Value, "Singleton", Calculator.GetScore("SINGLETON",s.GetResult()));
                 this.printBar(item.Value,"Decorator", Calculator.GetScore("DECORATOR", d.GetResult()));
                 this.printBar(item.Value,"Facade", f.Score(item.Value));
-
             }
 
             printBar("Factory Method", Calculator.GetScore("FACTORY", fm.GetResult()));
