@@ -28,8 +28,6 @@ namespace vs_plugin
             textBlock.Text = handle;
             UIHandler.ControlItems.Add(textBlock);
             PatternName1.Header = textBlock;
-
-            UIHandler.UpdateColors();
         }
 
         public SinglePattern()

@@ -33,7 +33,10 @@ namespace vs_plugin
 
             InitializeCustomUI();
         }
-
+        
+        /// <summary>
+        /// Initializes the custom user interface by going through all control items and giving them the correct color.
+        /// </summary>
         public void InitializeCustomUI()
         {
             List<StackPanel> StackPanels = new List<StackPanel>();
@@ -211,10 +214,12 @@ namespace vs_plugin
             UIHandler.UpdateColors();
             SolidColorBrush otherTheme = (UIHandler.IsLight) ? new SolidColorBrush(Colors.White) : new SolidColorBrush(Colors.Black);
             SwitchMode.Background = otherTheme;
-
-            UpdateConditionText("yeaaaaaaaaa this is my aaaaaaaaaaaa man");
         }
 
+        /// <summary>
+        /// Method to replace Condition's text and reset the text wrapping.
+        /// </summary>
+        /// <param name="text">Text to be placed inside TextBlock.</param>
         private void UpdateConditionText(string text)
         {
             ConditionText.Text = text;

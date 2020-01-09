@@ -14,6 +14,10 @@ namespace vs_plugin.Code
         public static bool IsLight { get; set; } = true;
         public static List<UIElement> ControlItems = new List<UIElement>();
         static SolidColorBrush color = new SolidColorBrush(Colors.Black);
+
+        /// <summary>
+        /// Sets color brush to either black or white, depending on whether <see cref="IsLight"/> is true or false.
+        /// </summary>
         public static void SwitchMode()
         {
             color = (IsLight) ? new SolidColorBrush(Colors.White) : new SolidColorBrush(Colors.Black);
@@ -21,6 +25,9 @@ namespace vs_plugin.Code
             IsLight = !IsLight;
         }
 
+        /// <summary>
+        /// Updates UI based on the color set in <see cref="SwitchMode"/>, or black by default.
+        /// </summary>
         public static void UpdateColors()
         {
             foreach (var item in ControlItems)
