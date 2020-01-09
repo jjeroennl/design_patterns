@@ -91,8 +91,23 @@ namespace idetector.Data
             strategyreqs.Add(new PatternRequirement("STRATEGY-CONCRETE-CLASS-RELATIONS", 2, ""));
             PatternRequirements.Add("STRATEGY", strategyreqs);
 
-
-
+            //Command
+            /*ID's:
+             * COMMAND-HAS-INTERFACE
+             * COMMAND-HAS-COMMAND-CLASS
+             * COMMAND-HAS-PUBLIC-CONSTRUCTOR
+             * COMMAND-HAS-RECEIVER-CLASS
+             * COMMAND-USES-RECEIVER
+             * COMMAND-HAS-INVOKER-CLASS
+             */
+            List<PatternRequirement> commandreqs = new List<PatternRequirement>();
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-INTERFACE", 2, "The command pattern does not contain either an interface or an abstract class."));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-COMMAND-CLASS", 2, "There are no commands that implement the abstract class or interface."));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-PUBLIC-CONSTRUCTOR", 2, "Either the interface does not contain a method, or the commands do not inherit the interface method."));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-RECEIVER-CLASS", 2, "There are no receiver classes implemented"));
+            commandreqs.Add(new PatternRequirement("COMMAND-USES-RECEIVER", 2, "None of the commands are controlled by a receiver"));
+            commandreqs.Add(new PatternRequirement("COMMAND-USES-RECEIVER", 2, "The code does not contain an Invoker class"));
+            PatternRequirements.Add("COMMAND", commandreqs);
         }
         public Dictionary<string, List<PatternRequirement>> GetRequirements()
         {
