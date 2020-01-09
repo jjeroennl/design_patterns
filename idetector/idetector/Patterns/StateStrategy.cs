@@ -27,7 +27,7 @@ namespace idetector.Patterns
 
         private ClassCollection Concretes = new ClassCollection();
         public ClassModel Context;
-        private ClassModel Interface;
+        private List<ClassModel> interfaces;
         private MethodModel Setter;
         private List<RequirementResult> _results = new List<RequirementResult>();
 
@@ -37,6 +37,7 @@ namespace idetector.Patterns
             cc = _cc;
             IsState = isState;
             Concretes = new ClassCollection();
+            interfaces = new List<ClassModel>();
 
         }
 
@@ -102,12 +103,13 @@ namespace idetector.Patterns
             {
                 foreach (var property in cls.getProperties())
                 {
-                    if (cc.GetClass(property.ValueType.ToString()) != null)
+                    foreach (ClassModel @interface in interfaces)
                     {
-                        if (cc.GetClass(property.ValueType.ToString()) == Interface)
+                        if (cc.GetClass(property.ValueType.ToString()) == @interface)
                         {
                             return new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true);
                         }
+
                     }
 
                 }
@@ -122,9 +124,9 @@ namespace idetector.Patterns
             {
                 foreach (var property in cls.getProperties())
                 {
-                    if (cc.GetClass(property.ValueType.ToString()) != null)
+                    foreach (ClassModel @interface in interfaces)
                     {
-                        if (cc.GetClass(property.ValueType.ToString()) == Interface)
+                        if (cc.GetClass(property.ValueType.ToString()) == @interface)
                         {
                             if (property.Modifiers.Length >= 1)
                             {
@@ -182,9 +184,9 @@ namespace idetector.Patterns
 
                     foreach (var method in cls.getMethods())
                     {
-                        if (Interface != null)
+                        foreach (ClassModel @interface in interfaces)
                         {
-                            if (property.ValueType.ToString() == Interface.Identifier)
+                            if (property.ValueType.ToString() == @interface.Identifier)
                             {
                                 if (method.Parameters.Contains(property.ValueType.ToString()) &&
                                     method.Body.Contains(property.Identifier))
@@ -214,15 +216,19 @@ namespace idetector.Patterns
                     {
                         foreach (var property in cls.getProperties())
                         {
-                            if (cc.GetClass(property.ValueType.ToString()) == Interface)
+                            foreach(ClassModel @interface in interfaces)
                             {
-                                if (Setter == null || method != Setter)
+                                if (cc.GetClass(property.ValueType.ToString()) == @interface)
                                 {
-                                    if (method.Body.Contains(property.Identifier))
+                                    if (Setter == null || method != Setter)
                                     {
-                                        return new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", true);
+                                        if (method.Body.Contains(property.Identifier))
+                                        {
+                                            return new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", true);
+                                        }
                                     }
                                 }
+
                             }
                         }
                     }
@@ -237,9 +243,12 @@ namespace idetector.Patterns
             {
                 if (cls.Value.IsInterface || cls.Value.IsAbstract)
                 {
-                    Interface = cls.Value;
-                    return new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT",true);
+                    interfaces.Add(cls.Value);
                 }
+            }
+            if (interfaces.Count > 0)
+            {
+                return new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true);
             }
 
             return new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", false);
@@ -254,7 +263,8 @@ namespace idetector.Patterns
                 i += 1;
                 foreach (string parent in cls.Value.GetParents())
                 {
-                    if (cc.GetClass(parent) == Interface) Concretes.AddClass(cls.Value);
+                    foreach (ClassModel @interface in interfaces)
+                    if (cc.GetClass(parent) == @interface) Concretes.AddClass(cls.Value);
                 }
 
                 if (cc.GetClasses().Count == i && Concretes.GetClasses().Count >= 1)
