@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using idetector.Models;
 
 namespace vs_plugin
 {
@@ -31,6 +32,11 @@ namespace vs_plugin
             textBlock.Text = handle;
 
             ClassName.Header = textBlock;
+        }
+
+        public void AddClass(ClassModel cls, int score)
+        {
+
         }
     }
 }

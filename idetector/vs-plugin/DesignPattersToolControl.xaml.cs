@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Documents;
+using idetector;
+using idetector.Data;
 using idetector.Models;
 
 namespace vs_plugin
@@ -112,6 +114,7 @@ namespace vs_plugin
                 s.Scan();
                 idetector.Patterns.Decorator d = new idetector.Patterns.Decorator(item.Value, collection.GetClasses());
                 d.Scan();
+
 
                 if (f.Score(item.Value) >= 50)
                 {

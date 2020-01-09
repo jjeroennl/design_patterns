@@ -39,6 +39,11 @@ namespace idetector.Patterns.Facade
             this.FacadeCheck(collection, table, table.ListClassesWithSingleParent());
         }
 
+        public List<RequirementResult> GetResult()
+        {
+            throw new NotImplementedException();
+        }
+
         public void FacadeCheck(ClassCollection collection, RelationTable parents, RelationTable relations)
         {
             foreach (var relation in relations.GetRelations())

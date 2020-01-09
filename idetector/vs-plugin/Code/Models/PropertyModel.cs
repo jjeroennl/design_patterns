@@ -49,8 +49,7 @@ namespace idetector.Models
             _setParent(node.Parent);
             ValueType = node.Declaration.Type.ToString();
             Type = Type.FieldSyntax;
-            string[] str = node.Declaration.ToString().Split(' ');
-            Identifier = str[str.Length - 1];
+            Identifier = node.Declaration.Variables.ToString().Split(' ')[0];
         }
 
         private void _setParent(SyntaxNode node)
@@ -78,6 +77,11 @@ namespace idetector.Models
                 return (FieldDeclarationSyntax) _node;
             }
             return (PropertyDeclarationSyntax) _node;
+        }
+        
+        public bool HasModifier(string modifier)
+        {
+            return Modifiers.Any(e => e.Equals(modifier));
         }
         
     }
