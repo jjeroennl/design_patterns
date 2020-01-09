@@ -30,35 +30,9 @@ namespace vs_plugin
         public ToolWindow1Control()
         {
             this.InitializeComponent();
-
-            InitializeCustomUI();
+            UIHandler.ToolWindow1Control = this;
         }
         
-        /// <summary>
-        /// Initializes the custom user interface by going through all control items and giving them the correct color.
-        /// </summary>
-        public void InitializeCustomUI()
-        {
-            List<StackPanel> StackPanels = new List<StackPanel>();
-
-            StackPanels.Add(ScanButtons);
-            StackPanels.Add(Summary);
-            StackPanels.Add(SummaryCondition);
-            StackPanels.Add(MoreInfo);
-
-            foreach (StackPanel stackPanel in StackPanels)
-            {
-                foreach (var item in stackPanel.Children)
-                {
-                    if (item is Control)
-                        UIHandler.ControlItems.Add((Control)item);
-                    if (item is TextBlock)
-                        UIHandler.ControlItems.Add((TextBlock)item);
-                }
-            }
-            UIHandler.ControlItems.Add(ConditionText);
-        }
-
         public ClassCollection GetOpenWindowText()
         {
             DTE dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
@@ -108,8 +82,6 @@ namespace vs_plugin
             }
 
             this.AddClasses(collection);
-
-            UIHandler.UpdateColors();
         }
 
         private void AddClasses(ClassCollection collection)
@@ -202,27 +174,17 @@ namespace vs_plugin
             }
 
             this.AddClasses(collection);
-            UIHandler.UpdateColors();
         }
 
         /// <summary>
-        /// Changes plugin colors.
-        /// </summary>
-        private void SwitchMode_Click(object sender, RoutedEventArgs e)
-        {
-            UIHandler.SwitchMode();
-            UIHandler.UpdateColors();
-            SolidColorBrush otherTheme = (UIHandler.IsLight) ? new SolidColorBrush(Colors.White) : new SolidColorBrush(Colors.Black);
-            SwitchMode.Background = otherTheme;
-        }
-
-        /// <summary>
-        /// Method to replace Condition's text and reset the text wrapping.
+        /// Method to replace summary's information and reset the text wrapping.
         /// </summary>
         /// <param name="text">Text to be placed inside TextBlock.</param>
-        private void UpdateConditionText(string text)
+        public void UpdateSummary(string title)
         {
-            ConditionText.Text = text;
+            Summary.Visibility = Visibility.Visible;
+            PatternName.Content = title;
+            ConditionNumber.Content = "Condition #";
             ConditionText.TextWrapping = TextWrapping.Wrap;
         }
     }

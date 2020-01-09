@@ -11,48 +11,12 @@ namespace vs_plugin.Code
 {
     public static class UIHandler
     {
-        public static bool IsLight { get; set; } = true;
-        public static List<UIElement> ControlItems = new List<UIElement>();
-        static SolidColorBrush color = new SolidColorBrush(Colors.Black);
+        public static ToolWindow1Control ToolWindow1Control { get; set; }
+        public static SinglePattern SinglePattern { get; set; }
 
-        /// <summary>
-        /// Sets color brush to either black or white, depending on whether <see cref="IsLight"/> is true or false.
-        /// </summary>
-        public static void SwitchMode()
+        public static void SummarySelection(Expander expander)
         {
-            color = (IsLight) ? new SolidColorBrush(Colors.White) : new SolidColorBrush(Colors.Black);
-
-            IsLight = !IsLight;
-        }
-
-        /// <summary>
-        /// Updates UI based on the color set in <see cref="SwitchMode"/>, or black by default.
-        /// </summary>
-        public static void UpdateColors()
-        {
-            foreach (var item in ControlItems)
-            {
-                if (item is Control)
-                {
-                    Control control = (Control)item;
-                    if (control is Label)
-                    {
-                        Label label = (Label)control;
-                        if (label.Name != "ConditionIcon")
-                            label.Foreground = color;
-                    }
-                    else
-                        control.Foreground = color;
-                }
-                else
-                {
-                    if (item is TextBlock)
-                    {
-                        TextBlock textBlock = (TextBlock)item;
-                        textBlock.Foreground = color;
-                    }
-                }
-            }
+            ToolWindow1Control.UpdateSummary(expander.Name);
         }
     }
 }

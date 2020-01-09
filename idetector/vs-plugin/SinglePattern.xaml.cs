@@ -1,11 +1,13 @@
 ﻿using idetector.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -26,8 +28,14 @@ namespace vs_plugin
         {
             TextBlock textBlock = new TextBlock();
             textBlock.Text = handle;
-            UIHandler.ControlItems.Add(textBlock);
+            PatternName1.Name = handle;
             PatternName1.Header = textBlock;
+            PatternName1.PreviewMouseLeftButtonDown += pattern_PreviewMouseDown;
+        }
+
+        private void pattern_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            UIHandler.SummarySelection((sender as Expander));
         }
 
         public SinglePattern()
