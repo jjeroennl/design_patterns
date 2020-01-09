@@ -41,6 +41,15 @@ namespace xUnitTest
         }
 
         [Fact]
+        public void Test_Strategy_NoContext()
+        {
+            var tree = NoContext();
+            var collection = Walker.GenerateModels(tree);
+
+            StateStrategy strategy = new StateStrategy(collection, false);
+            Assert.False(strategy.ContextChecks().Passed);
+        }
+        [Fact]
         public void Test_Strategy_NoInterface()
         {
             var tree = NoInterface();
@@ -118,7 +127,7 @@ namespace xUnitTest
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
             var score = calculator.GetScore("STRATEGY", strategy.GetResult());
-            Assert.Equal(0, score);
+            Assert.InRange(score, 0, 20);
         }
         [Fact]
         public void Test_OnlineCode()
@@ -130,7 +139,7 @@ namespace xUnitTest
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
             var score = calculator.GetScore("STRATEGY", strategy.GetResult());
-            Assert.InRange(score, 70, 90);
+            Assert.InRange(score, 80, 100);
         }
 
         SyntaxTree SuccessSetup()
@@ -715,25 +724,10 @@ namespace xUnitTest
             namespace RefactoringGuru.DesignPatterns.Strategy.Conceptual
             {
                 class Context
-                {
-                    private IStrategy _strategy;
-
-                    public Context()
-                    { }
-
-                    public Context(IStrategy strategy)
-                    { }
-
-                    public void SetStrategy(IStrategy strategy)
-                    { }
-
-                    public void DoSomeBusinessLogic()
-                    { }
-                }
+                { }
+                
                 public class IStrategy
-                {
-                    object DoAlgorithm(object data);
-                }
+                { }
 
                 class ConcreteStrategyA
                 { }

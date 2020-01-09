@@ -20,10 +20,10 @@ namespace xUnitTest
         [Fact]
         public void Test_State_Succeed()
         {
-            Requirements r = new Requirements();
-            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
 
             StateStrategy state= new StateStrategy(collection, true);
             state.Scan();
@@ -34,15 +34,15 @@ namespace xUnitTest
 
         public void Test_Nothing()
         {
-            Requirements r = new Requirements();
-            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
 
             StateStrategy state= new StateStrategy(collection, true);
             state.Scan();
             var score = calculator.GetScore("STATE", state.GetResult());
-            Assert.True(score < 50);
+            Assert.InRange(score, 0, 75);
         }
         [Fact]
         public void Test_State_NoRelationsBetweenStates()
@@ -66,7 +66,7 @@ namespace xUnitTest
             StateStrategy state = new StateStrategy(collection, true);
             state.Scan();
             var score = calculator.GetScore("STATE", state.GetResult());
-            Assert.InRange(score, 70, 75);
+            Assert.InRange(score, 80, 90);
         }
 
         SyntaxTree SuccessSetup()
@@ -212,15 +212,16 @@ namespace xUnitTest
                     public Context()
                     { }
 
-                    public Context(IState state)
+                    public Context()
                     { }
 
-                    public void SetState(IState state)
+                    public void SetState()
                     { }
 
                     public void DoSomeBusinessLogic()
                     { }
                 }
+
                 public class IState
                 {
                     object DoAlgorithm(object data);
