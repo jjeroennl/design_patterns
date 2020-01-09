@@ -45,6 +45,23 @@ namespace idetector.Collections
             return cache;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="classes"></param>
+        /// <returns></returns>
+        public List<ClassModel> GetClassListExcept(List<ClassModel> classes)
+        {
+            List<ClassModel> allClasses = new List<ClassModel>();
+            foreach (var cls in GetClasses())
+            {
+                allClasses.Add(cls.Value);
+            }
+
+            var result = allClasses.Except(classes).ToList();
+            return result;
+        }
+
 
 
     }

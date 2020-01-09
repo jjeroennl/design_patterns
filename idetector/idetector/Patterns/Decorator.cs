@@ -2,6 +2,7 @@
 using idetector.Collections;
 using idetector.Models;
 using System.Linq;
+using idetector.Patterns.Helper;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -17,7 +18,7 @@ namespace idetector.Patterns
         //DECORATOR-HAS-BASE-PROPERTY
         //DECORATOR-CONSTRUCTOR-SETS-COMPONENT
         //DECORATOR-CONCRETE-CALLS-BASE
-        
+
         private ClassModel _cls;
         private ClassCollection _collection;
         private List<ClassModel> _children = new List<ClassModel>();
@@ -25,61 +26,74 @@ namespace idetector.Patterns
         private List<ClassModel> _decorators = new List<ClassModel>();
         private List<ClassModel> _bases = new List<ClassModel>();
         private bool isDecorator = false;
+        private Dictionary<string, List<RequirementResult>> _results = new Dictionary<string, List<RequirementResult>>();
 
-        private List<RequirementResult> _results = new List<RequirementResult>();
+        
 
         public Decorator(ClassModel cls, ClassCollection collection)
         {
             _collection = collection;
             _cls = cls;
         }
+
         public Decorator(ClassCollection collection)
         {
             _collection = collection;
-            _cls = getInterfaces(_collection);
         }
 
         public void Scan()
         {
-            _cls = getInterfaces(_collection);
-            _results.Add(CheckChildren());
-            _results.Add(CheckAbstractChild());
-            _results.Add(FindDecorators());
-            _results.Add(DecoratorHasBaseProperty());
-            _results.Add(ConstructorSetsComponent());
-            _results.Add(DecoratorCallsBase());
+            var classes = findDecoratorInterface(_collection);
+            foreach (var cls in classes)
+            {
+                List<RequirementResult> results = new List<RequirementResult>();
+                _cls = cls;
+                results.Add(CheckChildren());
+                results.Add(CheckAbstractChild());
+                results.Add(FindDecorators());
+                results.Add(DecoratorHasBaseProperty());
+                results.Add(ConstructorSetsComponent());
+                results.Add(DecoratorCallsBase());
+                _results.Add(cls.Identifier, results);
+            }
         }
 
         public List<RequirementResult> GetResult()
         {
+            throw new System.NotImplementedException();
+        }
+
+        public Dictionary<string, List<RequirementResult>> GetResults()
+        {
             return _results;
         }
 
-        private ClassModel getInterfaces(ClassCollection cc)
+        private List<ClassModel> findDecoratorInterface(ClassCollection cc)
         {
-            
-        } 
-        
+            var interfaces = API.ListInterfaces(cc);
+            var abstracts = API.ListAbstract(cc);
+            List<ClassModel> abstractDecorators = new List<ClassModel>();
+            foreach (var inf in interfaces)
+            {
+                abstractDecorators.Add(abstracts.FirstOrDefault(e => e.HasParent(inf.Identifier)));
+            }
+
+            return abstractDecorators;
+        }
 
 
         public RequirementResult CheckChildren()
         {
-            List<ClassModel> children = new List<ClassModel>();
-            foreach (var item in _collection.Values)
+
+            var classes =
+                _collection.GetClassListExcept(API.ListAbstract(_collection).Concat(API.ListInterfaces(_collection)).ToList());
+
+            foreach (var cls in classes)
             {
-                if (item.HasParent(_cls.Identifier))
-                {
-                    children.Add(item);
-                }
+                return new RequirementResult("DECORATOR-BASE-HAS-CHILDREN", true);
             }
 
-            if (children.Count < 1)
-            {
-                return new RequirementResult("DECORATOR-BASE-HAS-CHILDREN", false);
-            }
-
-            _children = children;
-            return new RequirementResult("DECORATOR-BASE-HAS-CHILDREN", true);
+            
         }
 
         public RequirementResult CheckAbstractChild()
@@ -103,7 +117,7 @@ namespace idetector.Patterns
                 return new RequirementResult("DECORATOR-BASE-CHILDREN-TYPES", false);
             }
 
-            return new RequirementResult( "DECORATOR-BASE-CHILDREN-TYPES", true);
+            return new RequirementResult("DECORATOR-BASE-CHILDREN-TYPES", true);
         }
 
         public RequirementResult DecoratorHasBaseProperty()
@@ -124,7 +138,7 @@ namespace idetector.Patterns
                     return new RequirementResult("DECORATOR-HAS-BASE-PROPERTY", false);
                 }
             }
-            
+
 
             return new RequirementResult("DECORATOR-HAS-BASE-PROPERTY", true);
         }
@@ -158,11 +172,13 @@ namespace idetector.Patterns
                             {
                                 return new RequirementResult("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", true);
                             }
+
                             return new RequirementResult("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", false);
                         }
                     }
                 }
             }
+
             return new RequirementResult("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", false);
         }
 
@@ -183,6 +199,7 @@ namespace idetector.Patterns
                     return new RequirementResult("DECORATOR-HAS-CHILDREN", false);
                 }
             }
+
             return new RequirementResult("DECORATOR-HAS-CHILDREN", true);
         }
 
@@ -196,7 +213,7 @@ namespace idetector.Patterns
                     {
                         if (method.isConstructor)
                         {
-                            var node = (ConstructorDeclarationSyntax)method.getNode();
+                            var node = (ConstructorDeclarationSyntax) method.getNode();
                             if (!node.Initializer.ThisOrBaseKeyword.ToString().ToLower().Equals("base"))
                             {
                                 return new RequirementResult("DECORATOR-CONCRETE-CALLS-BASE", false);

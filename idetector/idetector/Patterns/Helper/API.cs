@@ -116,5 +116,6 @@ namespace idetector.Patterns.Helper
 
             return classes;
         }
+        
     }
 }
