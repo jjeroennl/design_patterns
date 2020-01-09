@@ -10,6 +10,8 @@ using idetector.Collections;
 using idetector.Parser;
 using idetector.Patterns;
 using Xunit;
+using idetector.Data;
+using idetector;
 
 namespace xUnitTest
 {
@@ -18,12 +20,15 @@ namespace xUnitTest
         [Fact]
         public void Test_Strategy_Succeed()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.Equal(100, strategy.Score());
+            var score = calculator.GetScore("STRATEGY", strategy.GetResult());
+            Assert.Equal(100, score);
         }
         [Fact]
         public void Test_State()
@@ -32,8 +37,9 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy strategy = new StateStrategy(collection, false);
-            Assert.True(strategy.HasRelationsBetweenConcreteClasses().isTrue);
+            Assert.True(strategy.HasRelationsBetweenConcreteClasses().Passed);
         }
+
         [Fact]
         public void Test_Strategy_NoContext()
         {
@@ -41,7 +47,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy strategy = new StateStrategy(collection, false);
-            Assert.False(strategy.ContextChecks().isTrue);
+            Assert.False(strategy.ContextChecks().Passed);
         }
         [Fact]
         public void Test_Strategy_NoInterface()
@@ -50,7 +56,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy strategy = new StateStrategy(collection, false);
-            Assert.False(strategy.HasInterfaceOrAbstract().isTrue);
+            Assert.False(strategy.HasInterfaceOrAbstract().Passed);
         }
         [Fact]
         public void Test_Strategy_NoConcreteStrategy()
@@ -59,7 +65,7 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy strategy = new StateStrategy(collection, false);
-            Assert.False(strategy.HasConcreteClasses().isTrue);
+            Assert.False(strategy.HasConcreteClasses().Passed);
         }
         [Fact]
         public void Test_Strategy_NoPublicConstructor()
@@ -69,7 +75,7 @@ namespace xUnitTest
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.False(strategy.ContextHasPublicConstructor(strategy.context).isTrue);
+            Assert.False(strategy.ContextHasPublicConstructor(strategy.Context).Passed);
         }
         [Fact]
         public void Test_Strategy_NoStrategySetter()
@@ -79,7 +85,7 @@ namespace xUnitTest
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.False(strategy.ContextHasStrategySetter(strategy.context).isTrue);
+            Assert.False(strategy.ContextHasStrategySetter(strategy.Context).Passed);
         }
         [Fact]
         public void Test_Strategy_NoPrivateStrategy()
@@ -89,7 +95,7 @@ namespace xUnitTest
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.False(strategy.ContextHasPrivateStrategy(strategy.context).isTrue);
+            Assert.False(strategy.ContextHasPrivateStrategy(strategy.Context).Passed);
         }
         [Fact]
         public void Test_Strategy_NoMethodContext()
@@ -99,7 +105,7 @@ namespace xUnitTest
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.False(strategy.ContextHasLogic(strategy.context).isTrue);
+            Assert.False(strategy.ContextHasLogic(strategy.Context).Passed);
         }
         [Fact]
         public void Test_Strategy_RelationsBetweenStrategies()
@@ -108,26 +114,32 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy strategy = new StateStrategy(collection, false);
-            Assert.True(strategy.HasRelationsBetweenConcreteClasses().isTrue);
+            Assert.True(strategy.HasRelationsBetweenConcreteClasses().Passed);
         }
         [Fact]
         public void Test_Nothing()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.Equal(0, strategy.Score());
+            var score = calculator.GetScore("STRATEGY", strategy.GetResult());
+            Assert.InRange(score, 0, 20);
         }
         [Fact]
         public void Test_OnlineCode()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var collection = Walker.GenerateModels(CSharpSyntaxTree.ParseText(TestStrings.StrategyExample()));
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.InRange(strategy.Score(), 70, 90);
+            var score = calculator.GetScore("STRATEGY", strategy.GetResult());
+            Assert.InRange(score, 80, 100);
         }
 
         SyntaxTree SuccessSetup()
@@ -712,25 +724,10 @@ namespace xUnitTest
             namespace RefactoringGuru.DesignPatterns.Strategy.Conceptual
             {
                 class Context
-                {
-                    private IStrategy _strategy;
-
-                    public Context()
-                    { }
-
-                    public Context(IStrategy strategy)
-                    { }
-
-                    public void SetStrategy(IStrategy strategy)
-                    { }
-
-                    public void DoSomeBusinessLogic()
-                    { }
-                }
+                { }
+                
                 public class IStrategy
-                {
-                    object DoAlgorithm(object data);
-                }
+                { }
 
                 class ConcreteStrategyA
                 { }
