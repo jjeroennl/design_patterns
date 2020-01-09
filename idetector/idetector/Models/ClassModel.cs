@@ -129,6 +129,19 @@ namespace idetector.Models
             ObjectCreations.Add(node);
         }
 
+        public List<MethodModel> getConstructors()
+        {
+            List<MethodModel> constructors = new List<MethodModel>();
+            foreach (var methods in Methods)
+            {
+                if (methods.isConstructor)
+                {
+                    constructors.Add(methods);
+                }
+            }
+            return constructors;
+        }
+
         public List<MethodModel> getMethods()
         {
             return Methods;
