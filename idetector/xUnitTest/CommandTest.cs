@@ -95,6 +95,77 @@ namespace xUnitTest
             Assert.False(command.HasInvokerClass().Passed);
         }
 
+        [Fact]
+        public void Test_Interface()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Command command = new Command(collection);
+
+            Assert.True(command.HasInterfaceOrAbstract().Passed);
+        }
+
+        [Fact]
+        public void Test_CommandClasses()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Command command = new Command(collection);
+
+            command.HasInterfaceOrAbstract();
+            Assert.True(command.HasCommandClasses().Passed);
+        }
+
+        [Fact]
+        public void Test_PublicCommandConstructor()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Command command = new Command(collection);
+
+            command.HasInterfaceOrAbstract();
+            command.HasCommandClasses();
+            Assert.True(command.CommandsHavePublicConstructor().Passed);
+        }
+
+        [Fact]
+        public void Test_Receivers()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Command command = new Command(collection);
+
+            Assert.True(command.HasReceiverClasses().Passed);
+        }
+
+        [Fact]
+        public void Test_CommandUsesReceiver()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Command command = new Command(collection);
+            command.HasInterfaceOrAbstract();
+            command.HasCommandClasses();
+            command.HasReceiverClasses();
+            Assert.True(command.HasReceiverClasses().Passed);
+        }
+
+        [Fact]
+        public void Test_Invoker()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+
+            Command command = new Command(collection);
+            command.HasInterfaceOrAbstract();
+            Assert.True(command.HasInvokerClass().Passed);
+        }
+
         public SyntaxTree SuccessSetup()
         {
             return CSharpSyntaxTree.ParseText(@"
@@ -111,7 +182,7 @@ namespace xUnitTest
             {
                 private string _payload = string.Empty;
 
-                private SimpleCommand(string payload)
+                public SimpleCommand(string payload)
                 {
                     this._payload = payload;
                 }
@@ -135,7 +206,7 @@ namespace xUnitTest
 
                 // Complex commands can accept one or several receiver objects along
                 // with any context data via the constructor.
-                private ComplexCommand(Receiver receiver, string a, string b)
+                public ComplexCommand(Receiver receiver, string a, string b)
                 {
                     this._receiver = receiver;
                     this._a = a;
@@ -515,10 +586,6 @@ namespace xUnitTest
                     this._payload = payload;
                 }
 
-                public void Execute()
-                {
-                    Console.WriteLine($'SimpleCommand: See, I can do simple things like printing({ this._payload})');
-                }
             }
 
             // However, some commands can delegate more complex operations to other
@@ -542,7 +609,7 @@ namespace xUnitTest
                 }
 
                 // Commands can delegate to any methods of a receiver.
-                public void Execute()
+                private void Execute()
                 {
                     Console.WriteLine('ComplexCommand: Complex stuff should be done by a receiver object');
                     this._receiver.DoSomething(this._a);
@@ -560,12 +627,12 @@ namespace xUnitTest
                 private ICommand _onFinish;
 
                 // Initialize commands.
-                public void SetOnStart(ICommand command)
+                private void SetOnStart(ICommand command)
                 {
                     this._onStart = command;
                 }
 
-                public void SetOnFinish(ICommand command)
+                private void SetOnFinish(ICommand command)
                 {
                     this._onFinish = command;
                 }
@@ -573,7 +640,7 @@ namespace xUnitTest
                 // The Invoker does not depend on concrete command or receiver classes.
                 // The Invoker passes a request to a receiver indirectly, by executing a
                 // command.
-                public void DoSomethingImportant()
+                private void DoSomethingImportant()
                 {
                     Console.WriteLine('Invoker: Does anybody want something done before I begin?');
                     if (this._onStart is ICommand)

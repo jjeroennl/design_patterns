@@ -42,7 +42,9 @@ namespace idetector.Patterns
             _results.Add(HasInterfaceOrAbstract());
             _results.Add(HasCommandClasses());
             _results.Add(CommandsHavePublicConstructor());
+            _results.Add(HasReceiverClasses());
             _results.Add(CommandsUseReceiver());
+            _results.Add(HasInvokerClass());
 
         }
         public List<RequirementResult> GetResult()
@@ -152,19 +154,18 @@ namespace idetector.Patterns
                 {
                     if (method.Modifiers.Length > 0)
                     {
-                        if (method.Modifiers[0].ToLower().Equals("private"))
+                        if (method.Modifiers[0].ToLower().Equals("public"))
                         {
                             count += 1;
                         }
                     }
                 }
-                if (count == cls.Value.getMethods().Count) receivers.AddClass(cls.Value);
+                if (count == cls.Value.getMethods().Count) {
+                    receivers.AddClass(cls.Value);
+                return new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", true);
+                }
             }
-            if (receivers.GetClasses().Count >= 1)
-            {
-                return new RequirementResult("COMMAND-HAS-RECEIVER-CLASS",true);
-            }
-            else return new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", false);
+            return new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", false);
         }
 
 
@@ -214,7 +215,7 @@ namespace idetector.Patterns
                     {
                         if (cc.GetClass(property.ValueType.ToString()) != null)
                         {
-                            if (property.ValueType.ToString() == commandInterface.ToString())
+                            if (property.ValueType.ToString() == commandInterface.Identifier)
                             {
                                 return new RequirementResult("COMMAND-HAS-INVOKER-CLASS",true);
                             }
