@@ -17,257 +17,214 @@ namespace xUnitTest
         SyntaxTree ObserverTree()
         {
             return CSharpSyntaxTree.ParseText(@"
-        using System;
-        using System.Collections.Generic;
-        using System.Threading;
+                using System;
+                using System.Collections.Generic;
+                using System.Threading;
 
-        namespace RefactoringGuru.DesignPatterns.Observer.Conceptual
-        {
-            public interface IObserver
-            {
-                void Update(ISubject subject);
-            }
-
-            public interface ISubject
-            {
-                void Attach(IObserver observer);
-
-                void Detach(IObserver observer);
-
-                void Notify();
-            }
-
-            public class Subject : ISubject
-            {
-                public int State { get; set; } = -0;
-
-                private List<IObserver> _observers = new List<IObserver>();
-
-                public void Attach(IObserver observer)
+                namespace RefactoringGuru.DesignPatterns.Observer.Conceptual
                 {
-                    Console.WriteLine('Subject: Attached an observer.');
-                    this._observers.Add(observer);
-                }
-
-                public void Detach(IObserver observer)
-                {
-                    this._observers.Remove(observer);
-                    Console.WriteLine('Subject: Detached an observer.');
-                }
-
-                public void Notify()
-                {
-                    Console.WriteLine('Subject: Notifying observers...');
-
-                    foreach (var observer in _observers)
+                    public interface IObserver
                     {
-                        observer.Update(this);
-                    }
-                }
-
-                public void SomeBusinessLogic()
-                {
-                    Console.WriteLine('\nSubject: I'm doing something important.');
-                    this.State = new Random().Next(0, 10);
-
-                    Thread.Sleep(15);
-
-                    Console.WriteLine('Subject: My state has just changed to: ' + this.State);
-                    this.Notify();
-                }
-            }
-
-
-            class ConcreteObserverA : IObserver
-            {
-                public void Update(ISubject subject)
-                {
-                    if ((subject as Subject).State < 3)
-                    {
-                        Console.WriteLine('ConcreteObserverA: Reacted to the event.');
-                    }
-                }
-            }
-
-            class ConcreteObserverB : IObserver
-            {
-                public void Update(ISubject subject)
-                {
-                    if ((subject as Subject).State == 0 || (subject as Subject).State >= 2)
-                    {
-                        Console.WriteLine('ConcreteObserverB: Reacted to the event.');
-                    }
-                }
-            }
-
-            class ConcreteObserverC : IObserver
-            {
-                public void Update(ISubject subject)
-                {
-                    if ((subject as Subject).State == 0 || (subject as Subject).State >= 2)
-                    {
-                        Console.WriteLine('ConcreteObserverC: Reacted to the event.');
-                    }
-                }
-            }
-
-            class ConcreteObserverD : IObserver
-            {
-                public void Update(ISubject subject)
-                {
-                    if ((subject as Subject).State == 0 || (subject as Subject).State >= 2)
-                    {
-                        Console.WriteLine('ConcreteObserverD: Reacted to the event.');
-                    }
-                }
-            }
-
-            class Program
-            {
-                static void Main(string[] args)
-                {
-                    // The client code.
-                    var subject = new Subject();
-                    var observerA = new ConcreteObserverA();
-                    subject.Attach(observerA);
-
-                    var observerB = new ConcreteObserverB();
-                    subject.Attach(observerB);
-
-                    subject.SomeBusinessLogic();
-                    subject.SomeBusinessLogic();
-
-                    subject.Detach(observerB);
-
-                    subject.SomeBusinessLogic();
-                }
-            }
-        }");
-        }
-        SyntaxTree NoObserverList()
-        {
-            return CSharpSyntaxTree.ParseText(@"
-                public interface IObserver
-                {
-                    void Update(ISubject subject);
-                }
-
-                public interface ISubject
-                {
-                    void Attach(IObserver observer);
-                    void Detach(IObserver observer);
-                    void Notify();
-                }
-
-                public class Subject : ISubject
-                {
-
-                    public int State { get; set; } = -0;
-
-                    public void Attach(IObserver observer)
-                    {
-                        this._observers.Add(observer);
+                        void Update(ISubject subject);
                     }
 
-                    public void Detach(IObserver observer)
+                    public interface ISubject
                     {
-                        this._observers.Remove(observer);
+                        void Attach(IObserver observer);
+
+                        void Detach(IObserver observer);
+
+                        void Notify();
                     }
 
-                    public void Notify()
+                    public class Subject : ISubject
                     {
-                        foreach (var observer in _observers)
+                        public int State { get; set; } = -0;
+
+                        private List<IObserver> _observers = new List<IObserver>();
+
+                        public void Attach(IObserver observer)
                         {
-                            observer.Update(this);
+                            Console.WriteLine('Subject: Attached an observer.');
+                            this._observers.Add(observer);
+                        }
+
+                        public void Detach(IObserver observer)
+                        {
+                            this._observers.Remove(observer);
+                            Console.WriteLine('Subject: Detached an observer.');
+                        }
+
+                        // Trigger an update in each subscriber.
+                        public void Notify()
+                        {
+                            Console.WriteLine('Subject: Notifying observers...');
+
+                            foreach (var observer in _observers)
+                            {
+                                observer.Update(this);
+                            }
+                        }
+
+                        public void SomeBusinessLogic()
+                        {
+                            Console.WriteLine('\nSubject: I'm doing something important.');
+                            this.State = new Random().Next(0, 10);
+
+                            Thread.Sleep(15);
+
+                            Console.WriteLine('Subject: My state has just changed to: ' + this.State);
+                            this.Notify();
                         }
                     }
 
-                    public void SomeBusinessLogic()
+                    class ConcreteObserverA : IObserver
                     {
-                        this.State = new Random().Next(0, 10);
-                        Thread.Sleep(15);
-                        this.Notify();
-                    }
-                }
-
-                class ConcreteObserverA : IObserver
-                {
-                    public void Update(ISubject subject)
-                    {
-                        if ((subject as Subject).State < 3)
+                        public void Update(ISubject subject)
                         {
-                            Console.WriteLine('ConcreteObserverA: Reacted to the event.');
+                            if ((subject as Subject).State < 3)
+                            {
+                                Console.WriteLine('ConcreteObserverA: Reacted to the event.');
+                            }
+                        }
+                    }
+
+                    class ConcreteObserverB : IObserver
+                    {
+                        public void Update(ISubject subject)
+                        {
+                            if ((subject as Subject).State == 0 || (subject as Subject).State >= 2)
+                            {
+                                Console.WriteLine('ConcreteObserverB: Reacted to the event.');
+                            }
+                        }
+                    }
+
+                    class Program
+                    {
+                        static void Main(string[] args)
+                        {
+                            var subject = new Subject();
+                            var observerA = new ConcreteObserverA();
+                            subject.Attach(observerA);
+
+                            var observerB = new ConcreteObserverB();
+                            subject.Attach(observerB);
+
+                            subject.SomeBusinessLogic();
+                            subject.SomeBusinessLogic();
+
+                            subject.Detach(observerB);
+
+                            subject.SomeBusinessLogic();
                         }
                     }
                 }
-
-                class ConcreteObserverB : IObserver
-                {
-                    public void Update(ISubject subject)
-                    {
-                        if ((subject as Subject).State == 0 || (subject as Subject).State >= 2)
-                        {
-                            Console.WriteLine('ConcreteObserverB: Reacted to the event.');
-                        }
-                    }
-                }");
+");
         }
 
-        SyntaxTree NoInterfaces()
+        SyntaxTree NoObserverInterface()
         {
             return CSharpSyntaxTree.ParseText(@"
-                public class Subject
+                using System;
+                using System.Collections.Generic;
+                using System.Threading;
+
+                namespace RefactoringGuru.DesignPatterns.Observer.Conceptual
                 {
-                    public int State { get; set; } = -0;
-                    private List<IObserver> _observers = new List<IObserver>();
-
-                    public void Attach(IObserver observer)
+                    public interface ISubject
                     {
-                        this._observers.Add(observer);
+                        void Attach(IObserver observer);
+
+                        void Detach(IObserver observer);
+
+                        void Notify();
                     }
 
-                    public void Detach(IObserver observer)
+                    public class Subject : ISubject
                     {
-                        this._observers.Remove(observer);
-                    }
+                        public int State { get; set; } = -0;
 
-                    public void Notify()
-                    {
-                        foreach (var observer in _observers)
+                        private List<IObserver> _observers = new List<IObserver>();
+
+                        public void Attach(IObserver observer)
                         {
-                            observer.Update(this);
+                            Console.WriteLine('Subject: Attached an observer.');
+                            this._observers.Add(observer);
+                        }
+
+                        public void Detach(IObserver observer)
+                        {
+                            this._observers.Remove(observer);
+                            Console.WriteLine('Subject: Detached an observer.');
+                        }
+
+                        // Trigger an update in each subscriber.
+                        public void Notify()
+                        {
+                            Console.WriteLine('Subject: Notifying observers...');
+
+                            foreach (var observer in _observers)
+                            {
+                                observer.Update(this);
+                            }
+                        }
+
+                        public void SomeBusinessLogic()
+                        {
+                            Console.WriteLine('\nSubject: I'm doing something important.');
+                            this.State = new Random().Next(0, 10);
+
+                            Thread.Sleep(15);
+
+                            Console.WriteLine('Subject: My state has just changed to: ' + this.State);
+                            this.Notify();
                         }
                     }
 
-                    public void SomeBusinessLogic()
+                    class ConcreteObserverA
                     {
-                        this.State = new Random().Next(0, 10);
-                        Thread.Sleep(15);
-                        this.Notify();
+                        public void Update(ISubject subject)
+                        {
+                            if ((subject as Subject).State < 3)
+                            {
+                                Console.WriteLine('ConcreteObserverA: Reacted to the event.');
+                            }
+                        }
+                    }
+
+                    class ConcreteObserverB
+                    {
+                        public void Update(ISubject subject)
+                        {
+                            if ((subject as Subject).State == 0 || (subject as Subject).State >= 2)
+                            {
+                                Console.WriteLine('ConcreteObserverB: Reacted to the event.');
+                            }
+                        }
+                    }
+
+                    class Program
+                    {
+                        static void Main(string[] args)
+                        {
+                            var subject = new Subject();
+                            var observerA = new ConcreteObserverA();
+                            subject.Attach(observerA);
+
+                            var observerB = new ConcreteObserverB();
+                            subject.Attach(observerB);
+
+                            subject.SomeBusinessLogic();
+                            subject.SomeBusinessLogic();
+
+                            subject.Detach(observerB);
+
+                            subject.SomeBusinessLogic();
+                        }
                     }
                 }
-
-                class ConcreteObserverA
-                {
-                    public void Update(ISubject subject)
-                    {
-                        if ((subject as Subject).State < 3)
-                        {
-                            Console.WriteLine('ConcreteObserverA: Reacted to the event.');
-                        }
-                    }
-                }
-
-                class ConcreteObserverB
-                {
-                    public void Update(ISubject subject)
-                    {
-                        if ((subject as Subject).State == 0 || (subject as Subject).State >= 2)
-                        {
-                            Console.WriteLine('ConcreteObserverB: Reacted to the event.');
-                        }
-                    }
-                }");
+");
         }
 
         [Fact]
@@ -287,9 +244,32 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             Observer observer = new Observer(collection);
+            // needs IObserver class
+            // observer.scan(); doent work because of noObserver
             observer.Scan();
             Assert.True(observer.HasObserverRelations().Passed);
         }
 
+        [Fact]
+        public void Test_Observer_HasSubjectInterface()
+        {
+            var tree = ObserverTree();
+            var collection = Walker.GenerateModels(tree);
+
+            Observer observer = new Observer(collection);
+            observer.Scan();
+            Assert.True(observer.HasSubjectInterface().Passed);
+        }
+
+
+        [Fact]
+        public void Test_Observer_HasNoObserverInterface()
+        {
+            var tree = NoObserverInterface();
+            var collection = Walker.GenerateModels(tree);
+
+            Observer observer = new Observer(collection);
+            Assert.False(observer.HasObserverInterface().Passed);
+        }
     }
 }

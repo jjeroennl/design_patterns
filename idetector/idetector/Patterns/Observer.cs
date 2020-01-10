@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using idetector.Patterns.Helper;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Type = System.Type;
 
@@ -17,10 +18,11 @@ namespace idetector.Patterns
 
         private float _score;
         private readonly ClassCollection cc;
-        private List<string> interfaces = new List<string>();
+        private List<ClassModel> observers = new List<ClassModel>();
         private List<RequirementResult> _results = new List<RequirementResult>();
-        private ClassModel observerClass;
-
+        private ClassModel IObserverClass;
+        private ClassModel ISubjectClass;
+        private int probability = 0;
 
         public Observer(ClassCollection _cc)
         {
@@ -32,6 +34,7 @@ namespace idetector.Patterns
             _score = 0;
             _results.Clear();
             _results.Add(HasObserverInterface());
+            _results.Add(HasSubjectInterface());
         }
 
         public List<RequirementResult> GetResult()
@@ -44,28 +47,47 @@ namespace idetector.Patterns
             return _score;
         }
 
-        // Checks if there is an observer interface
+        // Checks if there is an observer interface/abstract class
         public RequirementResult HasObserverInterface()
         {
-            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            List<ClassModel> interfacesAndAbstracts = API.ListInterfacesAndAbstracts(cc);
+            foreach (var cls in interfacesAndAbstracts)
             {
-                if (cls.Value.Modifiers != null)
+                // observer interface heeft alleen een void update function
+                if (cls.getMethods().Count <= 1)
                 {
-                    if (cls.Value.IsInterface || cls.Value.IsAbstract)
+                    foreach (var method in cls.getMethods())
                     {
-                        foreach (var method in cls.Value.getMethods())
+                        if (method.ReturnType == "void" && !method.Modifiers.Contains("private"))
                         {
-                            if (method.ReturnType == "void" && !method.Modifiers.Contains("private"))
-                            {
-                                observerClass = cls.Value;
-                                return new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", true);
-                            }
+                            IObserverClass = cls;
+                            return new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", true);
                         }
                     }
                 }
             }
-
             return new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false);
+        }
+
+        public RequirementResult HasSubjectInterface()
+        {
+            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            {
+                foreach (var method in cls.Value.getMethods())
+                {
+                    if (method.ReturnType == "void")
+                    {
+                        probability++;
+                        if (probability >= 2)
+                        {
+                            ISubjectClass = cls.Value;
+                            return new RequirementResult("OBSERVER-HAS-SUBJECT-INTERFACE", true);
+                        }
+
+                    }
+                }
+            }
+            return new RequirementResult("OBSERVER-HAS-SUBJECT-INTERFACE", false);
         }
 
         // Checks if there are relations between the subject and the observer(s)
@@ -77,31 +99,21 @@ namespace idetector.Patterns
 
                 // get all classes that extend the observer interface
                 // API: get all interfaces from tree
-                if (parents != null && parents.Contains(observerClass.Identifier))
+                if (parents != null && parents.Contains(IObserverClass.Identifier))
                 {
-                    interfaces.Add(cls.Value.Identifier);
-                    Debug.WriteLine("Added: " + cls.Value.Identifier);
+                    observers.Add(cls.Value);
                 }
+            }
 
-                foreach (var property in cls.Value.getProperties())
+            foreach (var property in ISubjectClass.getProperties())
+            { 
+                string t1 = property.ValueType;
+
+                Debug.WriteLine("ValueType: " + t1);
+                Debug.WriteLine("Class: " + IObserverClass.Identifier);
+                if (observers.Count >= 1 && t1.Contains(IObserverClass.Identifier))
                 {
-                    // if method.valuetype = ienumerable
-                    // save collection
-                    string t1 = property.ValueType;
-
-                    if (t1.Contains("<"))
-                    {
-                        int index = t1.LastIndexOf("<");
-
-                        t1 = property.ValueType.Substring(0, index);
-                    }
-
-                    Debug.WriteLine("Class name: " + property.Parent);
-                    Debug.WriteLine("Identifier: " + property.Identifier);
-                    Debug.WriteLine("ValueType: " + property.ValueType);
-                    Debug.WriteLine("t1: " + t1);
-                    Debug.WriteLine("====================");
-                    Debug.WriteLine(" ");
+                    return new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", true);
                 }
             }
 
@@ -110,11 +122,7 @@ namespace idetector.Patterns
             // Checken of die IEnumerable alle interfaces die we hebben gevonden bevat
             // API: check if type of checked attribute is IEnumerable
 
-            if (interfaces.Count > 77)
-                {
-                    return new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", true);
-                }
-                return new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", false);
-            }
+            return new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", false);
+        }
     }
 }
