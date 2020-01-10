@@ -52,6 +52,18 @@ namespace idetector.Patterns
             }
         }
 
+        public bool GetResult(string Iidentifier, string req, bool correct)
+        {
+            foreach (ClassModel cls in cc.GetClasses().Values)
+            {
+                if (_results[Iidentifier].Contains(new RequirementResult(req, correct, cls)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public Dictionary<string, List<RequirementResult>> GetResults()
         {
             return _results;
@@ -130,9 +142,9 @@ namespace idetector.Patterns
                     }
                 }
             }
-            if (!_results[cls.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true, cls)))
+            foreach (ClassModel @interface in interfaces)
             {
-                foreach (ClassModel @interface in interfaces)
+                if (!_results[@interface.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true, cls)))
                 {
                     _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", false, cls));
                     _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", false, cls));
@@ -149,7 +161,7 @@ namespace idetector.Patterns
                     _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", true, cls));
                 }
             }
-            if (!_results[cls.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", true, cls)))
+            if (!_results[@interface.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", true, cls)))
             {
                 _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", false, cls));
             }
@@ -177,9 +189,9 @@ namespace idetector.Patterns
                     }
                 }
             }
-            if (!_results[cls.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", true, cls)))
+            foreach (ClassModel @interface in interfaces)
             {
-                foreach (ClassModel @interface in interfaces)
+                if (!_results[@interface.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", true, cls)))
                 {
                     _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", false, cls));
                 }
@@ -224,9 +236,9 @@ namespace idetector.Patterns
                     }
                 }
             }
-            if (!_results[cls.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", true, cls)))
+            foreach (ClassModel @interface in interfaces)
             {
-                foreach (ClassModel @interface in interfaces)
+                if (!_results[@interface.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", true, cls)))
                 {
                     _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", false, cls));
                 }
@@ -251,8 +263,7 @@ namespace idetector.Patterns
                                     {
                                         if (method.Body.Contains(property.Identifier))
                                         {
-                                            _results.Add(cls.Identifier, new List<RequirementResult>());
-                                            _results[cls.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", true, cls));
+                                            _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", true, cls));
                                         }
                                     }
                                 }
@@ -262,9 +273,9 @@ namespace idetector.Patterns
                     }
                 }
             }
-            if (!_results[cls.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", true, cls)))
+            foreach (ClassModel @interface in interfaces)
             {
-                foreach (ClassModel @interface in interfaces)
+                if (!_results[@interface.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", true, cls)))
                 {
                     _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", false, cls));
                 }
@@ -286,9 +297,9 @@ namespace idetector.Patterns
                         }
                     }
                 }
-                if (!_results[cls.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONCRETE-CLASS", true, cls)))
+                foreach (ClassModel @interface in interfaces)
                 {
-                    foreach (ClassModel @interface in interfaces)
+                    if (!_results[@interface.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONCRETE-CLASS", true, cls)))
                     {
                         _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONCRETE-CLASS", false, cls));
                     }
@@ -319,9 +330,9 @@ namespace idetector.Patterns
                         }
                     }
                 }
-                if (!_results[cls.Identifier].Contains(new RequirementResult("STRATEGY-CONCRETE-CLASS-RELATIONS", true, cls)))
+                foreach (ClassModel @interface in interfaces)
                 {
-                    foreach (ClassModel @interface in interfaces)
+                    if (!_results[@interface.Identifier].Contains(new RequirementResult("STRATEGY-CONCRETE-CLASS-RELATIONS", true, cls)))
                     {
                         _results[@interface.Identifier].Add(new RequirementResult("STRATEGY-CONCRETE-CLASS-RELATIONS", false, cls));
                     }
