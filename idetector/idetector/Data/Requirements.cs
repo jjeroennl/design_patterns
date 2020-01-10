@@ -30,18 +30,16 @@ namespace idetector.Data
             //DECORATOR
             //ID's:
             //DECORATOR-BASE-HAS-CHILDREN
-            //DECORATOR-BASE-CHILDREN-TYPES
             //DECORATOR-HAS-CHILDREN
             //DECORATOR-HAS-BASE-PROPERTY
             //DECORATOR-CONSTRUCTOR-SETS-COMPONENT
             //DECORATOR-CONCRETE-CALLS-BASE
             List<PatternRequirement> decoratorreqs = new List<PatternRequirement>();
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-HAS-CHILDREN", 1, "The base decorator class did not have any children"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-CHILDREN-TYPES", 10, "The base decorator did not contain a decorator child, or multiple decorator childs"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-CHILDREN", 1, "The decorator class did not have any children"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", 1, "The decorator class did not contain a field of the parent type"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", 1, "The decorator class' constructor does not set component field"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-CALLS-BASE", 1, "The concrete decorators call the base decorator's constructor"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-HAS-CHILDREN", 1, "The base interface/abstract did not have any children"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-CHILDREN", 1, "The abstract decorator did not have any children"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", 1, "The abstract decorator did not contain a field of the parent type"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", 1, "The abstract decorator' constructor does not set component field"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-CALLS-BASE", 1, "The concrete decorators do not call the abstract decorator's constructor"));
             PatternRequirements.Add("DECORATOR", decoratorreqs);
 
             //ABSTRACT FACTORY METHOD
@@ -76,16 +74,23 @@ namespace idetector.Data
              * STATE-CONCRETE-CLASS-RELATIONS
              */
             List<PatternRequirement> statereqs = new List<PatternRequirement>();
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-INTERFACE-ABSTRACT", 4, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-HAS-CONTEXT", 3, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", 2, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", 1, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", 1, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", 1, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-LOGIC", 1, ""));
-            statereqs.Add(new PatternRequirement("STATE-STRATEGY-INTERFACE-ABSTRACT", 2, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONCRETE-CLASS", 2, ""));
             PatternRequirements.Add("STATE", statereqs);
-
+            
+            //FACADE
+            /*ID's:
+             * FACADE-IS-FACADE
+             */
+            List<PatternRequirement> facadereqs = new List<PatternRequirement>();
+            facadereqs.Add(new PatternRequirement("FACADE-IS-FACADE", 4, ""));
+            PatternRequirements.Add("FACADE", facadereqs);
 
             var strategyreqs = new List<PatternRequirement>(statereqs);
             strategyreqs.Add(new PatternRequirement("STRATEGY-CONCRETE-CLASS-RELATIONS", 2, ""));

@@ -28,7 +28,7 @@ namespace idetector.CodeLoader
             return System.IO.File.ReadAllText(path);
         }
 
-        public static ClassCollection ReadDirectory(string path)
+        public static void ReadDirectory(string path)
         {
             var files = SearchDirectoryForCSFiles(path, new List<string>());
             string dataStream = "";
@@ -38,7 +38,7 @@ namespace idetector.CodeLoader
                 dataStream += FileReader.ReadFile(file);
             }
 
-            return CodeParser.Parse(dataStream);
+            CodeParser.Parse(dataStream);
         }
 
         private static List<string> SearchDirectoryForCSFiles(string sDir, List<string> s)

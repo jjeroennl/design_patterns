@@ -200,6 +200,11 @@ namespace idetector.Patterns
             }
             return false;
         }
+
+        public List<RequirementResult> GetResult()
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
 }

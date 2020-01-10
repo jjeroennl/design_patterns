@@ -18,6 +18,8 @@ namespace vs_plugin
     using System;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Media;
+    using vs_plugin.Code;
 
     /// <summary>
     /// Interaction logic for ToolWindow1Control.
@@ -30,8 +32,9 @@ namespace vs_plugin
         public ToolWindow1Control()
         {
             this.InitializeComponent();
+            UIHandler.ToolWindow1Control = this;
         }
-
+        
         public ClassCollection GetOpenWindowText()
         {
             DTE dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
@@ -80,13 +83,14 @@ namespace vs_plugin
                 return;
             }
 
-            this.AddClasses(collection); ;
-
-
+            this.AddClasses(collection);
         }
 
         private void AddClasses(ClassCollection collection)
         {
+            var req = new Requirements();
+            ScoreCalculator calc = new ScoreCalculator(req.GetRequirements());
+
             List<ClassModel> stateList = new List<ClassModel>();
             List<ClassModel> strategyList = new List<ClassModel>();
             List<ClassModel> facadeList = new List<ClassModel>();
@@ -112,32 +116,35 @@ namespace vs_plugin
 
                 Singleton s = new Singleton(item.Value);
                 s.Scan();
+                var singletonResults = s.GetResult();
+                calc.GetScore("SINGLETON", singletonResults)
+
                 idetector.Patterns.Decorator d = new idetector.Patterns.Decorator(item.Value, collection.GetClasses());
                 d.Scan();
 
 
-                if (f.Score(item.Value) >= 50)
-                {
-                    facadeList.Add(item.Value);
-                }
-                if (strat.Score(item.Key) >= 50)
-                {
-                    strategyList.Add(item.Value);
-                }
-                if (state.Score(item.Key) >= 50)
-                {
-                    stateList.Add(item.Value);
-                }
-
-                if (s.Score() >= 50)
-                {
-                    singletonList.Add(item.Value);
-                }
-
-                if (d.Score() >= 50)
-                {
-                    decoratorList.Add(item.Value);
-                }
+                // if (f.Score(item.Value) >= 50)
+                // {
+                //     facadeList.Add(item.Value);
+                // }
+                // if (strat.Score(item.Key) >= 50)
+                // {
+                //     strategyList.Add(item.Value);
+                // }
+                // if (state.Score(item.Key) >= 50)
+                // {
+                //     stateList.Add(item.Value);
+                // }
+                //
+                // if (s.Score() >= 50)
+                // {
+                //     singletonList.Add(item.Value);
+                // }
+                //
+                // if (d.Score() >= 50)
+                // {
+                //     decoratorList.Add(item.Value);
+                // }
             }
 
             PatternList.Children.Clear();
@@ -175,7 +182,19 @@ namespace vs_plugin
                 return;
             }
 
-            this.AddClasses(collection); ;
+            this.AddClasses(collection);
+        }
+
+        /// <summary>
+        /// Method to replace summary's information and reset the text wrapping.
+        /// </summary>
+        /// <param name="text">Text to be placed inside TextBlock.</param>
+        public void UpdateSummary(string title)
+        {
+            Summary.Visibility = Visibility.Visible;
+            PatternName.Content = title;
+            ConditionNumber.Content = "Condition #";
+            ConditionText.TextWrapping = TextWrapping.Wrap;
         }
     }
 }

@@ -1,5 +1,8 @@
 using System;
+using idetector;
 using idetector.Collections;
+using idetector.Data;
+using idetector.Models;
 using idetector.Parser;
 using idetector.Patterns.Facade;
 using idetector.Patterns.Helper;
@@ -20,9 +23,12 @@ namespace xUnitTest
             registerFacade();
             Facade f = new Facade(this._facade);
             f.Scan();
-            Assert.Equal(100, f.Score("GasPipes"));
-            Assert.Equal(100, f.Score("HouseBuilderFacade"));
-            Assert.Equal(0, f.Score("User"));
+
+            var requirements = new Requirements();
+            var calc = new ScoreCalculator(requirements.GetRequirements());
+            var scores = calc.GetScore("FACADE", f.GetResults());
+            
+            Assert.Equal(100, scores["HouseBuilderFacade"]);
         }
         
         [Fact]
@@ -31,20 +37,24 @@ namespace xUnitTest
             registerFacade();
             Facade f = new Facade(this._notFacade);
             f.Scan();
-            Assert.Equal(0, f.Score("GasPipes"));
-            Assert.Equal(0, f.Score("HouseBuilderFacade"));
-            Assert.Equal(0, f.Score("User"));
+            var requirements = new Requirements();
+            var calc = new ScoreCalculator(requirements.GetRequirements());
+            var scores = calc.GetScore("FACADE", f.GetResults());
+            
+            Assert.Equal(0, scores["HouseBuilderFacade"]);
         }
         
         [Fact]
         void ReallyNotFacade()
         {
             registerFacade();
-
             Facade f = new Facade(this._reallyNotFacade);
             f.Scan();
-            Assert.Equal(0, f.Score("Current"));
-            Assert.Equal(0, f.Score("NoteBs"));
+            var requirements = new Requirements();
+            var calc = new ScoreCalculator(requirements.GetRequirements());
+            var scores = calc.GetScore("FACADE", f.GetResults());
+            
+            Assert.Empty(scores);
         }
 
 

@@ -57,6 +57,11 @@ namespace idetector.Patterns
             _results.Add(HasMultipleMethods());
         }
 
+        public Dictionary<string, List<RequirementResult>> GetResults()
+        {
+            throw new NotImplementedException();
+        }
+
         public List<RequirementResult> GetResult()
         {
             return _results;
@@ -173,26 +178,26 @@ namespace idetector.Patterns
         /// <returns>Whether or not the check passes.</returns>
         public RequirementResult ContainsIFactoryClass()
         {
-            if (ifactory != null) return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", true);
-            return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", false);
+            if (ifactory != null) return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", true, ifactory);
+            return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", false, ifactory);
         }
 
         public RequirementResult ContainsProductInterface()
         {
             if (abstractClasses.Count == 0 && interfaces.Count == 0)
             {
-                return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", false);
+                return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", false, ifactory);
             }
-            return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", true);
+            return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", true, ifactory);
         }
 
         public RequirementResult ContainsAbstractProductInterfaceMethod()
         {
             if (interfaces.Count == 0)
             {
-                return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", false);
+                return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", false, ifactory);
             }
-            return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", true);
+            return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", true, ifactory);
         }
 
         public RequirementResult IsInheritingFactoryClass()
@@ -205,12 +210,12 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.HasParent(prnt.Identifier))
                         {
-                            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", true);
+                            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", true, ifactory);
                         }
                     }
                 }
             }
-            return new RequirementResult("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", false);
+            return new RequirementResult("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", false, ifactory);
         }
 
         public RequirementResult IsInheritingProductInterface()
@@ -223,12 +228,12 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.HasParent(@interface.Identifier))
                         {
-                            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", true);
+                            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", true, ifactory);
                         }
                     }
                 }
             }
-            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", false);
+            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", false, ifactory);
         }
 
         public RequirementResult ConcreteFactoryIsReturningConcreteProduct()
@@ -245,7 +250,7 @@ namespace idetector.Patterns
                             {
                                 if (method.ReturnType == @interface.Identifier)
                                 {
-                                    return new RequirementResult("FACTORY-RETURNS-PRODUCT", true);
+                                    return new RequirementResult("FACTORY-RETURNS-PRODUCT", true, ifactory);
 
                                 }
                             }
@@ -253,7 +258,7 @@ namespace idetector.Patterns
                     }
                 }
             }
-            return new RequirementResult("FACTORY-RETURNS-PRODUCT", false);
+            return new RequirementResult("FACTORY-RETURNS-PRODUCT", false, ifactory);
         }
 
         /// <summary>
@@ -277,11 +282,11 @@ namespace idetector.Patterns
                                 {
                                     if (isMethod)
                                     {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false);
+                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false, ifactory);
                                     }
                                     else
                                     {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true);
+                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true, ifactory);
                                     }
                                 }
                                 else
@@ -295,14 +300,14 @@ namespace idetector.Patterns
             }
             else if (isMethod)
             {
-                return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", true);
+                return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", true, ifactory);
             }
             else
             {
-                return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", false);
+                return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", false, ifactory);
             }
 
-            return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", true);
+            return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", true, ifactory);
         }
 
         /// <summary>
@@ -330,13 +335,13 @@ namespace idetector.Patterns
                 }
                 if (count > 1)
                 {
-                    if (isMethod) return new RequirementResult("FACTORY-MULTIPLE-METHODS", false);
-                    else return new RequirementResult("FACTORY-MULTIPLE-METHODS", true);
+                    if (isMethod) return new RequirementResult("FACTORY-MULTIPLE-METHODS", false, ifactory);
+                    else return new RequirementResult("FACTORY-MULTIPLE-METHODS", true, ifactory);
                 }
-                if (isMethod) return new RequirementResult("FACTORY-MULTIPLE-METHODS", true);
-                else return new RequirementResult("FACTORY-MULTIPLE-METHODS", false);
+                if (isMethod) return new RequirementResult("FACTORY-MULTIPLE-METHODS", true, ifactory);
+                else return new RequirementResult("FACTORY-MULTIPLE-METHODS", false, ifactory);
             }
-            return new RequirementResult("FACTORY-MULTIPLE-METHODS", false);
+            return new RequirementResult("FACTORY-MULTIPLE-METHODS", false, ifactory);
         }
         #endregion
     }

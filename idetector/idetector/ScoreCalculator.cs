@@ -48,9 +48,39 @@ namespace idetector
                     score += _priorities[pattern][result.Id].Weight;
                 }
             }
+
+
+            var x = _scores[pattern];
             score = (score / _scores[pattern]) * 100;
             val = (int)score;
             return val;
+        }
+        
+        public Dictionary<string, int> GetScore(string pattern, Dictionary<string, List<RequirementResult>> results)
+        {
+            var scores = new Dictionary<string, int>();
+            foreach (var result in results)
+            {
+                float score = 0;
+                int val = 0;
+                HashSet<string> classes = new HashSet<string>();
+                foreach (var r in result.Value)
+                {
+                    if (r.Passed)
+                    {
+                        score += _priorities[pattern][r.Id].Weight;
+                    }
+
+                    if (r.Class != null)
+                    {
+                        classes.Add(r.Class.Identifier);
+                    }
+                }
+                score = (((int)((score / _scores[pattern]) * 100) / classes.Count));
+
+                scores.Add(result.Key, (int)score);
+            }
+            return scores;
         }
     }
 }
