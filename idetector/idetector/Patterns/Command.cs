@@ -157,14 +157,21 @@ namespace idetector.Patterns
                         if (method.Modifiers[0].ToLower().Equals("public"))
                         {
                             count += 1;
+
                         }
                     }
                 }
-                if (count == cls.Value.getMethods().Count) {
+
+                if (count == cls.Value.getMethods().Count)
+                {
                     receivers.AddClass(cls.Value);
-                return new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", true);
                 }
             }
+            if (receivers.GetClasses().Count > 0)
+            {
+                return new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", true);
+            }
+
             return new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", false);
         }
 
@@ -187,11 +194,11 @@ namespace idetector.Patterns
                             {
                                 foreach (var receiver in receivers.GetClasses())
                                 {
-                                    if (cc.GetClass(property.ValueType.ToString()) == receiver.Value)
-                                    {
-                                        return new RequirementResult("COMMAND-USES-RECEIVER",true);
+                                        if ((property.ValueType == receiver.Value.Identifier))
+                                        {
+                                            return new RequirementResult("COMMAND-USES-RECEIVER", true);
+                                        }
                                     }
-                                }
                             }
                         }
                     }

@@ -152,7 +152,7 @@ namespace xUnitTest
             command.HasInterfaceOrAbstract();
             command.HasCommandClasses();
             command.HasReceiverClasses();
-            Assert.True(command.HasReceiverClasses().Passed);
+            Assert.True(command.CommandsUseReceiver().Passed);
         }
 
         [Fact]
@@ -225,6 +225,7 @@ namespace xUnitTest
             // The Receiver classes contain some important business logic. They know how
             // to perform all kinds of operations, associated with carrying out a
             // request. In fact, any class may serve as a Receiver.
+
             class Receiver
             {
                 public void DoSomething(string a)
@@ -240,6 +241,7 @@ namespace xUnitTest
 
             // The Invoker is associated with one or several commands. It sends a
             // request to the command.
+
             class Invoker
             {
                 private ICommand _onStart;

@@ -101,12 +101,12 @@ namespace idetector.Data
              * COMMAND-HAS-INVOKER-CLASS
              */
             List<PatternRequirement> commandreqs = new List<PatternRequirement>();
-            commandreqs.Add(new PatternRequirement("COMMAND-HAS-INTERFACE", 1, "The command pattern does not contain either an interface or an abstract class."));
-            commandreqs.Add(new PatternRequirement("COMMAND-HAS-COMMAND-CLASS", 1, "There are no commands that implement the abstract class or interface."));
-            commandreqs.Add(new PatternRequirement("COMMAND-HAS-PUBLIC-CONSTRUCTOR", 1, "Either the interface does not contain a method, or the commands do not inherit the interface method."));
-            commandreqs.Add(new PatternRequirement("COMMAND-HAS-RECEIVER-CLASS", 1, "There are no receiver classes implemented"));
-            commandreqs.Add(new PatternRequirement("COMMAND-USES-RECEIVER",1, "None of the commands are controlled by a receiver"));
-            commandreqs.Add(new PatternRequirement("COMMAND-HAS-INVOKER-CLASS", 1, "The code does not contain an Invoker class"));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-INTERFACE", 2, "The command pattern does not contain either an interface or an abstract class."));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-COMMAND-CLASS", 3, "There are no commands that implement the abstract class or interface."));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-PUBLIC-CONSTRUCTOR", 1, "One or all of the commands do not have a public constructor."));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-RECEIVER-CLASS", 2, "There are no receiver classes implemented"));
+            commandreqs.Add(new PatternRequirement("COMMAND-USES-RECEIVER",2, "None of the commands are controlled by a receiver"));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-INVOKER-CLASS", 3, "The code does not contain an Invoker class"));
             PatternRequirements.Add("COMMAND", commandreqs);
         }
         public Dictionary<string, List<PatternRequirement>> GetRequirements()
