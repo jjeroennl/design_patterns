@@ -30,12 +30,6 @@ namespace vs_plugin
             textBlock.Text = handle;
             PatternName1.Name = handle;
             PatternName1.Header = textBlock;
-            PatternName1.PreviewMouseLeftButtonDown += pattern_PreviewMouseDown;
-        }
-
-        private void pattern_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            UIHandler.SummarySelection((sender as Expander));
         }
 
         public SinglePattern()
@@ -52,11 +46,14 @@ namespace vs_plugin
         {
         }
 
-        internal void AddClass(ClassModel classobj)
+        public void AddPattern(Pattern pattern)
         {
-            var singleclass = new SingleClass();
-            singleclass.SetHandle(classobj.Identifier);
-            ClassList.Children.Add(singleclass);
+            var singleclass = new UIPattern();
+            singleclass.SetHandle(pattern.Class.Identifier);
+            singleclass.SetScore(pattern.Score);
+            singleclass.SetRequirements(pattern.RequirementResults);
+
+            FoundList.Children.Add(singleclass);
         }
     }
 }

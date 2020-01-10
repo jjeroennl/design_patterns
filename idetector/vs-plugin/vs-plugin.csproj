@@ -55,6 +55,7 @@
     <Compile Include="Code\Models\ClassModel.cs" />
     <Compile Include="Code\Models\MethodModel.cs" />
     <Compile Include="Code\Models\NamespaceModel.cs" />
+    <Compile Include="Code\Models\Pattern.cs" />
     <Compile Include="Code\Models\PatternRequirement.cs" />
     <Compile Include="Code\Models\PriorityEnum.cs" />
     <Compile Include="Code\Models\PropertyModel.cs" />
@@ -81,8 +82,11 @@
     <Compile Include="DesignPattersToolControl.xaml.cs">
       <DependentUpon>DesignPattersToolControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SingleClass.xaml.cs">
-      <DependentUpon>SingleClass.xaml</DependentUpon>
+    <Compile Include="Requirement.xaml.cs">
+      <DependentUpon>Requirement.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UIPattern.xaml.cs">
+      <DependentUpon>UIPattern.xaml</DependentUpon>
     </Compile>
     <Compile Include="SinglePattern.xaml.cs">
       <DependentUpon>SinglePattern.xaml</DependentUpon>
@@ -112,7 +116,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SingleClass.xaml">
+    <Page Include="Requirement.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UIPattern.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

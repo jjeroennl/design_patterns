@@ -205,6 +205,11 @@ namespace idetector.Patterns
         {
             throw new NotImplementedException();
         }
+
+        public Dictionary<string, List<RequirementResult>> GetResults()
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
 }
