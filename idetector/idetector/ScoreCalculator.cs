@@ -63,14 +63,20 @@ namespace idetector
             {
                 float score = 0;
                 int val = 0;
+                HashSet<string> classes = new HashSet<string>();
                 foreach (var r in result.Value)
                 {
                     if (r.Passed)
                     {
                         score += _priorities[pattern][r.Id].Weight;
                     }
+
+                    if (r.Class != null)
+                    {
+                        classes.Add(r.Class.Identifier);
+                    }
                 }
-                score = (((int)((score / _scores[pattern]) * 100) / result.Value.Count));
+                score = (((int)((score / _scores[pattern]) * 100) / classes.Count));
 
                 scores.Add(result.Key, (int)score);
             }

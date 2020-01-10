@@ -91,7 +91,8 @@ namespace idetector.Patterns.Helper
                 foreach (var method in cls.getMethods().Where(
                     e =>
                         modifiers.All(e.HasModifier)
-                        && e.ReturnType == type)){
+                        && e.ReturnType == type
+                        && e.isConstructor == false)){
                     methodList.Add(method);
                 }
             }

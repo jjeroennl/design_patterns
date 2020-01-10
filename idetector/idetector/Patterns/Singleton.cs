@@ -70,6 +70,7 @@ namespace idetector.Patterns
             foreach (var instance in instances)
             {
                 _results[_cls.Identifier].Add(new RequirementResult("SINGLETON-GET-INSTANCE", true, _cls, instance));
+                return;
             }
         }
 

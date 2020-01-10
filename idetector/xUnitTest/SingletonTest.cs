@@ -151,7 +151,6 @@ namespace xUnitTest
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
             var score = calculator.GetScore("SINGLETON" ,singleton.GetResults());
-            var x = singleton.GetResults();
             Assert.Equal(100, score["User"]);
         }
 
