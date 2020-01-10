@@ -24,11 +24,14 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
             Requirements r = new Requirements();
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            int score;
 
             StateStrategy state= new StateStrategy(collection, true);
             state.Scan();
-            //var score = calculator.GetScore("STATE", state.GetResult());
-           // Assert.Equal(100, score);
+
+            calculator.GetScore("STATE", state.GetResults()).TryGetValue("state", out score);
+            Assert.Equal(100, score);
+
         }
         [Fact]
 
@@ -38,11 +41,14 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
             Requirements r = new Requirements();
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            int score;
 
             StateStrategy state= new StateStrategy(collection, true);
             state.Scan();
-            //var score = calculator.GetScore("STATE", state.GetResult());
-            //Assert.InRange(score, 0, 75);
+
+            calculator.GetScore("STATE", state.GetResults()).TryGetValue("state", out score);
+            Assert.InRange(score, 0, 75);
+
         }
         [Fact]
         public void Test_State_NoRelationsBetweenStates()

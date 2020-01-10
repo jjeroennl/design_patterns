@@ -61,7 +61,18 @@ namespace idetector
             var scores = new Dictionary<string, int>();
             foreach (var result in results)
             {
-                scores.Add(result.Key, GetScore(pattern, result.Value));
+                float score = 0;
+                int val = 0;
+                foreach (var r in result.Value)
+                {
+                    if (r.Passed)
+                    {
+                        score += _priorities[pattern][r.Id].Weight;
+                    }
+                }
+                score = (((int)((score / _scores[pattern]) * 100) / result.Value.Count));
+
+                scores.Add(result.Key, (int)score);
             }
             return scores;
         }
