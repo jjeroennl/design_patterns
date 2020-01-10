@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-
 using idetector.Collections;
 using idetector.Models;
 using System.Linq;
+using idetector.Patterns.Helper;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -11,201 +11,134 @@ namespace idetector.Patterns
 {
     public class Decorator : IPattern
     {
+        //ID's:
+        //DECORATOR-BASE-HAS-CHILDREN
+        //DECORATOR-BASE-CHILDREN-TYPES
+        //DECORATOR-HAS-CHILDREN
+        //DECORATOR-HAS-BASE-PROPERTY
+        //DECORATOR-CONSTRUCTOR-SETS-COMPONENT
+        //DECORATOR-CONCRETE-CALLS-BASE
+
         private ClassModel _cls;
-        private Dictionary<string, ClassModel> _collection;
+        private ClassCollection _collection;
         private List<ClassModel> _children = new List<ClassModel>();
         private ClassModel _decoratorInterface;
         private List<ClassModel> _decorators = new List<ClassModel>();
         private List<ClassModel> _bases = new List<ClassModel>();
-        private float _score = 0;
+        private bool isDecorator = false;
 
-        public Decorator(ClassModel cls, Dictionary<string, ClassModel> collection)
+        private Dictionary<string, List<RequirementResult>>
+            _results = new Dictionary<string, List<RequirementResult>>();
+        
+
+        public Decorator(ClassCollection collection)
         {
             _collection = collection;
-            _cls = cls;
-            PriorityCollection.ClearPriorities();
-            PriorityCollection.AddPriority("decorator", "checkChildren", Priority.Low);
-            PriorityCollection.AddPriority("decorator", "findDecorators", Priority.Low);
-            PriorityCollection.AddPriority("decorator", "decoratorBaseHasComponent", Priority.Low);
-            PriorityCollection.AddPriority("decorator", "constructorSetsComponent", Priority.Low);
-            PriorityCollection.AddPriority("decorator", "DecoratorCallsBase", Priority.Low);
         }
 
         public void Scan()
         {
-            if (_cls.IsInterface || _cls.IsAbstract)
+            var classes = findDecoratorInterface(_collection);
+            foreach (var cls in classes)
             {
-                if (checkChildren().isTrue)
-                {
-                    _score += PriorityCollection.GetPercentage("decorator", "checkChildren");
+                List<RequirementResult> results = new List<RequirementResult>();
+                var parent = cls.Parents.First(e => cls.HasParent(e.Identifier));
+                _cls = _collection.GetClass(parent.Identifier);
 
-                    if (findDecorators().isTrue)
-                    { 
-                        _score += PriorityCollection.GetPercentage("decorator", "findDecorators");
-                        if (decoratorBaseHasComponent().isTrue)
-                        {
-                            _score += PriorityCollection.GetPercentage("decorator", "decoratorBaseHasComponent");
-                        }
-
-                        if (constructorSetsComponent().isTrue)
-                        {
-                            _score += PriorityCollection.GetPercentage("decorator", "constructorSetsComponent");
-                        }
-
-                        if (DecoratorCallsBase().isTrue)
-                        {
-                            _score += PriorityCollection.GetPercentage("decorator", "DecoratorCallsBase");
-                        }
-                    }
-                }
-                
+                _decoratorInterface = cls;
+                results.Add(CheckChildren());
+                results.Add(FindDecorators());
+                results.Add(DecoratorHasBaseProperty());
+                results.Add(ConstructorSetsComponent());
+                results.Add(DecoratorCallsBase());
+                _results.Add(_cls.Identifier, results);
             }
         }
 
-        public int Score()
+        public Dictionary<string, List<RequirementResult>> GetResults()
         {
-            return (int) _score;
+            return _results;
+        }
+
+        private List<ClassModel> findDecoratorInterface(ClassCollection cc)
+        {
+            var interfaces = API.ListInterfaces(cc);
+            var abstracts = API.ListAbstract(cc);
+            var classes = interfaces.Concat(abstracts);
+            List<ClassModel> abstractDecorators = new List<ClassModel>();
+            foreach (var inf in classes)
+            {
+                var parent = abstracts.FirstOrDefault(e => e.HasParent(inf.Identifier));
+                if (parent != null)
+                {
+                    abstractDecorators.Add(parent);
+                }
+            }
+
+            return abstractDecorators;
         }
 
 
-        /// <summary>
-        /// Checks if interface has children
-        /// </summary>
-        /// <returns>CheckedMessage</returns>
-        private CheckedMessage checkChildren()
+        public RequirementResult CheckChildren()
         {
-            List<ClassModel> list = new List<ClassModel>();
-            foreach (var item in _collection.Values)
+            var classes =
+                _collection.GetClassListExcept(API.ListAbstract(_collection).Concat(API.ListInterfaces(_collection))
+                    .ToList());
+
+            foreach (var cls in classes)
             {
-                if (item.HasParent(_cls.Identifier))
+                if (cls.HasParent(_cls.Identifier))
                 {
-                    list.Add(item);
+                    return new RequirementResult("DECORATOR-BASE-HAS-CHILDREN", true, cls);
                 }
             }
 
-            if (list.Count > 1)
-            {
-                _children = list;
-                return checkChildrenType();
-            }
-
-            return new CheckedMessage("The class did not have enough children to qualify", false, _cls.Identifier);
+            return new RequirementResult("DECORATOR-BASE-HAS-CHILDREN", false, _cls);
         }
 
-        private CheckedMessage checkChildrenType()
+        public RequirementResult DecoratorHasBaseProperty()
         {
-            var i = 0;
-            foreach (var child in _children)
-            {
-                if (child.IsAbstract)
-                {
-                    i++;
-                    _decoratorInterface = child;
-                }
-                else
-                {
-                    _bases.Add(child);
-                }
+            bool result = API.ClassHasPropertyOfType(_decoratorInterface, _cls.Identifier);
 
-            }
 
-            if (i != 1)
-            {
-                return new CheckedMessage("Decorator pattern does not allow multiple base decorator classes", false,
-                    _cls.Identifier);
-            }
-
-            return new CheckedMessage(true);
-
+            return new RequirementResult("DECORATOR-HAS-BASE-PROPERTY", result, _decoratorInterface);
         }
 
-        private CheckedMessage decoratorBaseHasComponent()
+        public RequirementResult ConstructorSetsComponent()
         {
-            foreach (var property in _decoratorInterface.getProperties())
-            {
-                if (property.ValueType.Equals(_cls.Identifier))
-                {
-                    return new CheckedMessage(true);
-                }
-            }
+            var result = API.ClassHasConstructorOfType(_decoratorInterface, _cls.Identifier);
 
-            return new CheckedMessage("The base decorator did not have a property/field of type: " + _cls.Identifier,
-                false, _decoratorInterface.Identifier);
+
+            return new RequirementResult("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", result, _decoratorInterface);
         }
 
-        private CheckedMessage constructorSetsComponent()
+        public RequirementResult FindDecorators()
         {
-            foreach (var item in _decoratorInterface.getMethods())
+            _decorators = API.ListChildren(_collection, _decoratorInterface.Identifier);
+
+            if (_decorators.Count < 0)
             {
-                if (item.Parameters.Contains(_cls.Identifier))
-                {
-                    int count = 0;
-                    foreach (var decorator in _decorators)
-                    {
-                        bool triggered = false;
-                        
-                        foreach (var method in decorator.getMethods())
-                        {
-                            if (method.isConstructor)
-                            {
-                                count++;
-                                if (!method.Parameters.Contains(_cls.Identifier))
-                                {
-                                    triggered = true;
-                                }
-
-                            }
-                        }
-
-                        if (!triggered && (count >= _decorators.Count))
-                        {
-                            return new CheckedMessage(true);
-
-                        }
-                        return new CheckedMessage("One or more decorator does not take a " + _cls.Identifier + "as parameter", false, decorator.Identifier);
-                    }
-
-                }
+                return new RequirementResult("DECORATOR-HAS-CHILDREN", false, _decoratorInterface);
             }
-            return new CheckedMessage("The decorator base does not take a value of " + _cls.Identifier + "as parameter", false, _decoratorInterface.Identifier);
+
+            return new RequirementResult("DECORATOR-HAS-CHILDREN", true, _decoratorInterface);
         }
 
-        private CheckedMessage findDecorators()
+        public RequirementResult DecoratorCallsBase()
         {
-            foreach (var item in _collection.Values)
+            //if there are no decorators result will be false, otherwise true. 
+            bool result = _decorators.Count > 0;
+            ClassModel cls = _decoratorInterface;
+            foreach (var dec in _decorators)
             {
-                if (item.HasParent(_decoratorInterface.Identifier))
+                if (!API.ChildCallsBaseConstructor(dec))
                 {
-                    _decorators.Add(item);
+                    cls = dec;
+                    result = false;
                 }
             }
 
-            if (_decorators.Count > 0)
-            {
-                return new CheckedMessage(true);
-            }
-
-            return new CheckedMessage("the base decorator does not have any children", false,
-                _decoratorInterface.Identifier);
-        }
-
-        private CheckedMessage DecoratorCallsBase()
-        {
-            foreach (var decorator in _decorators)
-            {
-                foreach (var method in decorator.getMethods())
-                {
-                    if (method.isConstructor)
-                    {
-                        var node = (ConstructorDeclarationSyntax) method.getNode();
-                        if (!node.Initializer.ThisOrBaseKeyword.ToString().ToLower().Equals("base"))
-                        {
-                            return new CheckedMessage("Not all decorators call the base constructor", false, decorator.Identifier);
-                        }
-                    }
-                }
-            }
-            return new CheckedMessage(true);
+            return new RequirementResult("DECORATOR-CONCRETE-CALLS-BASE", result, cls);
         }
     }
 }

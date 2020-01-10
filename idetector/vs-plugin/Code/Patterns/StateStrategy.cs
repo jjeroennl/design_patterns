@@ -7,77 +7,66 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace idetector.Patterns
 {
+    /*ID's:
+     * STATE-STRATEGY-HAS-CONTEXT
+     * STATE-STRATEGY-CONTEXT-HAS-STRATEGY
+     * STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY
+     * STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR
+     * STATE-STRATEGY-CONTEXT-STRATEGY-SETTER
+     * STATE-STRATEGY-CONTEXT-LOGIC
+     * STATE-STRATEGY-INTERFACE-ABSTRACT
+     * STATE-STRATEGY-CONCRETE-CLASS
+     * STATE-CONCRETE-CLASS-RELATIONS
+     */
     public class StateStrategy : IPattern
     {
-        private float _score ;
+        private float _score;
         private Dictionary<string, int> _scores = new Dictionary<string, int>();
         private bool IsState = false;
         private ClassCollection cc;
-        private ClassCollection Concretes;
+
+        private ClassCollection Concretes = new ClassCollection();
         public ClassModel Context;
-        private ClassModel Interface;
+        private List<ClassModel> interfaces;
         private MethodModel Setter;
+        private Dictionary<string, List<RequirementResult>> _results = new Dictionary<string, List<RequirementResult>>();
 
-        /// <summary>
-        /// Constructor for StateStrategy
-        /// </summary>
-        /// <param name="_cc">ClassCollection to check</param>
-        /// <param name="state">Bool whether it should check for an state pattern</param>
-        public StateStrategy(ClassCollection _cc, bool state)
+
+        public StateStrategy(ClassCollection _cc, bool isState)
         {
-
             cc = _cc;
-            IsState = state;
+            IsState = isState;
             Concretes = new ClassCollection();
-            PriorityCollection.ClearPriorities();
-            PriorityCollection.AddPriority("strategy", "ContextHasStrategy", Priority.High);
-            PriorityCollection.AddPriority("strategy", "ContextHasStrategySetter", Priority.High);
-            PriorityCollection.AddPriority("strategy", "ContextHasLogic", Priority.Medium);
-            PriorityCollection.AddPriority("strategy", "ContextHasPrivateStrategy", Priority.Low);
-            PriorityCollection.AddPriority("strategy", "ContextHasPublicConstructor", Priority.Low);
-            PriorityCollection.AddPriority("strategy", "HasInterfaceOrAbstract", Priority.Medium);
-            PriorityCollection.AddPriority("strategy", "HasConcreteClasses", Priority.Medium);
-            if (IsState == false) PriorityCollection.AddPriority("strategy", "HasRelationsBetweenConcreteClasses", Priority.Low);
+            interfaces = new List<ClassModel>();
+
         }
 
         public void Scan()
         {
-            if (HasInterfaceOrAbstract().isTrue)
+            HasInterfaceOrAbstract();
+            ContextChecks();
+            HasConcreteClasses();
+            if (!IsState)
             {
-                _score += PriorityCollection.GetPercentage("strategy", "HasInterfaceOrAbstract");
+                HasRelationsBetweenConcreteClasses();
             }
-            if (HasConcreteClasses().isTrue)
-            {
-                _score += PriorityCollection.GetPercentage("strategy", "HasConcreteClasses");
-                if (IsState == false && HasRelationsBetweenConcreteClasses().isTrue)
-                {
-                    _score += PriorityCollection.GetPercentage("strategy", "HasRelationsBetweenConcreteClasses");
-                }
-            }
-            if (ContextChecks().isTrue)
-            {
-                if (ContextHasStrategy(Context).isTrue)
-                {
-                    _score += PriorityCollection.GetPercentage("strategy", "ContextHasStrategy");
+        }
 
-                    if (ContextHasPrivateStrategy(Context).isTrue)
-                    {
-                        _score += PriorityCollection.GetPercentage("strategy", "ContextHasPrivateStrategy");
-                    }
-                    if (ContextHasStrategySetter(Context).isTrue)
-                    {
-                        _score += PriorityCollection.GetPercentage("strategy", "ContextHasStrategySetter");
-                    }
-                }
-                if (ContextHasPublicConstructor(Context).isTrue)
+        public bool GetResult(string Iidentifier, string req, bool correct)
+        {
+            foreach (ClassModel cls in cc.GetClasses().Values)
+            {
+                if (_results[Iidentifier].Contains(new RequirementResult(req, correct, cls)))
                 {
-                    _score += PriorityCollection.GetPercentage("strategy", "ContextHasPublicConstructor");
-                }
-                if (ContextHasLogic(Context).isTrue)
-                {
-                    _score += PriorityCollection.GetPercentage("strategy", "ContextHasLogic");
+                    return true;
                 }
             }
+            return false;
+        }
+
+        public Dictionary<string, List<RequirementResult>> GetResults()
+        {
+            return _results;
         }
 
         public int Score()
@@ -85,238 +74,270 @@ namespace idetector.Patterns
             return (int) _score;
         }
 
-
-        public int Score(string className)
+        private void HasInterfaceOrAbstract()
         {
-            if (this._scores.ContainsKey(className))
+            foreach (var cls in cc.GetClasses().Values)
             {
-                return this._scores[className];
-            }
-            else
-            {
-                return 0;
+                if (cls.IsInterface || cls.IsAbstract)
+                {
+                    interfaces.Add(cls);
+                    _results.Add(cls.Identifier, new List<RequirementResult>());
+                    _results[cls.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true, cls));
+                }
+                else
+                {
+                    _results.Add(cls.Identifier, new List<RequirementResult>());
+                    _results[cls.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", false, cls));
+                }
             }
         }
 
         /// <summary>
         /// Checking if there is a class which suffises as an 'Context' class
         /// </summary>
-        /// <returns>CheckedMessage</returns>
-        public CheckedMessage ContextChecks()
+        private void ContextChecks()
         {
             int score = 0;
-            foreach (var cls in cc.GetClasses())
+            int i = 100 / 5;
+
+            foreach (var cls in cc.GetClasses().Values)
             {
-                this._scores[cls.Value.Identifier] = 0;
-
-                if (ContextHasStrategy(cls.Value).isTrue)
+                ContextHasStrategy(cls);
+                ContextHasPublicConstructor(cls);
+                ContextHasStrategySetter(cls);
+                ContextHasLogic(cls);
+                
+                if (score >= 50)
                 {
-                    score += 1;
-                    if (ContextHasPrivateStrategy(cls.Value).isTrue) score += 1;
-                    if (ContextHasPrivateStrategy(cls.Value).isTrue) this._scores[cls.Value.Identifier] += 1;
-                }
-                if (ContextHasPublicConstructor(cls.Value).isTrue) score += 1;
-                if (ContextHasPublicConstructor(cls.Value).isTrue) this._scores[cls.Value.Identifier] += 1;
+                    Context = cls;
 
-                if (ContextHasStrategySetter(cls.Value).isTrue) score += 1;
-                if (ContextHasStrategySetter(cls.Value).isTrue) this._scores[cls.Value.Identifier] += 1;
-
-                if (ContextHasLogic(cls.Value).isTrue) score += 1;
-                if (ContextHasLogic(cls.Value).isTrue) this._scores[cls.Value.Identifier] += 1;
-
-
-                if (score >= 3)
-                {
-                    Context = cls.Value;
-                    return new CheckedMessage(true);
-                }
-            }
-            return new CheckedMessage("There is not an class which suffises as an 'Context' class", false);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cls">ClassModel to check</param>
-        /// <returns>CheckedMessage</returns>
-        private CheckedMessage ContextHasStrategy(ClassModel cls)
-        {
-            foreach (var property in cls.getProperties())
-            {
-                if (cc.GetClass(property.ValueType.ToString()) != null)
-                {
-                    if (cc.GetClass(property.ValueType.ToString()) == Interface) return new CheckedMessage(true);
-                }
-            }
-            return new CheckedMessage("There is not an 'Context' class, which contains an strategy", false);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cls">ClassModel to check</param>
-        /// <returns>CheckedMessage</returns>
-        public CheckedMessage ContextHasPrivateStrategy(ClassModel cls)
-        {
-            foreach (var property in cls.getProperties())
-            {
-                if (cc.GetClass(property.ValueType.ToString()) != null)
-                {
-                    if (cc.GetClass(property.ValueType.ToString()) == Interface)
+                    foreach (ClassModel @interface in interfaces)
                     {
-                        if (property.Modifiers.Length >= 1)
+                        _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-HAS-CONTEXT", true, Context));
+                    }
+                }
+                else
+                {
+                    foreach (ClassModel @interface in interfaces)
+                    {
+                        _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-HAS-CONTEXT", false, cls));
+                    }
+                }
+            }
+        }
+        private void ContextHasStrategy(ClassModel cls)
+        {
+            if (cls != null)
+            {
+                foreach (var property in cls.getProperties())
+                {
+                    foreach (ClassModel @interface in interfaces)
+                    {
+                        if (cc.GetClass(property.ValueType.ToString()) == @interface)
                         {
-                            if (property.Modifiers[0].ToLower().Equals("private")) return new CheckedMessage(true);
+                            _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true, cls));
+
+                            ContextHasPrivateStrategy(cls, @interface, property);
                         }
                     }
                 }
             }
-            return new CheckedMessage("There is not an 'Context' class, which contains an private strategy, but an public one", false);
+            foreach (ClassModel @interface in interfaces)
+            {
+                if (!_results[@interface.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true, cls)))
+                {
+                    _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", false, cls));
+                    _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", false, cls));
+                }
+            }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cls">ClassModel to check</param>
-        /// <returns>CheckedMessage</returns>
-        public CheckedMessage ContextHasPublicConstructor(ClassModel cls)
+        private void ContextHasPrivateStrategy(ClassModel cls, ClassModel @interface ,PropertyModel property)
         {
-            foreach (var method in cls.getMethods())
+            if (property.Modifiers.Length > 0)
             {
-                if (method.isConstructor)
+                if (property.Modifiers[0].ToLower().Equals("private"))
                 {
-                    foreach (var modifier in method.Modifiers)
+                    _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", true, cls));
+                }
+            }
+            if (!_results[@interface.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", true, cls)))
+            {
+                _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", false, cls));
+            }
+        }
+
+
+        private void ContextHasPublicConstructor(ClassModel cls)
+        {
+            if (cls != null)
+            {
+                foreach (var method in cls.getMethods())
+                {
+                    if (method.isConstructor)
                     {
-                        if (modifier.ToLower().Equals("public")) return new CheckedMessage(true);
+                        foreach (var modifier in method.Modifiers)
+                        {
+                            if (modifier.ToLower().Equals("public"))
+                            {
+                                foreach (ClassModel @interface in interfaces)
+                                {
+                                    _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", true, cls));
+                                }
+                            }
+                        }
                     }
                 }
             }
-            return new CheckedMessage("There is not an public constructor in the 'Context' class", false);
+            foreach (ClassModel @interface in interfaces)
+            {
+                if (!_results[@interface.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", true, cls)))
+                {
+                    _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", false, cls));
+                }
+            }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cls">ClassModel to check</param>
-        /// <returns>CheckedMessage</returns>
-        public CheckedMessage ContextHasStrategySetter(ClassModel cls)
+        private void ContextHasStrategySetter(ClassModel cls)
         {
-            foreach (var property in cls.getProperties())
+            if (cls != null)
             {
-                if (property.Type.Equals(Models.Type.PropertySyntax))
+                foreach (var property in cls.getProperties())
                 {
-                    var node = (PropertyDeclarationSyntax)property.GetNode();
-                    if (node.AccessorList.ToString().Contains("set")) return new CheckedMessage(true);
+                    if (property.Type.Equals(Models.Type.PropertySyntax))
+                    {
+                        var node = (PropertyDeclarationSyntax)property.GetNode();
+                        if (node.AccessorList.ToString().Contains("set"))
+                        {
+                            foreach (ClassModel @interface in interfaces)
+                            {
+                                _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", true, cls));
+                            }
+                        }
+                    }
+
+                    foreach (ClassModel @interface in interfaces)
+                    {
+                        if (property.ValueType.ToString() == @interface.Identifier)
+                        {
+                            foreach (var method in cls.getMethods())
+                            {
+                                if (method.Parameters.Contains(property.ValueType.ToString()) &&
+                                    method.Body.Contains(property.Identifier))
+                                {
+                                    if (!method.isConstructor)
+                                    {
+                                        Setter = method;
+                                        _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", true, cls));
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+            }
+            foreach (ClassModel @interface in interfaces)
+            {
+                if (!_results[@interface.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", true, cls)))
+                {
+                    _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", false, cls));
+                }
+            }
+        }
+
+        private void ContextHasLogic(ClassModel cls)
+        {
+            if (cls != null)
+            {
                 foreach (var method in cls.getMethods())
                 {
                     if (!method.isConstructor)
                     {
-                        if (Interface != null)
+                        foreach (var property in cls.getProperties())
                         {
-                            if (property.ValueType.ToString() == Interface.Identifier)
+                            foreach(ClassModel @interface in interfaces)
                             {
-                                if (method.Parameters.Contains(property.ValueType.ToString()) && method.Body.Contains(property.Identifier))
+                                if (cc.GetClass(property.ValueType.ToString()) == @interface)
                                 {
-                                    Setter = method;
-                                    return new CheckedMessage(true);
+                                    if (Setter == null || method != Setter)
+                                    {
+                                        if (method.Body.Contains(property.Identifier))
+                                        {
+                                            _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", true, cls));
+                                        }
+                                    }
                                 }
+
                             }
                         }
                     }
                 }
             }
-            return new CheckedMessage("There is not an setter for the strategy/state in the 'Context' class", false);
+            foreach (ClassModel @interface in interfaces)
+            {
+                if (!_results[@interface.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", true, cls)))
+                {
+                    _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-LOGIC", false, cls));
+                }
+            }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cls">ClassModel to check</param>
-        /// <returns>CheckedMessage</returns>
-        public CheckedMessage ContextHasLogic(ClassModel cls)
+        private void HasConcreteClasses()
         {
-            foreach (var method in cls.getMethods())
+            foreach (var cls in cc.GetClasses().Values)
             {
-                if (!method.isConstructor)
+                foreach (string parent in cls.GetParents())
                 {
-                    foreach (var property in cls.getProperties())
+                    foreach (ClassModel @interface in interfaces)
                     {
-                        if (cc.GetClass(property.ValueType.ToString()) != null)
+                        if (cc.GetClass(parent) == @interface)
                         {
-                            if (cc.GetClass(property.ValueType.ToString()) == Interface)
-                            {
-                                if (Setter == null || method != Setter)
-                                {
-                                    if (method.Body.Contains(property.Identifier)) return new CheckedMessage(true);
-                                }
-                            }
+                            Concretes.AddClass(cls);
+                            _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true, cls));
                         }
                     }
                 }
-            }
-            return new CheckedMessage("The 'Context' class doesn't contain any logic to call the strategies/states", false);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>CheckedMessage</returns>
-        public CheckedMessage HasInterfaceOrAbstract()
-        {
-            foreach (var cls in cc.GetClasses())
-            {
-                if (cls.Value.IsInterface || cls.Value.IsAbstract)
+                foreach (ClassModel @interface in interfaces)
                 {
-                    Interface = cls.Value;
-                    return new CheckedMessage(true);
+                    if (!_results[@interface.Identifier].Contains(new RequirementResult("STATE-STRATEGY-CONCRETE-CLASS", true, cls)))
+                    {
+                        _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONCRETE-CLASS", false, cls));
+                    }
                 }
             }
-            return new CheckedMessage("There is not an interface or abstract class for the strategies/patterns", false);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>CheckedMessage</returns>
-        public CheckedMessage HasConcreteClasses()
+        private void HasRelationsBetweenConcreteClasses()
         {
-            int i = 0;
-            foreach (var cls in cc.GetClasses())
+            foreach (var cls in Concretes.GetClasses().Values)
             {
-                i += 1;
-                foreach (string parent in cls.Value.GetParents())
-                {
-                    if (cc.GetClass(parent) == Interface) Concretes.AddClass(cls.Value);
-                }
-                if (cc.GetClasses().Count == i && Concretes.GetClasses().Count >= 1) return new CheckedMessage(true);
-            }
-            return new CheckedMessage("There are no classes that implement the abstract class or interface", false);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>CheckedMessage</returns>
-        public CheckedMessage HasRelationsBetweenConcreteClasses()
-        {
-            foreach (var cls in Concretes.GetClasses())
-            {
-                foreach (var method in cls.Value.getMethods())
+                foreach (var method in cls.getMethods())
                 {
                     if (!method.isConstructor)
                     {
-                        foreach (var cs in Concretes.GetClasses())
+                        foreach (var cs in Concretes.GetClasses().Values)
                         {
-                            if (cs.Value.Identifier != cls.Value.Identifier)
+                            if (cs.Identifier != cls.Identifier)
                             {
-                                if (method.Body.Contains(cs.Value.Identifier)) return new CheckedMessage("There are relations between the strategies, which aren't allowed", false);
+                                if (method.Body.Contains(cs.Identifier))
+                                {
+                                    foreach (ClassModel @interface in interfaces)
+                                    {
+                                        _results[@interface.Identifier].Add(new RequirementResult("STRATEGY-CONCRETE-CLASS-RELATIONS", false, cls));
+                                    }
+                                }
                             }
                         }
                     }
                 }
+                foreach (ClassModel @interface in interfaces)
+                {
+                    if (!_results[@interface.Identifier].Contains(new RequirementResult("STRATEGY-CONCRETE-CLASS-RELATIONS", true, cls)))
+                    {
+                        _results[@interface.Identifier].Add(new RequirementResult("STRATEGY-CONCRETE-CLASS-RELATIONS", false, cls));
+                    }
+                }
             }
-            return new CheckedMessage(true);
         }
     }
 }

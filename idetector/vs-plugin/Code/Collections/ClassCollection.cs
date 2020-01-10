@@ -46,6 +46,19 @@ namespace idetector.Collections
         }
 
 
+        public List<ClassModel> GetClassListExcept(List<ClassModel> classes)
+        {
+            List<ClassModel> allClasses = new List<ClassModel>();
+            foreach (var cls in GetClasses())
+            {
+                allClasses.Add(cls.Value);
+            }
+
+            var result = allClasses.Except(classes).ToList();
+            return result;
+        }
+
+
 
     }
 }

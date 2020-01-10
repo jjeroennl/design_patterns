@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Documents;
+using idetector;
+using idetector.Data;
 using idetector.Models;
 
 namespace vs_plugin
@@ -86,12 +88,15 @@ namespace vs_plugin
 
         private void AddClasses(ClassCollection collection)
         {
-            List<ClassModel> stateList = new List<ClassModel>();
-            List<ClassModel> strategyList = new List<ClassModel>();
-            List<ClassModel> facadeList = new List<ClassModel>();
-            List<ClassModel> factoryList = new List<ClassModel>();
-            List<ClassModel> singletonList = new List<ClassModel>();
-            List<ClassModel> decoratorList = new List<ClassModel>();
+            var req = new Requirements();
+            ScoreCalculator calc = new ScoreCalculator(req.GetRequirements());
+
+            List<Pattern> stateList = new List<Pattern>();
+            List<Pattern> strategyList = new List<Pattern>();
+            List<Pattern> facadeList = new List<Pattern>();
+            List<Pattern> factoryList = new List<Pattern>();
+            List<Pattern> singletonList = new List<Pattern>();
+            List<Pattern> decoratorList = new List<Pattern>();
 
             Facade f = new Facade(collection);
             f.Scan();
@@ -106,59 +111,59 @@ namespace vs_plugin
             FactoryMethod fm = new FactoryMethod(collection);
             fm.Scan();
 
+            idetector.Patterns.Decorator d = new idetector.Patterns.Decorator(collection);
+            d.Scan();
+
+            var cutoff = 50;
+
             foreach (var item in collection.GetClasses())
             {
 
                 Singleton s = new Singleton(item.Value);
                 s.Scan();
-                idetector.Patterns.Decorator d = new idetector.Patterns.Decorator(item.Value, collection.GetClasses());
-                d.Scan();
+                var singletonResults = s.GetResults();
 
-                if (f.Score(item.Value) >= 50)
+                foreach (var singletonResult in singletonResults)
                 {
-                    facadeList.Add(item.Value);
-                }
-                if (strat.Score(item.Key) >= 50)
-                {
-                    strategyList.Add(item.Value);
-                }
-                if (state.Score(item.Key) >= 50)
-                {
-                    stateList.Add(item.Value);
+                    var singletonScore = calc.GetScore("SINGLETON", singletonResult.Value);
+                    if (singletonScore >= cutoff)
+                    {
+                        singletonList.Add(new Pattern(collection.GetClass(singletonResult.Key), singletonScore, singletonResult.Value));
+                    }
                 }
 
-                if (s.Score() >= 50)
+                foreach (var decoratorResult in d.GetResults())
                 {
-                    singletonList.Add(item.Value);
+                    var decoratorScore = calc.GetScore("DECORATOR", decoratorResult.Value);
+                    if (decoratorScore >= cutoff)
+                    {
+                        decoratorList.Add(new Pattern(collection.GetClass(decoratorResult.Key), decoratorScore, decoratorResult.Value));
+                    }
                 }
 
-                if (d.Score() >= 50)
-                {
-                    decoratorList.Add(item.Value);
-                }
             }
 
             PatternList.Children.Clear();
 
   
+            this.PopulatePattern("singleton", singletonList);
             this.PopulatePattern("decorator", decoratorList);
             
-            this.PopulatePattern("facade", facadeList);
-            this.PopulatePattern("factory", factoryList);
-            this.PopulatePattern("singleton", singletonList);
-            this.PopulatePattern("state", stateList);
-            this.PopulatePattern("strategory", strategyList);
+            // this.PopulatePattern("facade", facadeList);
+            // this.PopulatePattern("factory", factoryList);
+            // this.PopulatePattern("singleton", singletonList);
+            // this.PopulatePattern("state", stateList);
+            // this.PopulatePattern("strategory", strategyList);
         }
 
-        private void PopulatePattern(string pattern, List<ClassModel> classList)
+        private void PopulatePattern(string pattern, List<Pattern> classList)
         {
             SinglePattern p = new SinglePattern();
-            p.SetHandle(pattern?.First().ToString().ToUpper() + pattern?.Substring(1).ToLower()); ;
+            p.SetHandle(pattern?.First().ToString().ToUpper() + pattern?.Substring(1).ToLower());
             foreach (var cls in classList)
             {
-                p.AddClass(cls);
+                p.AddPattern(cls);
             }
-
             this.PatternList.Children.Add(p);
         }
 
@@ -186,6 +191,22 @@ namespace vs_plugin
             PatternName.Content = title;
             ConditionNumber.Content = "Condition #";
             ConditionText.TextWrapping = TextWrapping.Wrap;
+        }
+
+        private Dictionary<ClassModel, List<RequirementResult>> GroupResults(List<RequirementResult> unGroupedList)
+        {
+            var returnVal = new Dictionary<ClassModel, List<RequirementResult>>();
+            foreach (var reqResults in unGroupedList)
+            {
+                if (!returnVal.ContainsKey(reqResults.Class))
+                {
+                    returnVal.Add(reqResults.Class, new List<RequirementResult>());
+                }
+
+                returnVal[reqResults.Class].Add(reqResults);
+            }
+
+            return returnVal;
         }
     }
 }
