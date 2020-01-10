@@ -30,18 +30,16 @@ namespace idetector.Data
             //DECORATOR
             //ID's:
             //DECORATOR-BASE-HAS-CHILDREN
-            //DECORATOR-BASE-CHILDREN-TYPES
             //DECORATOR-HAS-CHILDREN
             //DECORATOR-HAS-BASE-PROPERTY
             //DECORATOR-CONSTRUCTOR-SETS-COMPONENT
             //DECORATOR-CONCRETE-CALLS-BASE
             List<PatternRequirement> decoratorreqs = new List<PatternRequirement>();
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-HAS-CHILDREN", 1, "The base decorator class did not have any children"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-CHILDREN-TYPES", 10, "The base decorator did not contain a decorator child, or multiple decorator childs"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-CHILDREN", 1, "The decorator class did not have any children"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", 1, "The decorator class did not contain a field of the parent type"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", 1, "The decorator class' constructor does not set component field"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-CALLS-BASE", 1, "The concrete decorators call the base decorator's constructor"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-HAS-CHILDREN", 1, "The base interface/abstract did not have any children"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-CHILDREN", 1, "The abstract decorator did not have any children"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", 1, "The abstract decorator did not contain a field of the parent type"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", 1, "The abstract decorator' constructor does not set component field"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-CALLS-BASE", 1, "The concrete decorators do not call the abstract decorator's constructor"));
             PatternRequirements.Add("DECORATOR", decoratorreqs);
 
             //ABSTRACT FACTORY METHOD

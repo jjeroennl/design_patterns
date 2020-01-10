@@ -62,6 +62,8 @@ namespace idetector
 
             AbstractFactoryMethod af = new AbstractFactoryMethod(collection, false);
             af.Scan();
+            Decorator d = new Decorator(collection);
+            d.Scan();
 
             foreach (var item in this.collection.GetClasses())
             {                
@@ -69,18 +71,23 @@ namespace idetector
                 Console.WriteLine(item.Value.Identifier + ": ");
                 Singleton s = new Singleton(item.Value);
                 s.Scan();
-                Decorator d = new Decorator(item.Value, collection.GetClasses());
-                d.Scan();
 
-                this.printBar(item.Value, "Singleton", Calculator.GetScore("SINGLETON",s.GetResult()));
-                this.printBar(item.Value,"Decorator", Calculator.GetScore("DECORATOR", d.GetResult()));
-                this.printBar(item.Value,"Facade", f.Score(item.Value));
+                foreach (var result in s.GetResults())
+                {
+                    printBar(item.Value, "Singleton: " + result.Key, Calculator.GetScore("SINGLETON", result.Value));
+                }
+                printBar(item.Value,"Facade", f.Score(item.Value));
             }
 
+            foreach (var result in d.GetResults())
+            {
+                printBar(collection.GetClass(result.Key),"Decorator", Calculator.GetScore("DECORATOR", result.Value));
+            }
+            
             printBar("Factory Method", Calculator.GetScore("FACTORY", fm.GetResult()));
             printBar("Abstract Factory", Calculator.GetScore("FACTORY", af.GetResult()));
-            printBar("Strategy", Calculator.GetScore("STRATEGY", strat.GetResult()));
-            printBar("State", Calculator.GetScore("STATE", state.GetResult()));
+            //printBar("Strategy", Calculator.GetScore("STRATEGY", strat.GetResult()));
+           // printBar("State", Calculator.GetScore("STATE", state.GetResult()));
         }
 
         private void printBar(string name, int score)

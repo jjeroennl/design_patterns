@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using idetector.Collections;
 using idetector.Models;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace idetector.Patterns.Helper
 {
@@ -94,13 +95,13 @@ namespace idetector.Patterns.Helper
                     methodList.Add(method);
                 }
             }
-            
+
             return methodList;
         }
 
 
         /// <summary>
-        ///     Check if the given class has a method of the given type and (optionally) the given modifiers
+        ///     Check if the given class has a consturctor of the given type and (optionally) the given modifiers
         /// </summary>
         /// <param name="cls">ClassModel Object</param>
         /// <param name="type">Returntype of property</param>
@@ -114,12 +115,13 @@ namespace idetector.Patterns.Helper
                         e.Modifiers.All(
                             i => modifiers.Any(m => m == i)
                         )
-                        && e.Parameters == type
+                        && e.Parameters.Contains(type)
                         && e.isConstructor);
-            return cls.getMethods().Any(
+            return  cls.getMethods().Any(
                 e =>
-                    e.Parameters == type
+                    e.Parameters.Contains(type)
                     && e.isConstructor);
+            
         }
 
         /// <summary>
@@ -133,6 +135,30 @@ namespace idetector.Patterns.Helper
             foreach (var obj in cls.ObjectCreations)
                 if (obj.Identifier.Equals(type))
                     return true;
+            return false;
+        }
+
+        public static List<ClassModel> ListChildren(ClassCollection collection, string type)
+        {
+            List<ClassModel> result = collection.GetClasses().Values.Where(e => e.HasParent(type)).Distinct().ToList();
+            return result;
+        }
+        /// <summary>
+        /// Check if a child has a call to the base constructor
+        /// </summary>
+        /// <param name="cls">Child class</param>
+        /// <returns>True/False</returns>
+        public static bool ChildCallsBaseConstructor(ClassModel cls)
+        {
+            foreach (var cons in cls.getConstructors())
+            {
+                var node = (ConstructorDeclarationSyntax) cons.getNode();
+                if (node.Initializer.ThisOrBaseKeyword.ToString().ToLower().Equals("base"))
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
@@ -164,5 +190,6 @@ namespace idetector.Patterns.Helper
 
             return classes;
         }
+
     }
 }

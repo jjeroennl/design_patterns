@@ -15,12 +15,12 @@ namespace idetector.Patterns
     public class Singleton : IPattern
     {
         private float _score;
-        private ClassModel cls;
+        private ClassModel _cls;
         private  Dictionary<string, List<RequirementResult>>  _results = new Dictionary<string, List<RequirementResult>>() ;
 
-        public Singleton(ClassModel _cls)
+        public Singleton(ClassModel cls)
         {
-            cls = _cls;
+            _cls = cls;
         }
 
         public void Scan()
@@ -29,8 +29,8 @@ namespace idetector.Patterns
             list.Add(IsStaticSelf());
             list.Add(IsCreateSelf());
 
-            _results.Add(cls.Identifier, list);
-            
+            _results.Add(_cls.Identifier, list);
+
             IsPrivateConstructor();
             IsGetInstance();
         }
@@ -43,15 +43,15 @@ namespace idetector.Patterns
 
         public void IsPrivateConstructor()
         {
-            foreach (var constructor in cls.getConstructors())
+            foreach (var constructor in _cls.getConstructors())
             {
-                if (!constructor.HasModifier("private"))
+                if (constructor.HasModifier("private"))
                 {
-                    _results[cls.Identifier].Add(new RequirementResult("SINGLETON-PRIVATE-CONSTRUCTOR", false, cls, constructor));
+                    _results[_cls.Identifier].Add(new RequirementResult("SINGLETON-PRIVATE-CONSTRUCTOR", true, _cls, constructor));
                 }
                 else
                 {
-                    _results[cls.Identifier].Add(new RequirementResult("SINGLETON-PRIVATE-CONSTRUCTOR", false, cls, constructor));
+                    _results[_cls.Identifier].Add(new RequirementResult("SINGLETON-PRIVATE-CONSTRUCTOR", false, _cls, constructor));
                 }
             }
 
@@ -59,25 +59,25 @@ namespace idetector.Patterns
 
         public RequirementResult IsStaticSelf()
         {
-            var checkStatic = API.ClassHasPropertyOfType(cls, cls.Identifier, new [] {"private", "static"});
+            var checkStatic = API.ClassHasPropertyOfType(_cls, _cls.Identifier, new [] {"private", "static"});
 
-            return new RequirementResult("SINGLETON-STATIC-SELF", checkStatic, cls);
+            return new RequirementResult("SINGLETON-STATIC-SELF", checkStatic, _cls);
         }
 
         public void IsGetInstance()
         {
-            var instances = API.ClassGetMethodOfType(cls, cls.Identifier, new [] {"static"});
+            var instances = API.ClassGetMethodOfType(_cls, _cls.Identifier, new [] {"static"});
             foreach (var instance in instances)
             {
-                _results[cls.Identifier].Add(new RequirementResult("SINGLETON-GET-INSTANCE", true, cls, instance));
+                _results[_cls.Identifier].Add(new RequirementResult("SINGLETON-GET-INSTANCE", true, _cls, instance));
             }
         }
 
         public RequirementResult IsCreateSelf()
         {
-            var createSelf = API.ClassHasObjectCreationOfType(cls, cls.Identifier);
+            var createSelf = API.ClassHasObjectCreationOfType(_cls, _cls.Identifier);
 
-            return new RequirementResult("SINGLETON-CREATE-SELF", createSelf, cls);
+            return new RequirementResult("SINGLETON-CREATE-SELF", createSelf, _cls);
         }
     }
 }
