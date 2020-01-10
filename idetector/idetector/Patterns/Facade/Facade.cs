@@ -12,7 +12,7 @@ namespace idetector.Patterns.Facade
         private ClassCollection collection;
         private int _score = 0;
         private List<ClassModel> results = new List<ClassModel>();
-        private Dictionary<string, int> _result;
+        private Dictionary<string, int> _scores;
 
         public Facade(ClassCollection collection)
         {
@@ -37,6 +37,11 @@ namespace idetector.Patterns.Facade
             }
 
             this.FacadeCheck(collection, table, table.ListClassesWithSingleParent());
+        }
+
+        public Dictionary<string, List<RequirementResult>> GetResults()
+        {
+            throw new NotImplementedException();
         }
 
         public List<RequirementResult> GetResult()

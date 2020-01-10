@@ -48,6 +48,9 @@ namespace idetector
                     score += _priorities[pattern][result.Id].Weight;
                 }
             }
+
+
+            var x = _scores[pattern];
             score = (score / _scores[pattern]) * 100;
             val = (int)score;
             return val;

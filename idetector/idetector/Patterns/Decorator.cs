@@ -42,15 +42,16 @@ namespace idetector.Patterns
             foreach (var cls in classes)
             {
                 List<RequirementResult> results = new List<RequirementResult>();
-                _cls = _collection.GetClass(cls.Parents.Where(e => e.Identifier == cls.GetParents()[0])
-                    .Select(c => c.Identifier).ToString());
+                var parent = cls.Parents.First(e => cls.HasParent(e.Identifier));
+                _cls = _collection.GetClass(parent.Identifier);
+
                 _decoratorInterface = cls;
                 results.Add(CheckChildren());
                 results.Add(FindDecorators());
                 results.Add(DecoratorHasBaseProperty());
                 results.Add(ConstructorSetsComponent());
                 results.Add(DecoratorCallsBase());
-                _results.Add(cls.Identifier, results);
+                _results.Add(_cls.Identifier, results);
             }
         }
 
@@ -63,10 +64,15 @@ namespace idetector.Patterns
         {
             var interfaces = API.ListInterfaces(cc);
             var abstracts = API.ListAbstract(cc);
+            var classes = interfaces.Concat(abstracts);
             List<ClassModel> abstractDecorators = new List<ClassModel>();
-            foreach (var inf in interfaces)
+            foreach (var inf in classes)
             {
-                abstractDecorators.Add(abstracts.FirstOrDefault(e => e.HasParent(inf.Identifier)));
+                var parent = abstracts.FirstOrDefault(e => e.HasParent(inf.Identifier));
+                if (parent != null)
+                {
+                    abstractDecorators.Add(parent);
+                }
             }
 
             return abstractDecorators;
@@ -110,7 +116,7 @@ namespace idetector.Patterns
         {
             _decorators = API.ListChildren(_collection, _decoratorInterface.Identifier);
 
-            if (_decorators.Count < 1)
+            if (_decorators.Count < 0)
             {
                 return new RequirementResult("DECORATOR-HAS-CHILDREN", false, _decoratorInterface);
             }

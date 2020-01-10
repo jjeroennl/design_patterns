@@ -115,12 +115,13 @@ namespace idetector.Patterns.Helper
                         e.Modifiers.All(
                             i => modifiers.Any(m => m == i)
                         )
-                        && e.Parameters == type
+                        && e.Parameters.Contains(type)
                         && e.isConstructor);
-            return cls.getMethods().Any(
+            return  cls.getMethods().Any(
                 e =>
-                    e.Parameters == type
+                    e.Parameters.Contains(type)
                     && e.isConstructor);
+            
         }
 
         /// <summary>
@@ -152,7 +153,7 @@ namespace idetector.Patterns.Helper
             foreach (var cons in cls.getConstructors())
             {
                 var node = (ConstructorDeclarationSyntax) cons.getNode();
-                if (!node.Initializer.ThisOrBaseKeyword.ToString().ToLower().Equals("base"))
+                if (node.Initializer.ThisOrBaseKeyword.ToString().ToLower().Equals("base"))
                 {
                     return true;
                 }

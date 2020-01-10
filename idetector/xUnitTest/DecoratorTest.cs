@@ -23,7 +23,7 @@ namespace xUnitTest
 
             Decorator d = new Decorator(collection);
             d.Scan();
-            var score = calculator.GetScore("DECORATOR" , d.GetResults().First().Value);
+            var score = calculator.GetScore("DECORATOR", d.GetResults()["ComponentBase"]);
             Assert.Equal(100, score);
         }
 
@@ -35,9 +35,10 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(setupNoBaseParam());
             Decorator d = new Decorator(collection);
             d.Scan();
-            var score = calculator.GetScore("DECORATOR", d.GetResults().First().Value);
-            Assert.Equal(93, score);
+            var score = calculator.GetScore("DECORATOR", d.GetResults()["ComponentBase"]);
+            Assert.Equal(80, score);
         }
+
         [Fact]
         public void testRandomClasses()
         {
@@ -45,18 +46,23 @@ namespace xUnitTest
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             List<string> decorators = new List<string>();
             var collection = Walker.GenerateModels(CSharpSyntaxTree.ParseText(TestStrings.RandomClasses()));
+            Decorator d = new Decorator(collection);
+            d.Scan();
+            var results = d.GetResults();
             foreach (var cls in collection.GetClasses())
             {
-                Decorator d = new Decorator(collection);
-                d.Scan();
-                var score = calculator.GetScore("DECORATOR", d.GetResults().First().Value);
-                if (score > 50)
+                if (results.ContainsKey(cls.Key))
                 {
-                    decorators.Add(cls.Key);
+                    var score = calculator.GetScore("DECORATOR", results[cls.Key]);
+                    if (score > 50)
+                    {
+                        decorators.Add(cls.Key);
+                    }
                 }
             }
             Assert.Empty(decorators);
         }
+
         [Fact]
         public void TestFullDecorator()
         {
@@ -64,16 +70,22 @@ namespace xUnitTest
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             List<string> decorators = new List<string>();
             var collection = Walker.GenerateModels(setup());
+
+            Decorator d = new Decorator(collection);
+            d.Scan();
+            var results = d.GetResults();
             foreach (var cls in collection.GetClasses())
             {
-                Decorator d = new Decorator(collection);
-                d.Scan();
-                var score = calculator.GetScore("DECORATOR", d.GetResults().First().Value);
-                if (score > 50)
+                if (results.ContainsKey(cls.Key))
                 {
-                    decorators.Add(cls.Key);
+                    var score = calculator.GetScore("DECORATOR", results[cls.Key]);
+                    if (score > 50)
+                    {
+                        decorators.Add(cls.Key);
+                    }
                 }
             }
+
             Assert.Single(decorators);
             Assert.Equal("ComponentBase", collection.GetClass(decorators[0]).Identifier);
         }
@@ -86,9 +98,10 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(setupNoBaseProperty());
             Decorator d = new Decorator(collection);
             d.Scan();
-            var score = calculator.GetScore("DECORATOR", d.GetResults().First().Value);
-            Assert.Equal(93, score);
+            var score = calculator.GetScore("DECORATOR", d.GetResults()["ComponentBase"]);
+            Assert.Equal(80, score);
         }
+
         [Fact]
         public void TestNoAbstractChild()
         {
@@ -97,27 +110,34 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(setupNoAbstract());
             Decorator d = new Decorator(collection);
             d.Scan();
-            var score = calculator.GetScore("DECORATOR", d.GetResults().First().Value);
-            Assert.Equal(26, score);
+            
+            Assert.False(d.GetResults().ContainsKey("ComponentBase"));
         }
+
         [Fact]
         public void TestDecoratorWithRandomClasses()
         {
             Requirements r = new Requirements();
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
-            var collection = Walker.GenerateModels(CSharpSyntaxTree.ParseText(TestStrings.RandomClasses() + TestStrings.CorrectDecoratorString()));
+            var collection =
+                Walker.GenerateModels(
+                    CSharpSyntaxTree.ParseText(TestStrings.RandomClasses() + TestStrings.CorrectDecoratorString()));
             List<string> decorators = new List<string>();
+            Decorator d = new Decorator(collection);
+            d.Scan();
+            var results = d.GetResults();
             foreach (var cls in collection.GetClasses())
             {
-                Decorator d = new Decorator(collection);
-                d.Scan();
-                var score = calculator.GetScore("DECORATOR", d.GetResults().First().Value);
-                if (score > 50)
+                if (results.ContainsKey(cls.Key))
                 {
-
-                    decorators.Add(cls.Key);
+                    var score = calculator.GetScore("DECORATOR", results[cls.Key]);
+                    if (score > 50)
+                    {
+                        decorators.Add(cls.Key);
+                    }
                 }
             }
+
             Assert.Single(decorators);
             Assert.Equal("ComponentBase", collection.GetClass(decorators[0]).Identifier);
         }
@@ -169,9 +189,6 @@ public class ConcreteDecorator : DecoratorBase
 }
 ");
         }
-
-
-
 
 
         public SyntaxTree setupNoBaseParam()
