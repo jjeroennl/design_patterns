@@ -11,7 +11,7 @@ namespace idetector.Patterns.Facade
     {
         private ClassCollection collection;
         private int _score = 0;
-        private List<ClassModel> results = new List<ClassModel>();
+        private Dictionary<string, List<RequirementResult>>_results = new Dictionary<string, List<RequirementResult>>();
 
 
         public Facade(ClassCollection collection)

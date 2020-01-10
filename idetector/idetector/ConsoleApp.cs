@@ -76,7 +76,7 @@ namespace idetector
                 {
                     printBar(item.Value, "Singleton: " + result.Key, Calculator.GetScore("SINGLETON", result.Value));
                 }
-                printBar(item.Value,"Facade", f.Score(item.Value));
+                // printBar(item.Value,"Facade", f.Score(item.Value));
             }
 
             foreach (var result in d.GetResults())
