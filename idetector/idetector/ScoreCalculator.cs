@@ -52,5 +52,26 @@ namespace idetector
             val = (int)score;
             return val;
         }
+        
+        public Dictionary<string, int> GetScore(string pattern, Dictionary<string, List<RequirementResult>> results)
+        {
+            var scores = new Dictionary<string, int>();
+            foreach (var result in results)
+            {
+                float score = 0;
+                int val = 0;
+                foreach (var r in result.Value)
+                {
+                    if (r.Passed)
+                    {
+                        score += _priorities[pattern][r.Id].Weight;
+                    }
+                }
+                score = (((int)((score / _scores[pattern]) * 100) / result.Value.Count));
+
+                scores.Add(result.Key, (int)score);
+            }
+            return scores;
+        }
     }
 }

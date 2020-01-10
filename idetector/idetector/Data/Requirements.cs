@@ -76,16 +76,23 @@ namespace idetector.Data
              * STATE-CONCRETE-CLASS-RELATIONS
              */
             List<PatternRequirement> statereqs = new List<PatternRequirement>();
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-INTERFACE-ABSTRACT", 4, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-HAS-CONTEXT", 3, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", 2, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", 1, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", 1, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", 1, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-LOGIC", 1, ""));
-            statereqs.Add(new PatternRequirement("STATE-STRATEGY-INTERFACE-ABSTRACT", 2, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONCRETE-CLASS", 2, ""));
             PatternRequirements.Add("STATE", statereqs);
-
+            
+            //FACADE
+            /*ID's:
+             * FACADE-IS-FACADE
+             */
+            List<PatternRequirement> facadereqs = new List<PatternRequirement>();
+            facadereqs.Add(new PatternRequirement("FACADE-IS-FACADE", 4, ""));
+            PatternRequirements.Add("FACADE", facadereqs);
 
             var strategyreqs = new List<PatternRequirement>(statereqs);
             strategyreqs.Add(new PatternRequirement("STRATEGY-CONCRETE-CLASS-RELATIONS", 2, ""));
