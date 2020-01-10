@@ -28,7 +28,7 @@ namespace xUnitTest
 
             StateStrategy state= new StateStrategy(collection, true);
             state.Scan();
-            calculator.GetScore("STATE", state.GetResults()).TryGetValue("state", out score);
+            calculator.GetScore("STATE", state.GetResults()).TryGetValue("State", out score);
             Assert.Equal(100, score);
         }
         [Fact]
@@ -43,20 +43,8 @@ namespace xUnitTest
 
             StateStrategy state= new StateStrategy(collection, true);
             state.Scan();
-            calculator.GetScore("STATE", state.GetResults()).TryGetValue("state", out score);
+            calculator.GetScore("STATE", state.GetResults()).TryGetValue("State", out score);
             Assert.InRange(score, 0, 75);
-        }
-        [Fact]
-        public void Test_State_NoRelationsBetweenStates()
-        {
-
-            var tree = RelationsBetweenStates();
-            var collection = Walker.GenerateModels(tree);
-
-            StateStrategy state = new StateStrategy(collection, true);
-            state.Scan();
-
-            Assert.True(state.HasRelationsBetweenConcreteClasses().Passed);
         }
         [Fact]
         public void Test_OnlineCode()
@@ -67,8 +55,11 @@ namespace xUnitTest
 
             StateStrategy state = new StateStrategy(collection, true);
             state.Scan();
-            var score = calculator.GetScore("STATE", state.GetResult());
-            Assert.InRange(score, 80, 90);
+            var score = calculator.GetScore("STATE", state.GetResults());
+            foreach(int s in score.Values)
+            {
+                Assert.InRange(s, 80, 90);
+            }
         }
 
         SyntaxTree SuccessSetup()

@@ -24,10 +24,11 @@ namespace xUnitTest
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
+            int score;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            var score = calculator.GetScore("STRATEGY", strategy.GetResult());
+            calculator.GetScore("STRATEGY", strategy.GetResults()).TryGetValue("IStrategy", out score);
             Assert.Equal(100, score);
         }
         [Fact]
@@ -37,9 +38,9 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy strategy = new StateStrategy(collection, false);
-            Assert.True(strategy.HasRelationsBetweenConcreteClasses().Passed);
+            strategy.Scan();
+            Assert.True(strategy.GetResult("IStrategy", "STRATEGY-CONCRETE-CLASS-RELATIONS"));
         }
-
         [Fact]
         public void Test_Strategy_NoContext()
         {
@@ -47,7 +48,8 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy strategy = new StateStrategy(collection, false);
-            Assert.False(strategy.ContextChecks().Passed);
+            strategy.Scan();
+            Assert.False(strategy.GetResult("IStrategy", "STATE-STRATEGY-HAS-CONTEXT"));
         }
         [Fact]
         public void Test_Strategy_NoInterface()
@@ -56,7 +58,8 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy strategy = new StateStrategy(collection, false);
-            Assert.False(strategy.HasInterfaceOrAbstract().Passed);
+            strategy.Scan();
+            Assert.False(strategy.GetResult("IStrategy", "STATE-STRATEGY-INTERFACE-ABSTRACT"));
         }
         [Fact]
         public void Test_Strategy_NoConcreteStrategy()
@@ -65,7 +68,8 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy strategy = new StateStrategy(collection, false);
-            Assert.False(strategy.HasConcreteClasses().Passed);
+            strategy.Scan();
+            Assert.False(strategy.GetResult("IStrategy", "STATE-STRATEGY-CONCRETE-CLASS"));
         }
         [Fact]
         public void Test_Strategy_NoPublicConstructor()
@@ -75,7 +79,7 @@ namespace xUnitTest
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.False(strategy.ContextHasPublicConstructor(strategy.Context).Passed);
+            Assert.False(strategy.GetResult("IStrategy", "STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR"));
         }
         [Fact]
         public void Test_Strategy_NoStrategySetter()
@@ -85,7 +89,7 @@ namespace xUnitTest
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.False(strategy.ContextHasStrategySetter(strategy.Context).Passed);
+            Assert.False(strategy.GetResult("IStrategy", "STATE-STRATEGY-CONTEXT-STRATEGY-SETTER"));
         }
         [Fact]
         public void Test_Strategy_NoPrivateStrategy()
@@ -95,7 +99,7 @@ namespace xUnitTest
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.False(strategy.ContextHasPrivateStrategy(strategy.Context).Passed);
+            Assert.False(strategy.GetResult("IStrategy", "STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY"));
         }
         [Fact]
         public void Test_Strategy_NoMethodContext()
@@ -105,7 +109,7 @@ namespace xUnitTest
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            Assert.False(strategy.ContextHasLogic(strategy.Context).Passed);
+            Assert.False(strategy.GetResult("IStrategy", "STATE-STRATEGY-CONTEXT-LOGIC"));
         }
         [Fact]
         public void Test_Strategy_RelationsBetweenStrategies()
@@ -114,7 +118,8 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             StateStrategy strategy = new StateStrategy(collection, false);
-            Assert.True(strategy.HasRelationsBetweenConcreteClasses().Passed);
+            strategy.Scan();
+            Assert.False(strategy.GetResult("IStrategy", "STRATEGY-CONCRETE-CLASS-RELATIONS"));
         }
         [Fact]
         public void Test_Nothing()
@@ -123,10 +128,11 @@ namespace xUnitTest
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
+            int score;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            var score = calculator.GetScore("STRATEGY", strategy.GetResult());
+            calculator.GetScore("STRATEGY", strategy.GetResults()).TryGetValue("IStrategy", out score);
             Assert.InRange(score, 0, 20);
         }
         [Fact]
@@ -135,10 +141,11 @@ namespace xUnitTest
             Requirements r = new Requirements();
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var collection = Walker.GenerateModels(CSharpSyntaxTree.ParseText(TestStrings.StrategyExample()));
+            int score;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            var score = calculator.GetScore("STRATEGY", strategy.GetResult());
+            calculator.GetScore("STRATEGY", strategy.GetResults()).TryGetValue("IStrategy", out score);
             Assert.InRange(score, 80, 100);
         }
 

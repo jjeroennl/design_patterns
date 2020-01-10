@@ -52,11 +52,11 @@ namespace idetector.Patterns
             }
         }
 
-        public bool GetResult(string Iidentifier, string req, bool correct)
+        public bool GetResult(string Iidentifier, string req)
         {
             foreach (ClassModel cls in cc.GetClasses().Values)
             {
-                if (_results[Iidentifier].Contains(new RequirementResult(req, correct, cls)))
+                if (_results[Iidentifier].Contains(new RequirementResult(req, true, cls)))
                 {
                     return true;
                 }
@@ -293,7 +293,7 @@ namespace idetector.Patterns
                         if (cc.GetClass(parent) == @interface)
                         {
                             Concretes.AddClass(cls);
-                            _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true, cls));
+                            _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONCRETE-CLASS", true, cls));
                         }
                     }
                 }
