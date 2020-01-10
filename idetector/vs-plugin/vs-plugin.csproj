@@ -49,13 +49,17 @@
     <Compile Include="Code\CodeLoader\FileReader.cs" />
     <Compile Include="Code\Collections\ClassCollection.cs" />
     <Compile Include="Code\Collections\PriorityCollection.cs" />
+    <Compile Include="Code\Data\Requirements.cs" />
     <Compile Include="Code\Exceptions\ClassNotException.cs" />
     <Compile Include="Code\Models\CheckedMessage.cs" />
     <Compile Include="Code\Models\ClassModel.cs" />
     <Compile Include="Code\Models\MethodModel.cs" />
     <Compile Include="Code\Models\NamespaceModel.cs" />
+    <Compile Include="Code\Models\Pattern.cs" />
+    <Compile Include="Code\Models\PatternRequirement.cs" />
     <Compile Include="Code\Models\PriorityEnum.cs" />
     <Compile Include="Code\Models\PropertyModel.cs" />
+    <Compile Include="Code\Models\RequirementResult.cs" />
     <Compile Include="Code\Models\TypeEnum.cs" />
     <Compile Include="Code\Parser\ClassWalker.cs" />
     <Compile Include="Code\Parser\CodeParser.cs" />
@@ -63,17 +67,26 @@
     <Compile Include="Code\Patterns\Decorator.cs" />
     <Compile Include="Code\Patterns\Facade\Facade.cs" />
     <Compile Include="Code\Patterns\FactoryMethod.cs" />
+    <Compile Include="Code\Patterns\Helper\API.cs" />
     <Compile Include="Code\Patterns\Helper\ChildList.cs" />
     <Compile Include="Code\Patterns\Helper\FacadeRelationTable.cs" />
     <Compile Include="Code\Patterns\Helper\RelationTable.cs" />
     <Compile Include="Code\Patterns\IPattern.cs" />
     <Compile Include="Code\Patterns\Singleton.cs" />
     <Compile Include="Code\Patterns\StateStrategy.cs" />
+    <Compile Include="Code\ScoreCalculator.cs" />
+    <Compile Include="Code\UIHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DesignPattersTool.cs" />
     <Compile Include="DesignPatternsToolCommand.cs" />
     <Compile Include="DesignPattersToolControl.xaml.cs">
       <DependentUpon>DesignPattersToolControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Requirement.xaml.cs">
+      <DependentUpon>Requirement.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UIPattern.xaml.cs">
+      <DependentUpon>UIPattern.xaml</DependentUpon>
     </Compile>
     <Compile Include="SinglePattern.xaml.cs">
       <DependentUpon>SinglePattern.xaml</DependentUpon>
@@ -103,12 +116,21 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Requirement.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UIPattern.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SinglePattern.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Logo.png" />
     <Content Include="Resources\ToolWindow1Command.png" />
     <VSCTCompile Include="vs_pluginPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
