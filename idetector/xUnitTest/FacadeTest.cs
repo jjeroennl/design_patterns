@@ -44,16 +44,18 @@ namespace xUnitTest
             Assert.Equal(0, scores["HouseBuilderFacade"]);
         }
         
-//        [Fact]
-//        void ReallyNotFacade()
-//        {
-//            registerFacade();
-//
-//            Facade f = new Facade(this._reallyNotFacade);
-//            f.Scan();
-//            Assert.Equal(0, f.Score("Current"));
-//            Assert.Equal(0, f.Score("NoteBs"));
-//        }
+        [Fact]
+        void ReallyNotFacade()
+        {
+            registerFacade();
+            Facade f = new Facade(this._reallyNotFacade);
+            f.Scan();
+            var requirements = new Requirements();
+            var calc = new ScoreCalculator(requirements.GetRequirements());
+            var scores = calc.GetScore("FACADE", f.GetResults());
+            
+            Assert.Empty(scores);
+        }
 
 
         void registerFacade()
