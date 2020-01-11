@@ -85,6 +85,7 @@
     <Compile Include="DesignPattersToolControl.xaml.cs">
       <DependentUpon>DesignPattersToolControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RangeChangeEventHandler.cs" />
     <Compile Include="Requirement.xaml.cs">
       <DependentUpon>Requirement.xaml</DependentUpon>
     </Compile>

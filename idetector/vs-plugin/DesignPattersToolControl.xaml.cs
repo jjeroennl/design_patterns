@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -49,7 +50,10 @@ namespace vs_plugin
                 patternWeight.Title.Text = pattern.Key;
                 foreach (var requirement in pattern.Value)
                 {
-                    patternWeight.AddWeight(pattern.Key, requirement.Id, requirement.Title, requirement.Weight);
+                    var weight = patternWeight.AddWeight(pattern.Key, requirement.Id, requirement.Title, requirement.Weight);
+
+                    var rangeEventHandler = new RangeChangeEventHandler(pattern.Key, requirement.Id, weight);
+                    weight.RangeSlider.ValueChanged += this.UpdateValue;
                 }
 
                 this.Ranges.Children.Add(patternWeight);
