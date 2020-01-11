@@ -20,9 +20,32 @@ namespace vs_plugin
     /// </summary>
     public partial class WeightRange : UserControl
     {
+        private string _pattern;
+        private string _id;
+
         public WeightRange()
         {
             InitializeComponent();
+        }
+
+        internal void SetPattern(string pattern)
+        {
+            this._pattern = pattern;
+        }
+
+        internal void SetID(string ID)
+        {
+            this._id = ID;
+        }
+
+        internal void SetTitle(string requirementTitle)
+        {
+            this.RequirementName.Content = requirementTitle;
+        }
+
+        internal void SetWeight(float weight)
+        {
+            this.RangeSlider.Value = weight;
         }
     }
 }

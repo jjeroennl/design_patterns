@@ -5,22 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:vs_plugin"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <Grid Name="SettingsGrid">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="20"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Settings" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-            </StackPanel>
-
-            <StackPanel Name="Ranges" Grid.Row="1" CanVerticallyScroll="True" Orientation="Vertical" Visibility="Visible">
-
-            </StackPanel>
-        </Grid>
-
+             >
+    <Grid >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition  />
+            <ColumnDefinition  />
+        </Grid.ColumnDefinitions>
+        <Label Name="RequirementName" Grid.Column="0"/>
+        <Slider Name="RangeSlider" Grid.Column="1" Minimum="0" Maximum="2" Value="1" LargeChange="0.5" SmallChange="0.05" AutoToolTipPlacement="BottomRight" />
     </Grid>
 </UserControl>

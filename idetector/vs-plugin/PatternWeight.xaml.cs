@@ -24,5 +24,20 @@ namespace vs_plugin
         {
             InitializeComponent();
         }
+
+
+        public WeightRange AddWeight(string pattern, string ID, string requirementTitle, float weight)
+        {
+            var range = new WeightRange();
+            range.SetPattern(pattern);
+            range.SetID(ID);
+            range.SetTitle(requirementTitle);
+            range.SetWeight(weight);
+
+            this.Weights.Children.Add(range);
+
+            return range;
+        }
     }
+
 }

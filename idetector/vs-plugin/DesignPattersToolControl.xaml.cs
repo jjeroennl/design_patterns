@@ -37,6 +37,23 @@ namespace vs_plugin
             var req = new Requirements();
             Patterns = req.GetRequirements();
             UIHandler.ToolWindow1Control = this;
+
+            this.CreateSettings();
+        }
+
+        private void CreateSettings()
+        {
+            foreach (var pattern in ToolWindow1Control.Patterns)
+            {
+                var patternWeight = new PatternWeight();
+                patternWeight.Title.Text = pattern.Key;
+                foreach (var requirement in pattern.Value)
+                {
+                    patternWeight.AddWeight(pattern.Key, requirement.Id, requirement.Title, requirement.Weight);
+                }
+
+                this.Ranges.Children.Add(patternWeight);
+            }
         }
 
         public ClassCollection GetOpenWindowText()
@@ -224,6 +241,12 @@ namespace vs_plugin
         {
             Default.Visibility = Visibility.Collapsed;
             SettingsGrid.Visibility = Visibility.Visible;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.SettingsGrid.Visibility = Visibility.Collapsed;
+            this.Default.Visibility = Visibility.Visible;
         }
     }
 }

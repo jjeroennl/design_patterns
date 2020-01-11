@@ -17,8 +17,8 @@
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.BrandedUITextKey}}" />
         </Style>
     </UserControl.Resources>
-    <StackPanel>
-        <Grid Name="Default" Visibility="Collapsed">
+    <StackPanel VerticalAlignment="Stretch">
+        <Grid Name="Default" Visibility="Visible">
             <Grid.RowDefinitions>
                 <RowDefinition Height="32" />
                 <RowDefinition Height="*" />
@@ -74,16 +74,16 @@
                 </StackPanel>
             </Grid>
         </Grid>
-        <Grid Name="SettingsGrid">
+        <Grid Name="SettingsGrid" Visibility="Collapsed">
             <Grid.RowDefinitions>
                 <RowDefinition Height="20"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal">
+            <Grid HorizontalAlignment="Stretch">
                 <TextBlock Text="Settings" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <Button Content="X" HorizontalAlignment="Right" />
-            </StackPanel>
+                <Button Content="Back" HorizontalAlignment="Right" Click="Button_Click" />
+            </Grid>
 
             <StackPanel Name="Ranges" Grid.Row="1" CanVerticallyScroll="True" Orientation="Vertical" Visibility="Visible">
 
