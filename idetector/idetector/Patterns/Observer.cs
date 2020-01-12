@@ -15,114 +15,127 @@ namespace idetector.Patterns
 {
     public class Observer : IPattern
     {
-
-        private float _score;
-        private readonly ClassCollection cc;
+        private readonly ClassCollection _cc;
         private List<ClassModel> observers = new List<ClassModel>();
-        private List<RequirementResult> _results = new List<RequirementResult>();
+        private List<ClassModel> subjects = new List<ClassModel>();
         private ClassModel IObserverClass;
         private ClassModel ISubjectClass;
         private int probability = 0;
 
-        public Observer(ClassCollection _cc)
+        private Dictionary<string, List<RequirementResult>>
+            _results = new Dictionary<string, List<RequirementResult>>();
+
+        public Observer(ClassCollection cc)
         {
-            cc = _cc;
+            _cc = cc;
         }
 
         public void Scan()
         {
-            _score = 0;
             _results.Clear();
-            _results.Add(HasObserverInterface());
-            _results.Add(HasSubjectInterface());
+            HasObserverInterface();
+            //HasSubjectInterface();
         }
 
-        public List<RequirementResult> GetResult()
+        public Dictionary<string, List<RequirementResult>> GetResults()
         {
             return _results;
         }
 
-        public float Score()
+        /// <summary>
+        /// Checking if there is a class which suffices as a 'Object' interface
+        /// </summary>
+        public void HasObserverInterface()
         {
-            return _score;
-        }
+            var interfaces = API.ListInterfaces(_cc);
+            var abstracts = API.ListAbstract(_cc);
+            var classes = interfaces.Concat(abstracts);
+            var classes2 = _cc.GetClasses();
 
-        // Checks if there is an observer interface/abstract class
-        public RequirementResult HasObserverInterface()
-        {
-            List<ClassModel> interfacesAndAbstracts = API.ListInterfacesAndAbstracts(cc);
-            foreach (var cls in interfacesAndAbstracts)
-            {
-                // observer interface heeft alleen een void update function
-                if (cls.getMethods().Count <= 1)
-                {
-                    foreach (var method in cls.getMethods())
-                    {
-                        if (method.ReturnType == "void" && !method.Modifiers.Contains("private"))
-                        {
-                            IObserverClass = cls;
-                            return new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", true);
-                        }
-                    }
-                }
-            }
-            return new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false);
-        }
-
-        public RequirementResult HasSubjectInterface()
-        {
-            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            foreach (var cls in classes2)
             {
                 foreach (var method in cls.Value.getMethods())
+                {
+                    if (method.ReturnType == "void" && !method.Modifiers.Contains("private")) // evt check of maar 1 method is
+                    {
+                        IObserverClass = cls.Value;
+                        _results.Add(cls.Value.Identifier, new List<RequirementResult>());
+                        _results[cls.Value.Identifier].Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", true, IObserverClass));
+                        // done??
+                    }
+                }
+                // ja wat idk wat dit moet voorstellen
+                //_results.Add(cls.Identifier, new List<RequirementResult>());
+                //_results[cls.Identifier].Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false, cls));
+            }
+        }
+
+        /// <summary>
+        /// Checking if there is a class which suffices as a 'Subject' interface
+        /// </summary>
+        public void HasSubjectInterface()
+        {
+            var interfaces = API.ListInterfaces(_cc);
+            var abstracts = API.ListAbstract(_cc);
+            var classes = interfaces.Concat(abstracts);
+
+            foreach (var cls in classes)
+            {
+                foreach (var method in cls.getMethods())
                 {
                     if (method.ReturnType == "void")
                     {
                         probability++;
-                        if (probability >= 2)
+                        // als er 3 voids zijn of meer dan wss een subject interface
+                        if (probability > 2)
                         {
-                            ISubjectClass = cls.Value;
-                            return new RequirementResult("OBSERVER-HAS-SUBJECT-INTERFACE", true);
+                            ISubjectClass = cls;
+                            _results.Add(cls.Identifier, new List<RequirementResult>());
+                            _results[cls.Identifier].Add(new RequirementResult("OBSERVER-HAS-SUBJECT-INTERFACE", true, ISubjectClass));
                         }
 
                     }
                 }
+                _results.Add("null", new List<RequirementResult>());
+                _results["null"].Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false, cls));
             }
-            return new RequirementResult("OBSERVER-HAS-SUBJECT-INTERFACE", false);
         }
 
         // Checks if there are relations between the subject and the observer(s)
-        public RequirementResult HasObserverRelations()
+        public void HasObserverRelations()
         {
-            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            foreach (KeyValuePair<string, ClassModel> cls in _cc.GetClasses())
             {
                 List<string> parents = cls.Value.GetParents();
 
-                // get all classes that extend the observer interface
-                // API: get all interfaces from tree
                 if (parents != null && parents.Contains(IObserverClass.Identifier))
                 {
                     observers.Add(cls.Value);
                 }
-            }
-
-            foreach (var property in ISubjectClass.getProperties())
-            { 
-                string t1 = property.ValueType;
-
-                Debug.WriteLine("ValueType: " + t1);
-                Debug.WriteLine("Class: " + IObserverClass.Identifier);
-                if (observers.Count >= 1 && t1.Contains(IObserverClass.Identifier))
+                else if (parents != null && parents.Contains(ISubjectClass.Identifier))
                 {
-                    return new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", true);
+                    subjects.Add(cls.Value);
+                }
+
+                foreach (var subject in subjects)
+                {
+                    foreach (var property in subject.getProperties())
+                    {
+                        // list type
+                        string collectionType = property.ValueType;
+                        //Debug.WriteLine("ValueType: " + collectionType);
+                        //Debug.WriteLine("Class: " + IObserverClass.Identifier);
+                        if (observers.Count >= 1 && collectionType.Contains(IObserverClass.Identifier))
+                        {
+                            // er is een collection met als parameter de iobserver interface en er is minstens een observer klasse
+                            _results.Add(cls.Value.Identifier, new List<RequirementResult>());
+                            _results[cls.Value.Identifier].Add(new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", true, IObserverClass));
+                        }
+                    }
+                    _results.Add(cls.Value.Identifier, new List<RequirementResult>());
+                    _results[cls.Value.Identifier].Add(new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", true, IObserverClass));
                 }
             }
-
-            // Op zoek naar collection
-            // Op zoek of er een object is die een IEnumerable is
-            // Checken of die IEnumerable alle interfaces die we hebben gevonden bevat
-            // API: check if type of checked attribute is IEnumerable
-
-            return new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", false);
         }
     }
 }

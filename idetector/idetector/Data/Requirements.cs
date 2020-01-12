@@ -96,6 +96,18 @@ namespace idetector.Data
             strategyreqs.Add(new PatternRequirement("STRATEGY-CONCRETE-CLASS-RELATIONS", 2, ""));
             PatternRequirements.Add("STRATEGY", strategyreqs);
 
+            //OBSERVER
+            /*ID's:
+             * OBSERVER-HAS-OBSERVER-INTERFACE
+             * OBSERVER-HAS-SUBJECT-INTERFACE
+             * OBSERVER-HAS-OBSERVER-RELATIONS
+             */
+            List<PatternRequirement> observerreqs = new List<PatternRequirement>();
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-OBSERVER-INTERFACE", 4, ""));
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-SUBJECT-INTERFACE", 3, ""));
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-OBSERVER-RELATIONS", 2, ""));
+            PatternRequirements.Add("OBSERVER", observerreqs);
+
 
 
         }

@@ -232,9 +232,15 @@ namespace xUnitTest
         {
             var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            int score;
 
             Observer observer = new Observer(collection);
-            Assert.True(observer.HasObserverInterface().Passed);
+            observer.Scan();
+
+            calculator.GetScore("OBSERVER", observer.GetResults()).TryGetValue("observer", out score);
+            Assert.Equal(100, score);
         }
 
         [Fact]
@@ -242,12 +248,15 @@ namespace xUnitTest
         {
             var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            int score;
 
             Observer observer = new Observer(collection);
-            // needs IObserver class
-            // observer.scan(); doent work because of noObserver
             observer.Scan();
-            Assert.True(observer.HasObserverRelations().Passed);
+
+            calculator.GetScore("OBSERVER", observer.GetResults()).TryGetValue("observer", out score);
+            Assert.Equal(100, score);
         }
 
         [Fact]
@@ -255,10 +264,15 @@ namespace xUnitTest
         {
             var tree = ObserverTree();
             var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            int score;
 
             Observer observer = new Observer(collection);
             observer.Scan();
-            Assert.True(observer.HasSubjectInterface().Passed);
+
+            calculator.GetScore("OBSERVER", observer.GetResults()).TryGetValue("observer", out score);
+            Assert.Equal(100, score);
         }
 
 
@@ -267,9 +281,15 @@ namespace xUnitTest
         {
             var tree = NoObserverInterface();
             var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            int score;
 
             Observer observer = new Observer(collection);
-            Assert.False(observer.HasObserverInterface().Passed);
+            observer.Scan();
+
+            calculator.GetScore("OBSERVER", observer.GetResults()).TryGetValue("observer", out score);
+            Assert.Equal(0, score);
         }
     }
 }
