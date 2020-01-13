@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" HorizontalAlignment="Stretch">
 
-    <Grid Margin="0,0,0,0"><CheckBox/>
+    <Grid Margin="0,0,0,0">
         <Expander x:Name="PatternName1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Header="{Binding Path=HeaderTitle}" IsExpanded="True" Collapsed="Collapse" Expanded="Collapse">
             <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
                 <StackPanel Name="FoundList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
