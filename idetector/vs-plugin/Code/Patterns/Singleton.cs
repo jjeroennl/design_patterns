@@ -72,6 +72,8 @@ namespace idetector.Patterns
                 _results[_cls.Identifier].Add(new RequirementResult("SINGLETON-GET-INSTANCE", true, _cls, instance));
                 return;
             }
+            _results[_cls.Identifier].Add(new RequirementResult("SINGLETON-GET-INSTANCE", false, _cls));
+            return;
         }
 
         public RequirementResult IsCreateSelf()

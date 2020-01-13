@@ -17,47 +17,81 @@
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.BrandedUITextKey}}" />
         </Style>
     </UserControl.Resources>
-    <Grid x:Name="idetectorPlugin" VerticalAlignment="Stretch" >
-        <Grid.RowDefinitions>
-            <RowDefinition Height="45" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        
-        <Image Source="Resources/Logo.png" HorizontalAlignment="Left"/>
-        <StackPanel Grid.Row="2" >
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
-                <StackPanel x:Name="ScanButtons" VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Horizontal" Grid.ColumnSpan="2">
-                    <Button x:Name="ScanProject" Content="Scan Current Project" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="120" Click="Scan_Current_project" Background="{x:Null}" />
-                    <Button x:Name="ScanFile" Content="Scan Current File" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="100" Click="Scan_Current_file" Background="{x:Null}"/>
+    <StackPanel VerticalAlignment="Stretch">
+        <Grid Name="Default" Visibility="Visible">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid x:Name="idetectorPlugin" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Image Source="Resources/Logo.png" HorizontalAlignment="Left" Grid.Column="0" Margin="0,0,0,0"
+                       Width="140" />
+                <StackPanel x:Name="ScanButtons" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                    <Button x:Name="ScanProject" Content="Scan Project" VerticalAlignment="Center" MinWidth="100"
+                            Click="Scan_Current_project" Background="{x:Null}" />
+                    <Button x:Name="ScanFile" Content="Scan open File" VerticalAlignment="Center" MinWidth="100"
+                            Click="Scan_Current_file" Background="{x:Null}" />
+                    <Button x:Name="Settings" Content="⚙️" VerticalAlignment="Center" MinWidth="32"
+                            Click="OpenSettingsPanel" Background="{x:Null}" />
                 </StackPanel>
-            </StackPanel>
-            <Grid HorizontalAlignment="Stretch" Grid.Row="2" VerticalAlignment="Stretch" Name="DesignPatterns" Grid.ColumnSpan="2" Height="auto">
+            </Grid>
+            <Grid HorizontalAlignment="Stretch" Grid.Row="2" VerticalAlignment="Stretch" Name="DesignPatterns"
+                  Grid.ColumnSpan="2" Height="auto">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <StackPanel x:Name="PatternList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                </StackPanel>
-                <StackPanel Grid.Column="2">
-                    <StackPanel x:Name="Summary" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Orientation="Vertical">
-                        <Label x:Name="PatternName" Content="Summary" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Grid.ColumnSpan="2"/>
+                <StackPanel x:Name="PatternList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <StackPanel Grid.Column="1">
+                    <StackPanel x:Name="Summary" Visibility="Collapsed" HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" Orientation="Vertical">
+                        <Label x:Name="PatternName" Content="Summary" HorizontalAlignment="Stretch"
+                               VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Grid.ColumnSpan="2" />
                         <StackPanel x:Name="SummaryCondition" Orientation="Horizontal">
-                            <Label x:Name="ConditionIcon" Content="⚠️" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" FontSize="15" Foreground="Red"/>
-                            <Label x:Name="ConditionNumber" Content="Condition" Margin="-7,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" FontWeight="Bold" FontSize="15"/>
+                            <Label x:Name="ConditionIcon" Content="" Visibility="Visible" HorizontalAlignment="Left"
+                                   VerticalAlignment="Top" FontWeight="Bold" FontSize="15"/>
+                            <Label x:Name="ConditionTitle" Content="Condition" Margin="-7,0"
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Top" FontWeight="Bold"
+                                   FontSize="15" />
                         </StackPanel>
-                        <Canvas x:Name="Canvas" Height="{Binding ElementName=ConditionText, Path=ActualHeight}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Canvas x:Name="Canvas" Height="{Binding ElementName=ConditionText, Path=ActualHeight}"
+                                VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                             <TextBlock x:Name="ConditionText" Text="Placeholder text"
-                            Width="{Binding ElementName=Canvas, Path=ActualWidth}"
-                            TextWrapping="WrapWithOverflow"/>
+                                       Width="{Binding ElementName=Canvas, Path=ActualWidth}"
+                                       TextWrapping="WrapWithOverflow" />
                         </Canvas>
-                        <StackPanel x:Name="MoreInfo" Margin="0,10,0,0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" >
-                            <Label Content="More info..." FontStyle="Italic"/>
+                        <StackPanel x:Name="MoreInfo" Margin="0,10,0,0" Grid.Column="2" HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom">
+                            <Label Content="More info..." FontStyle="Italic" />
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
             </Grid>
-            <StackPanel MinWidth="220" HorizontalAlignment="Left"/>
-        </StackPanel>
-    </Grid>
-    
+        </Grid>
+        <Grid Name="SettingsGrid" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid HorizontalAlignment="Stretch">
+                <TextBlock Text="Settings" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                <Button Content="Back" HorizontalAlignment="Right" Click="Button_Click" />
+            </Grid>
+
+            <StackPanel Name="Ranges" Grid.Row="1" CanVerticallyScroll="True" Orientation="Vertical" Visibility="Visible">
+
+            </StackPanel>
+        </Grid>
+
+
+
+    </StackPanel>
+
 </UserControl>
