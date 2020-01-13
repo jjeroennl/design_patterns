@@ -36,12 +36,33 @@ namespace idetector.Patterns
         {
             // als die eerste niet true is de rest ook niet doen
             HasObserverInterface();
+            foreach (var result in _results["IObserver"].ToArray())
+            {
+                Debug.WriteLine("ID: " + result.Id);
+                Debug.WriteLine("Class: " + result.Class.Identifier);
+                Debug.WriteLine("Passed: " + result.Passed);
+            }
+
             if (IObserverClass != null)
             {
                 HasSubjectInterface();
-                HasObserverRelations();
+                HasObserversAndSubjects();
+                if(observers != null && subjects != null) HasObserverRelations();
             }
 
+
+        }
+
+        public bool GetResult(string Iidentifier, string req, bool correct)
+        {
+            foreach (ClassModel cls in _cc.GetClasses().Values)
+            {
+                if (_results[Iidentifier].Contains(new RequirementResult(req, correct, cls)))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public Dictionary<string, List<RequirementResult>> GetResults()
@@ -60,17 +81,10 @@ namespace idetector.Patterns
 
             foreach (var cls in classes)
             {
-                foreach (var method in cls.getMethods())
-                {
-                    if (method.ReturnType == "void" && !method.Modifiers.Contains("private") &&
-                        cls.getMethods().Count == 1)
-                    {
-                        IObserverClass = cls;
-                    }
-                }
 
-                if (IObserverClass != null)
+                if (cls.getMethods().Count == 1 && cls.getMethods()[0].ReturnType == "void" && cls.getMethods()[0].Modifiers.Contains("private"))
                 {
+                    IObserverClass = cls;
                     _results.Add(cls.Identifier, new List<RequirementResult>());
                     _results[cls.Identifier]
                         .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", true, cls));
@@ -166,9 +180,26 @@ namespace idetector.Patterns
 
                 if (parents != null && IObserverClass != null && ISubjectClass != null)
                 {
-                    if (parents.Contains(IObserverClass.Identifier)) observers.Add(cls.Value);
-                    else if (parents.Contains(ISubjectClass.Identifier)) subjects.Add(cls.Value);
+                    if (parents.Contains(IObserverClass.Identifier))
+                    {
+                        observers.Add(cls.Value);
+                        _results.Add(cls.Value.Identifier, new List<RequirementResult>());
+                        _results[cls.Value.Identifier]
+                            .Add(new RequirementResult("OBSERVER-HAS-OBSERVERS-AND-SUBJECTS", true, cls.Value));
+                    }
+
+                    else if (parents.Contains(ISubjectClass.Identifier))
+                    {
+                        subjects.Add(cls.Value);
+                        _results.Add(cls.Value.Identifier, new List<RequirementResult>());
+                        _results[cls.Value.Identifier]
+                            .Add(new RequirementResult("OBSERVER-HAS-OBSERVERS-AND-SUBJECTS", true, cls.Value));
+                    }
                 }
+
+                _results.Add(cls.Value.Identifier, new List<RequirementResult>());
+                _results[cls.Value.Identifier]
+                    .Add(new RequirementResult("OBSERVER-HAS-OBSERVERS-AND-SUBJECTS", false, cls.Value));
             }
         }
     }

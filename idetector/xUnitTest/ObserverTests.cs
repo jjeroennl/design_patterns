@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using idetector;
 using idetector.Data;
 using Microsoft.CodeAnalysis;
@@ -469,6 +470,20 @@ namespace xUnitTest
             Assert.Equal(100, score);
         }
 
+        [Fact]
+        public void Test_Observer_HasObserversAndSubjects()
+        {
+            var tree = ObserverTree();
+            var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+
+            Observer observer = new Observer(collection);
+            observer.Scan();
+
+            var score = calculator.GetScore("OBSERVER", observer.GetResults()["Subject"]);
+            Assert.Equal(0, score);
+        }
 
         [Fact]
         public void Test_Observer_HasNoObserverInterface()
@@ -511,7 +526,7 @@ namespace xUnitTest
             Observer observer = new Observer(collection);
             observer.Scan();
 
-            var score = calculator.GetScore("OBSERVER", observer.GetResults());
+            var score = calculator.GetScore("OBSERVER", observer.GetResults()["ISubject"]);
             Assert.Equal(0, score);
         }
     }
