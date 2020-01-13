@@ -20,8 +20,6 @@ namespace idetector.Patterns
      */
     public class StateStrategy : IPattern
     {
-        private float _score;
-        private Dictionary<string, int> _scores = new Dictionary<string, int>();
         private bool IsState = false;
         private ClassCollection cc;
 
@@ -62,9 +60,22 @@ namespace idetector.Patterns
             return _results;
         }
 
-        public int Score()
+        private void HasInterfaceOrAbstract()
         {
-            return (int) _score;
+            foreach (var cls in cc.GetClasses().Values)
+            {
+                if (cls.IsInterface || cls.IsAbstract)
+                {
+                    interfaces.Add(cls);
+                    _results.Add(cls.Identifier, new List<RequirementResult>());
+                    _results[cls.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true, cls));
+                }
+                else
+                {
+                    _results.Add(cls.Identifier, new List<RequirementResult>());
+                    _results[cls.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", false, cls));
+                }
+            }
         }
 
         /// <summary>
