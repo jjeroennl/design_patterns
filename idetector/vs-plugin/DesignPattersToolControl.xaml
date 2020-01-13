@@ -29,7 +29,7 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <Image Source="Resources/Logo.png" HorizontalAlignment="Left" Grid.Column="0" Margin="0,0,0,0"
+                <Image Source="Resources/Logo.png" HorizontalAlignment="Left" Grid.Column="0"
                        Width="140" />
                 <StackPanel x:Name="ScanButtons" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
                             VerticalAlignment="Center">

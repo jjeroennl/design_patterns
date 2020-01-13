@@ -55,6 +55,7 @@ namespace idetector.Patterns
             _results.Add(IsInheritingProductInterface());
             _results.Add(ConcreteFactoryIsReturningConcreteProduct());
             _results.Add(HasMultipleMethods());
+            _results.Add(ConcreteProductsFollowOneProductInterface());
         }
 
         public Dictionary<string, List<RequirementResult>> GetResults()
@@ -173,15 +174,20 @@ namespace idetector.Patterns
 
         #region Checks
         /// <summary>
-        /// Method that checks if there's any (abstract) factory classes present.
+        /// Checks if there is any (abstract) factory classes present.
         /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ContainsIFactoryClass()
         {
             if (ifactory != null) return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", true, ifactory);
             return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", false, ifactory);
         }
 
+
+        /// <summary>
+        /// Checks if there is any (product) interfaces present.
+        /// </summary>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ContainsProductInterface()
         {
             if (abstractClasses.Count == 0 && interfaces.Count == 0)
@@ -191,6 +197,10 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", true, ifactory);
         }
 
+        /// <summary>
+        /// Checks if there is any classes present that have an abstract method with the return type of a product interface.
+        /// </summary>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ContainsAbstractProductInterfaceMethod()
         {
             if (interfaces.Count == 0)
@@ -200,6 +210,10 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", true, ifactory);
         }
 
+        /// <summary>
+        /// Checks if there is any classes that inherit an abstract (factory) class.
+        /// </summary>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult IsInheritingFactoryClass()
         {
             if (parents != null)
@@ -218,6 +232,10 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", false, ifactory);
         }
 
+        /// <summary>
+        /// Checks if there is any classes that inherit a (product) interface.
+        /// </summary>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult IsInheritingProductInterface()
         {
             foreach (var @interface in productInterfaces)
@@ -236,6 +254,10 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", false, ifactory);
         }
 
+        /// <summary>
+        /// Checks if there is a concrete factory that returns a concrete product.
+        /// </summary>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ConcreteFactoryIsReturningConcreteProduct()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -262,9 +284,9 @@ namespace idetector.Patterns
         }
 
         /// <summary>
-        /// Method that checks if the concrete products follow just one product interface.
+        /// Checks if the concrete products follow just one product interface.
         /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ConcreteProductsFollowOneProductInterface()
         {
             if (productInterfaces.Count != 1)

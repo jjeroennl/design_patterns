@@ -145,6 +145,7 @@ namespace vs_plugin
                 singletonList = this.HandleResults(singletonList, s.GetResults());
                 decoratorList = this.HandleResults(decoratorList, d.GetResults());
                 facadeList = this.HandleResults(facadeList, f.GetResults());
+                factoryList = this.HandleResults(factoryList, fm.GetResults());
             }
 
             PatternList.Children.Clear();
@@ -153,7 +154,7 @@ namespace vs_plugin
             PopulatePattern("singleton", singletonList);
             PopulatePattern("decorator", decoratorList);
             PopulatePattern("facade", facadeList);
-            // this.PopulatePattern("factory", factoryList);
+            PopulatePattern("factory", factoryList);
             // this.PopulatePattern("singleton", singletonList);
             // this.PopulatePattern("state", stateList);
             // this.PopulatePattern("strategory", strategyList);    
@@ -205,7 +206,6 @@ namespace vs_plugin
             {
                 this.ConditionIcon.Content = "✔️";
                 this.ConditionIcon.Foreground = new SolidColorBrush(Color.FromRgb(0, 128, 0));
-                ;
             }
             else
             {
