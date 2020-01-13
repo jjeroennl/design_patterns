@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using idetector.Patterns.Helper;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -21,6 +22,7 @@ namespace idetector.Patterns
         private ClassModel IObserverClass;
         private ClassModel ISubjectClass;
         private int probability = 0;
+        private bool kutzooi = false;
 
         private Dictionary<string, List<RequirementResult>>
             _results = new Dictionary<string, List<RequirementResult>>();
@@ -32,9 +34,14 @@ namespace idetector.Patterns
 
         public void Scan()
         {
-            _results.Clear();
+            // als die eerste niet true is de rest ook niet doen
             HasObserverInterface();
-            //HasSubjectInterface();
+            if (IObserverClass != null)
+            {
+                HasSubjectInterface();
+                HasObserverRelations();
+            }
+
         }
 
         public Dictionary<string, List<RequirementResult>> GetResults()
@@ -50,23 +57,30 @@ namespace idetector.Patterns
             var interfaces = API.ListInterfaces(_cc);
             var abstracts = API.ListAbstract(_cc);
             var classes = interfaces.Concat(abstracts);
-            var classes2 = _cc.GetClasses();
 
-            foreach (var cls in classes2)
+            foreach (var cls in classes)
             {
-                foreach (var method in cls.Value.getMethods())
+                foreach (var method in cls.getMethods())
                 {
-                    if (method.ReturnType == "void" && !method.Modifiers.Contains("private")) // evt check of maar 1 method is
+                    if (method.ReturnType == "void" && !method.Modifiers.Contains("private") &&
+                        cls.getMethods().Count == 1)
                     {
-                        IObserverClass = cls.Value;
-                        _results.Add(cls.Value.Identifier, new List<RequirementResult>());
-                        _results[cls.Value.Identifier].Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", true, IObserverClass));
-                        // done??
+                        IObserverClass = cls;
                     }
                 }
-                // ja wat idk wat dit moet voorstellen
-                //_results.Add(cls.Identifier, new List<RequirementResult>());
-                //_results[cls.Identifier].Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false, cls));
+
+                if (IObserverClass != null)
+                {
+                    _results.Add(cls.Identifier, new List<RequirementResult>());
+                    _results[cls.Identifier]
+                        .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", true, cls));
+                }
+                else
+                {
+                    _results.Add(cls.Identifier, new List<RequirementResult>());
+                    _results[cls.Identifier]
+                        .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false, cls));
+                }
             }
         }
 
@@ -91,13 +105,24 @@ namespace idetector.Patterns
                         {
                             ISubjectClass = cls;
                             _results.Add(cls.Identifier, new List<RequirementResult>());
-                            _results[cls.Identifier].Add(new RequirementResult("OBSERVER-HAS-SUBJECT-INTERFACE", true, ISubjectClass));
+                            _results[cls.Identifier]
+                                .Add(new RequirementResult("OBSERVER-HAS-SUBJECT-INTERFACE", true, cls));
                         }
-
                     }
+                    break;
                 }
-                _results.Add("null", new List<RequirementResult>());
-                _results["null"].Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false, cls));
+
+                foreach (var item in classes)
+                {
+                    Debug.WriteLine(item.Identifier);
+                }
+
+                if (ISubjectClass == null)
+                {
+                    _results.Add(cls.Identifier, new List<RequirementResult>());
+                    _results[cls.Identifier]
+                        .Add(new RequirementResult("OBSERVER-HAS-SUBJECT-INTERFACE", false, cls));
+                }
             }
         }
 
@@ -106,36 +131,46 @@ namespace idetector.Patterns
         {
             foreach (KeyValuePair<string, ClassModel> cls in _cc.GetClasses())
             {
-                List<string> parents = cls.Value.GetParents();
-
-                if (parents != null && parents.Contains(IObserverClass.Identifier))
-                {
-                    observers.Add(cls.Value);
-                }
-                else if (parents != null && parents.Contains(ISubjectClass.Identifier))
-                {
-                    subjects.Add(cls.Value);
-                }
-
                 foreach (var subject in subjects)
                 {
                     foreach (var property in subject.getProperties())
                     {
                         // list type
                         string collectionType = property.ValueType;
-                        //Debug.WriteLine("ValueType: " + collectionType);
-                        //Debug.WriteLine("Class: " + IObserverClass.Identifier);
                         if (observers.Count >= 1 && collectionType.Contains(IObserverClass.Identifier))
                         {
                             // er is een collection met als parameter de iobserver interface en er is minstens een observer klasse
+                            kutzooi = true;
                             _results.Add(cls.Value.Identifier, new List<RequirementResult>());
-                            _results[cls.Value.Identifier].Add(new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", true, IObserverClass));
+                            _results[cls.Value.Identifier]
+                                .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", true, cls.Value));
                         }
                     }
-                    _results.Add(cls.Value.Identifier, new List<RequirementResult>());
-                    _results[cls.Value.Identifier].Add(new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", true, IObserverClass));
+
+                    if (!kutzooi)
+                    {
+                        _results.Add(cls.Value.Identifier, new List<RequirementResult>());
+                        _results[cls.Value.Identifier]
+                            .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", false, cls.Value));
+                    }
+                }
+            }
+        }
+
+        public void HasObserversAndSubjects()
+        {
+            foreach (KeyValuePair<string, ClassModel> cls in _cc.GetClasses())
+            {
+
+                List<string> parents = cls.Value.GetParents();
+
+                if (parents != null && IObserverClass != null && ISubjectClass != null)
+                {
+                    if (parents.Contains(IObserverClass.Identifier)) observers.Add(cls.Value);
+                    else if (parents.Contains(ISubjectClass.Identifier)) subjects.Add(cls.Value);
                 }
             }
         }
     }
 }
+    
