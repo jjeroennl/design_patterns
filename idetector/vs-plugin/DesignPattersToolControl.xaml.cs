@@ -1,46 +1,82 @@
-﻿namespace vs_plugin
-{
-    using EnvDTE;
-    using idetector.CodeLoader;
-    using idetector.Collections;
-    using idetector.Parser;
-    using idetector.Patterns;
-    using idetector.Patterns.Facade;
-    using Microsoft.VisualStudio.Shell;
-    using Microsoft.VisualStudio.Shell.Interop;
-    using System;
-    using System.Windows;
-    using System.Windows.Controls;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using EnvDTE;
+using idetector;
+using idetector.CodeLoader;
+using idetector.Collections;
+using idetector.Data;
+using idetector.Models;
+using idetector.Patterns;
+using idetector.Patterns.Facade;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using vs_plugin.Code;
+using Decorator = idetector.Patterns.Decorator;
 
+namespace vs_plugin
+{
     /// <summary>
-    /// Interaction logic for ToolWindow1Control.
+    ///     Interaction logic for ToolWindow1Control.
     /// </summary>
     public partial class ToolWindow1Control : UserControl
     {
+        public static Dictionary<string, List<PatternRequirement>> Patterns;
+        private ScoreCalculator calc;
+        private int cutoff = 50;
+        private ClassCollection collection;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="ToolWindow1Control"/> class.
+        ///     Initializes a new instance of the <see cref="ToolWindow1Control" /> class.
         /// </summary>
         public ToolWindow1Control()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+            var req = new Requirements();
+            Patterns = req.GetRequirements();
+            UIHandler.ToolWindow1Control = this;
+
+            this.CreateSettings();
+        }
+
+        private void CreateSettings()
+        {
+            foreach (var pattern in ToolWindow1Control.Patterns)
+            {
+                var patternWeight = new PatternWeight();
+                patternWeight.Title.Text = pattern.Key;
+                foreach (var requirement in pattern.Value)
+                {
+                    var weight = patternWeight.AddWeight(pattern.Key, requirement.Id, requirement.Title, requirement.Weight);
+
+                    var rangeEventHandler = new RangeChangeEventHandler(pattern.Key, requirement.Id, weight);
+                    weight.RangeSlider.ValueChanged += this.UpdateValue;
+                }
+
+                this.Ranges.Children.Add(patternWeight);
+            }
         }
 
         public ClassCollection GetOpenWindowText()
         {
-            DTE dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
+            var dte = (DTE) ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
             if (dte.ActiveDocument == null)
             {
                 MessageBox.Show("Please open a file before scanning it.");
                 return null;
             }
+
             var filename = dte.ActiveDocument.FullName;
-  
+
             return FileReader.ReadSingleFile(filename);
         }
 
         public ClassCollection ReadProjectCode()
         {
-            DTE dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
+            var dte = (DTE) ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
             if (dte.Solution.Projects == null)
             {
                 MessageBox.Show("Please open a project before scanning it.");
@@ -49,7 +85,7 @@
 
             foreach (var project in dte.Solution.Projects)
             {
-                var p = (Project)project;
+                var p = (Project) project;
 
                 var fileName = p.FullName;
                 var arrpath = fileName.Split('\\');
@@ -65,55 +101,86 @@
         private void Scan_Current_file(object sender, RoutedEventArgs e)
         {
             PatternList.Children.Clear();
-            
+
             //Scan file
-            var collection = GetOpenWindowText();
-            if(collection == null)
-            {
-                return;
-            }
+            collection = GetOpenWindowText();
+            if (collection == null) return;
 
-            this.AddClasses(collection); ;
-
-
+            AddClasses();
         }
 
-        private void AddClasses(ClassCollection collection)
+        private void AddClasses()
         {
-            Facade f = new Facade(collection);
+            calc = new ScoreCalculator(Patterns);
+
+            var stateList = new List<Pattern>();
+            var strategyList = new List<Pattern>();
+            var facadeList = new List<Pattern>();
+            var factoryList = new List<Pattern>();
+            var singletonList = new List<Pattern>();
+            var decoratorList = new List<Pattern>();
+
+            var f = new Facade(collection);
             f.Scan();
 
-            StateStrategy state = new StateStrategy(collection, true);
+            var state = new StateStrategy(collection, true);
             state.Scan();
 
 
-            StateStrategy strat = new StateStrategy(collection, false);
+            var strat = new StateStrategy(collection, false);
             strat.Scan();
 
-
-            FactoryMethod fm = new FactoryMethod(collection);
+            var fm = new FactoryMethod(collection);
             fm.Scan();
+
+            var d = new Decorator(collection);
+            d.Scan();
+
 
             foreach (var item in collection.GetClasses())
             {
-
-                Singleton s = new Singleton(item.Value);
+                var s = new Singleton(item.Value);
                 s.Scan();
-                idetector.Patterns.Decorator d = new idetector.Patterns.Decorator(item.Value, collection.GetClasses());
-                d.Scan();
 
-                SinglePattern p = new SinglePattern();
-                p.SetFacade(f.Score(item.Key.ToString()));
-                p.SetStrategy(strat.Score(item.Key.ToString()));
-                p.SetState(state.Score(item.Key.ToString()));
-                p.SetSingleton(s.Score());
-                p.SetDecorator(d.Score());
-                p.SetFactoryMethod(0);
-
-
-                p.SetHandle(item.Key.ToString());
-                PatternList.Children.Add(p);
+                singletonList = this.HandleResults(singletonList, s.GetResults());
+                decoratorList = this.HandleResults(decoratorList, d.GetResults());
+                facadeList = this.HandleResults(facadeList, f.GetResults());
             }
+
+            PatternList.Children.Clear();
+
+
+            PopulatePattern("singleton", singletonList);
+            PopulatePattern("decorator", decoratorList);
+            PopulatePattern("facade", facadeList);
+            // this.PopulatePattern("factory", factoryList);
+            // this.PopulatePattern("singleton", singletonList);
+            // this.PopulatePattern("state", stateList);
+            // this.PopulatePattern("strategory", strategyList);    
+        }
+
+        private List<Pattern> HandleResults(List<Pattern> patternList, Dictionary<string, List<RequirementResult>> results)
+        {
+            foreach (var patternResult in results)
+            {
+                var patternScore = calc.GetScore("SINGLETON", patternResult.Value);
+                if (patternScore >= cutoff)
+                    patternList.Add(new Pattern(collection.GetClass(patternResult.Key), patternScore,
+                        patternResult.Value));
+            }
+
+            return patternList;
+        }
+
+        private void PopulatePattern(string patternName, List<Pattern> patternList)
+        {
+            var p = new SinglePattern();
+            p.SetHandle(patternName?.First().ToString().ToUpper() + patternName?.Substring(1).ToLower());
+
+            foreach (var pattern in patternList)
+                if (pattern.Score >= 50)
+                    p.AddPattern(patternName, pattern);
+            PatternList.Children.Add(p);
         }
 
         private void Scan_Current_project(object sender, RoutedEventArgs e)
@@ -121,13 +188,69 @@
             PatternList.Children.Clear();
 
             //Scan file
-            var collection = ReadProjectCode();
-            if (collection == null)
+            collection = ReadProjectCode();
+            if (collection == null) return;
+
+            AddClasses();
+        }
+
+        /// <summary>
+        ///     Method to replace summary's information and reset the text wrapping.
+        /// </summary>
+        /// <param name="text">Text to be placed inside TextBlock.</param>
+        public void UpdateSummary(string pattern, PatternRequirement req, bool passed)
+        {
+
+            if (passed)
             {
-                return;
+                this.ConditionIcon.Content = "✔️";
+                this.ConditionIcon.Foreground = new SolidColorBrush(Color.FromRgb(0, 128, 0));
+                ;
+            }
+            else
+            {
+                this.ConditionIcon.Content = "❌";
+                this.ConditionIcon.Foreground = new SolidColorBrush(Color.FromRgb(128, 0, 0));
+            }
+            Summary.Visibility = Visibility.Visible;
+            PatternName.Content = pattern;
+            ConditionTitle.Content = req.Title;
+            if (passed)
+            {
+                ConditionText.Text = req.Description;
+            }
+            else
+            {
+                ConditionText.Text = req.ErrorMessage;
             }
 
-            this.AddClasses(collection); ;
+            ConditionText.TextWrapping = TextWrapping.Wrap;
+        }
+
+        private Dictionary<ClassModel, List<RequirementResult>> GroupResults(List<RequirementResult> unGroupedList)
+        {
+            var returnVal = new Dictionary<ClassModel, List<RequirementResult>>();
+            foreach (var reqResults in unGroupedList)
+            {
+                if (!returnVal.ContainsKey(reqResults.Class))
+                    returnVal.Add(reqResults.Class, new List<RequirementResult>());
+
+                returnVal[reqResults.Class].Add(reqResults);
+            }
+
+            return returnVal;
+        }
+
+        private void OpenSettingsPanel(object sender, RoutedEventArgs e)
+        {
+            Default.Visibility = Visibility.Collapsed;
+            SettingsGrid.Visibility = Visibility.Visible;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.SettingsGrid.Visibility = Visibility.Collapsed;
+            this.Default.Visibility = Visibility.Visible;
         }
     }
 }

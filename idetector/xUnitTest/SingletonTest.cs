@@ -1,16 +1,10 @@
-﻿using idetector.Models;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
-using System.Linq;
-using idetector.Collections;
 using idetector.Parser;
 using idetector.Patterns;
 using Xunit;
 using idetector;
 using idetector.Data;
-using System.Collections.Generic;
 
 namespace xUnitTest
 {
@@ -156,8 +150,8 @@ namespace xUnitTest
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            var score = calculator.GetScore("SINGLETON" ,singleton.GetResult());
-            Assert.Equal(100, score);
+            var score = calculator.GetScore("SINGLETON" ,singleton.GetResults());
+            Assert.Equal(100, score["User"]);
         }
 
         [Fact]
@@ -170,8 +164,8 @@ namespace xUnitTest
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            var score = calculator.GetScore("SINGLETON", singleton.GetResult());
-            Assert.NotEqual(100, score);
+            var score = calculator.GetScore("SINGLETON", singleton.GetResults());
+            Assert.NotEqual(100, score["User"]);
         }
         [Fact]
         public void Test_Singleton_noPrivateStatic()
@@ -183,8 +177,8 @@ namespace xUnitTest
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            var score = calculator.GetScore("SINGLETON", singleton.GetResult());
-            Assert.NotEqual(100, score);
+            var score = calculator.GetScore("SINGLETON", singleton.GetResults());
+            Assert.NotEqual(100, score["User"]);
         }
         [Fact]
         public void Test_Singleton_NoStaticSelf()
@@ -196,8 +190,8 @@ namespace xUnitTest
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            var score = calculator.GetScore("SINGLETON", singleton.GetResult());
-            Assert.NotEqual(100, score);
+            var score = calculator.GetScore("SINGLETON", singleton.GetResults());
+            Assert.NotEqual(100, score["User"]);
         }
         [Fact]
         public void Test_Singleton_NoGetInstance()
@@ -209,8 +203,8 @@ namespace xUnitTest
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            var score = calculator.GetScore("SINGLETON", singleton.GetResult());
-            Assert.NotEqual(100, score);
+            var score = calculator.GetScore("SINGLETON", singleton.GetResults());
+            Assert.NotEqual(100, score["User"]);
         }
         [Fact]
         public void Test_Singleton_NoStaticGetInstance()
@@ -223,8 +217,8 @@ namespace xUnitTest
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            var score = calculator.GetScore("SINGLETON", singleton.GetResult());
-            Assert.NotEqual(100, score);
+            var score = calculator.GetScore("SINGLETON", singleton.GetResults());
+            Assert.NotEqual(100, score["User"]);
         }
         [Fact]
         public void Test_Singleton_NoCreationOfSelf()
@@ -236,8 +230,8 @@ namespace xUnitTest
 
             Singleton singleton = new Singleton(collection.GetClass("User"));
             singleton.Scan();
-            var score = calculator.GetScore("SINGLETON", singleton.GetResult());
-            Assert.NotEqual(100, score);
+            var score = calculator.GetScore("SINGLETON", singleton.GetResults());
+            Assert.NotEqual(100, score["User"]);
         }
     }
 }

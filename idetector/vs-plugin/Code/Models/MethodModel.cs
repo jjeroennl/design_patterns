@@ -39,7 +39,7 @@ namespace idetector.Models
 
             ReturnType = node.ReturnType.ToString();
             Identifier = node.Identifier.ToString();
-            Parameters = node.ParameterList.ToString();
+            Parameters = node.ParameterList.Parameters.ToString();
             if (node.Body != null)
             {
                 Body = node.Body.ToString();
@@ -58,7 +58,7 @@ namespace idetector.Models
             isConstructor = true;
             ReturnType = type;
             Identifier = node.Identifier.ToString();
-            Parameters = node.ParameterList.ToString();
+            Parameters = node.ParameterList.Parameters.ToString();
             if (node.Body != null)
             {
                 Body = node.Body.ToString();
@@ -68,6 +68,11 @@ namespace idetector.Models
         public BaseMethodDeclarationSyntax getNode()
         {
             return _node;
+        }
+
+        public bool HasModifier(string modifier)
+        {
+            return Modifiers.Any(e => e.Equals(modifier));
         }
     }
 }

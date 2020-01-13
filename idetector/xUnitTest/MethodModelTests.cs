@@ -47,7 +47,7 @@ Console.WriteLine('Hello, World!');
             Assert.Equal("static", methodModel.Modifiers[0]);
             Assert.Equal("void", methodModel.ReturnType);
             Assert.Equal("Main", methodModel.Identifier);
-            Assert.Equal("(string[] args , string foo)", methodModel.Parameters);
+            Assert.Equal("string[] args , string foo", methodModel.Parameters);
             Assert.Equal("{Console.WriteLine('Hello, World!');}", methodModel.Body.Replace(System.Environment.NewLine, ""));
             
             Assert.True(methodModel.HasModifier("static"));

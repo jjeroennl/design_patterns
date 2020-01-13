@@ -1,0 +1,53 @@
+﻿using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using idetector.Models;
+using vs_plugin.Code;
+
+namespace vs_plugin
+{
+    /// <summary>
+    /// Interaction logic for Requirement.xaml
+    /// </summary>
+    public partial class Requirement : UserControl
+    {
+        private RequirementResult _result;
+        private PatternRequirement _patternRequirement;
+        private string _pattern;
+        public Requirement()
+        {
+            InitializeComponent();
+            this.MouseLeftButtonUp += pattern_PreviewMouseDown;
+        }
+
+
+
+        private void pattern_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            UIHandler.SummarySelection(this._pattern, _patternRequirement, this._result.Passed);
+        }
+
+
+        public void SetRequirement(string pattern, RequirementResult result)
+        {
+            this._result = result;
+            this._pattern = pattern;
+
+            if (result.Passed)
+            {
+                this.Check.Text = "✔️";
+                this.Check.Foreground = new SolidColorBrush(Color.FromRgb(0, 128, 0));
+            }
+            else
+            {
+                this.Check.Text = "❌";
+                this.Check.Foreground = new SolidColorBrush(Color.FromRgb(128, 0, 0));
+            }
+
+            var requirements = ToolWindow1Control.Patterns[pattern.ToUpper()];
+            _patternRequirement = requirements.Find(e => e.Id.Equals(result.Id));
+            var errormessage = _patternRequirement.Title;
+            this.RequirementText.Text = errormessage;
+        }
+    }
+}

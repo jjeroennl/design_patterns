@@ -35,10 +35,6 @@ namespace idetector.CodeLoader
 
             foreach (var file in files)
             {
-                if (file.Contains("netcoreapp3.0"))
-                {
-                    continue;
-                }
                 dataStream += FileReader.ReadFile(file);
             }
 
@@ -60,13 +56,6 @@ namespace idetector.CodeLoader
                     }
 
                     SearchDirectoryForCSFiles(dir, s);
-                }
-                foreach (string file in Directory.GetFiles(sDir))
-                {
-                    if (file.EndsWith(".cs"))
-                    {
-                        s.Add((file));
-                    }
                 }
             }
             catch (System.Exception excpt)

@@ -11,13 +11,12 @@ namespace idetector.Patterns.Facade
     {
         private ClassCollection collection;
         private int _score = 0;
-        private List<ClassModel> results = new List<ClassModel>();
-        private Dictionary<string, int> _scores;
+        private Dictionary<string, List<RequirementResult>>_results = new Dictionary<string, List<RequirementResult>>();
+
 
         public Facade(ClassCollection collection)
         {
             this.collection = collection;
-            this._scores = new Dictionary<string, int>();
         }
 
         public void Scan()
@@ -37,6 +36,12 @@ namespace idetector.Patterns.Facade
             }
 
             this.FacadeCheck(collection, table, table.ListClassesWithSingleParent());
+        }
+
+        public Dictionary<string, List<RequirementResult>> GetResults()
+
+        {
+            return _results;
         }
 
         public void FacadeCheck(ClassCollection collection, RelationTable parents, RelationTable relations)
@@ -60,31 +65,26 @@ namespace idetector.Patterns.Facade
                         isFacade = RecursiveCheckGroup(parents, facade, collection.GetClass(modelName), isFacade);
                     }
 
-                    var scoreInt = 0;
-                    if (isFacade)
-                    {
-                        scoreInt = 100;
-                    }
-
-                    this.SaveScores(facade, scoreInt);
+                    SaveScores(relation.Key.ToString(), facade, isFacade);
                 }
             }
         }
 
-        private void SaveScores(List<String> facade, int scoreInt)
+        private void SaveScores(string identifier, List<string> facade, bool isFacade)
         {
             foreach (var className in facade)
             {
-                if (this._scores.ContainsKey(className))
+                if (!_results.ContainsKey(identifier))
                 {
-                    if (this._scores[className] < scoreInt)
-                    {
-                        this._scores[className] = scoreInt;
-                    }
+                    _results.Add(identifier, new List<RequirementResult>());
+                }
+                if (isFacade)
+                {
+                    _results[identifier].Add(new RequirementResult("FACADE-IS-FACADE", true, collection.GetClass(className)));
                 }
                 else
                 {
-                    this._scores[className] = scoreInt;
+                    _results[identifier].Add(new RequirementResult("FACADE-IS-FACADE", false, collection.GetClass(className)));
                 }
             }
         }
@@ -121,35 +121,6 @@ namespace idetector.Patterns.Facade
 
 
             return found;
-        }
-
-        public int Score(ClassModel item)
-        {
-            if (!this._scores.ContainsKey(item.Identifier.ToString()))
-            {
-                return 0;
-            }
-            else
-            {
-                return this._scores[item.Identifier.ToString()];
-            }
-        }
-
-        public int Score(string item)
-        {
-            if (!this._scores.ContainsKey(item.ToString()))
-            {
-                return 0;
-            }
-            else
-            {
-                return this._scores[item.ToString()];
-            }
-        }
-
-        public List<ClassModel> Results()
-        {
-            return results;
         }
     }
 }
