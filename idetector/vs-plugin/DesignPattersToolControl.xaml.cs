@@ -53,7 +53,7 @@ namespace vs_plugin
                     var weight = patternWeight.AddWeight(pattern.Key, requirement.Id, requirement.Title, requirement.Weight);
 
                     var rangeEventHandler = new RangeChangeEventHandler(pattern.Key, requirement.Id, weight);
-                    weight.RangeSlider.ValueChanged += this.UpdateValue;
+                    
                 }
 
                 this.Ranges.Children.Add(patternWeight);
