@@ -35,9 +35,9 @@ namespace idetector.Data
             //DECORATOR-CONSTRUCTOR-SETS-COMPONENT
             //DECORATOR-CONCRETE-CALLS-BASE
             List<PatternRequirement> decoratorreqs = new List<PatternRequirement>();
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-HAS-CHILDREN", "Children of base exist", "", "The base interface/abstract did not have any children"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-CHILDREN", "Children of decorator exist", "", "The abstract decorator did not have any children"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", "", "", "The abstract decorator did not contain a field of the parent type"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-HAS-CHILDREN", "Base classes", "A decorator pattern should contain an interface or abstract class with atleast 2 children: 1 base class and an abstract decorato.r", "The base interface/abstract did not have any children"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-CHILDREN", "Abstract decorator implemented", "The abstract decorator class should have atleast 1 child which should be the concrete decorator.", "The abstract decorator did not have any children"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", "Abstract decorator contains parenty property", "The abstract decorator class should contain a property of it's parent type to use as a base item.", "The abstract decorator did not contain a field of the parent type"));
             decoratorreqs.Add(new PatternRequirement("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", "", "", "The abstract decorator' constructor does not set component field"));
             decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-CALLS-BASE", "", "", "The concrete decorators do not call the abstract decorator's constructor"));
             PatternRequirements.Add("DECORATOR", decoratorreqs);
