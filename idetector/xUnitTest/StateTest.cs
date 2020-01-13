@@ -24,12 +24,20 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
             Requirements r = new Requirements();
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
-            int score;
+            int score = 0;
 
             StateStrategy state= new StateStrategy(collection, true);
             state.Scan();
+            var results = state.GetResults();
 
-            calculator.GetScore("STATE", state.GetResults()).TryGetValue("state", out score);
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STATE", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
             Assert.Equal(100, score);
 
         }
@@ -68,11 +76,21 @@ namespace xUnitTest
             Requirements r = new Requirements();
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var collection = Walker.GenerateModels(CSharpSyntaxTree.ParseText(TestStrings.StateExample()));
+            int score = 0;
 
             StateStrategy state = new StateStrategy(collection, true);
             state.Scan();
-            //var score = calculator.GetScore("STATE", state.GetResult());
-           // Assert.InRange(score, 80, 90);
+            var results = state.GetResults();
+
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STATE", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
+            Assert.InRange(score, 80, 90);
         }
 
         SyntaxTree SuccessSetup()
