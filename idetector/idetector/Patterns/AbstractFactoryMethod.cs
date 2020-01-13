@@ -210,7 +210,7 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.HasParent(prnt.Identifier))
                         {
-                            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", true, ifactory);
+                            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", true, cls.Value);
                         }
                     }
                 }
@@ -228,7 +228,7 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.HasParent(@interface.Identifier))
                         {
-                            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", true, ifactory);
+                            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", true, cls.Value);
                         }
                     }
                 }
@@ -250,7 +250,7 @@ namespace idetector.Patterns
                             {
                                 if (method.ReturnType == @interface.Identifier)
                                 {
-                                    return new RequirementResult("FACTORY-RETURNS-PRODUCT", true, ifactory);
+                                    return new RequirementResult("FACTORY-RETURNS-PRODUCT", true, cls.Value);
 
                                 }
                             }
@@ -282,11 +282,11 @@ namespace idetector.Patterns
                                 {
                                     if (isMethod)
                                     {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false, ifactory);
+                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false, cls.Value);
                                     }
                                     else
                                     {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true, ifactory);
+                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true, cls.Value);
                                     }
                                 }
                                 else
