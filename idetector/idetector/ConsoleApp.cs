@@ -66,8 +66,7 @@ namespace idetector
             d.Scan();
 
             foreach (var item in this.collection.GetClasses())
-            {                
-              
+            {
                 Console.WriteLine(item.Value.Identifier + ": ");
                 Singleton s = new Singleton(item.Value);
                 s.Scan();
@@ -86,8 +85,17 @@ namespace idetector
             
             printBar("Factory Method", Calculator.GetScore("FACTORY", fm.GetResult()));
             printBar("Abstract Factory", Calculator.GetScore("FACTORY", af.GetResult()));
-            //printBar("Strategy", Calculator.GetScore("STRATEGY", strat.GetResult()));
-           // printBar("State", Calculator.GetScore("STATE", state.GetResult()));
+
+            foreach (var result in state.GetResults())
+            {
+                Console.WriteLine(result.Key + ": ");
+                printBar(collection.GetClass(result.Key), "State", Calculator.GetScore("STATE", result.Value));
+            }
+            foreach (var result in strat.GetResults())
+            {
+                Console.WriteLine(result.Key + ": ");
+                printBar(collection.GetClass(result.Key), "Strategy", Calculator.GetScore("STRATEGY", result.Value));
+            }
         }
 
         private void printBar(string name, int score)

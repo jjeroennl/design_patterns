@@ -83,7 +83,11 @@ namespace idetector.Data
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-LOGIC", 1, ""));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONCRETE-CLASS", 2, ""));
             PatternRequirements.Add("STATE", statereqs);
-            
+
+            List<PatternRequirement> strategyreqs = new List<PatternRequirement>(statereqs);
+            strategyreqs.Add(new PatternRequirement("STRATEGY-CONCRETE-CLASS-RELATIONS", 2, ""));
+            PatternRequirements.Add("STRATEGY", strategyreqs);
+
             //FACADE
             /*ID's:
              * FACADE-IS-FACADE
@@ -92,9 +96,6 @@ namespace idetector.Data
             facadereqs.Add(new PatternRequirement("FACADE-IS-FACADE", 4, ""));
             PatternRequirements.Add("FACADE", facadereqs);
 
-            var strategyreqs = new List<PatternRequirement>(statereqs);
-            strategyreqs.Add(new PatternRequirement("STRATEGY-CONCRETE-CLASS-RELATIONS", 2, ""));
-            PatternRequirements.Add("STRATEGY", strategyreqs);
 
             //OBSERVER
             /*ID's:
