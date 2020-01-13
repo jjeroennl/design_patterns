@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using idetector.Models;
 
 namespace vs_plugin.Code
 {
@@ -18,9 +19,9 @@ namespace vs_plugin.Code
         /// Calls main page to update summary based on selected item.
         /// </summary>
         /// <param name="expander"></param>
-        public static void SummarySelection(Expander expander)
+        public static void SummarySelection(string pattern, PatternRequirement req, bool passed)
         {
-            ToolWindow1Control.UpdateSummary(expander.Name);
+            ToolWindow1Control.UpdateSummary(pattern, req, passed);
         }
     }
 }

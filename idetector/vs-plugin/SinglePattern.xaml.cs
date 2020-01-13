@@ -1,21 +1,6 @@
 ﻿using idetector.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using vs_plugin.Code;
 
 namespace vs_plugin
 {
@@ -46,12 +31,12 @@ namespace vs_plugin
         {
         }
 
-        public void AddPattern(Pattern pattern)
+        public void AddPattern(string patternName, Pattern pattern)
         {
             var singleclass = new UIPattern();
             singleclass.SetHandle(pattern.Class.Identifier);
             singleclass.SetScore(pattern.Score);
-            singleclass.SetRequirements(pattern.RequirementResults);
+            singleclass.SetRequirements(patternName, pattern.RequirementResults);
 
             FoundList.Children.Add(singleclass);
         }
