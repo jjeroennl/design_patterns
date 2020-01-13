@@ -338,7 +338,7 @@ namespace xUnitTest
 
                 namespace RefactoringGuru.DesignPatterns.Observer.Conceptual
                 {
-                    public class Subject : ISubject
+                    public class Subject
                     {
                         public int State { get; set; } = -0;
 
@@ -379,7 +379,7 @@ namespace xUnitTest
                         }
                     }
 
-                    class ConcreteObserverA : IObserver
+                    class ConcreteObserverA
                     {
                         public void Update(ISubject subject)
                         {
@@ -390,7 +390,7 @@ namespace xUnitTest
                         }
                     }
 
-                    class ConcreteObserverB : IObserver
+                    class ConcreteObserverB
                     {
                         public void Update(ISubject subject)
                         {
@@ -435,7 +435,7 @@ namespace xUnitTest
             Observer observer = new Observer(collection);
             observer.Scan();
 
-            var score = calculator.GetScore("OBSERVER", observer.GetResults()["ISubject"]);
+            var score = calculator.GetScore("OBSERVER", observer.GetResults()["IObserver"]);
             Assert.Equal(100, score);
         }
 
