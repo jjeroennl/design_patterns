@@ -139,6 +139,17 @@ namespace idetector.Patterns.Helper
             return false;
         }
 
+        public static bool ClassIsAbstractOrInterface(ClassModel cls)
+        {
+            if(cls.IsAbstract || cls.IsInterface)
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
         public static List<ClassModel> ListChildren(ClassCollection collection, string type)
         {
             List<ClassModel> result = collection.GetClasses().Values.Where(e => e.HasParent(type)).Distinct().ToList();

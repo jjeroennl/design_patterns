@@ -4,6 +4,8 @@ using System.Text;
 using idetector.Collections;
 using idetector.Models;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using idetector.Patterns.Helper;
+using System.Linq;
 
 namespace idetector.Patterns
 {
@@ -20,16 +22,15 @@ namespace idetector.Patterns
      */
     public class StateStrategy : IPattern
     {
-        private bool IsState = false;
+        private bool IsState;
         private ClassCollection cc;
+        private Dictionary<string, List<RequirementResult>> _results = new Dictionary<string, List<RequirementResult>>();
 
         private ClassCollection Concretes = new ClassCollection();
         public ClassModel Context;
         private List<ClassModel> interfaces;
         private MethodModel Setter;
-        private Dictionary<string, List<RequirementResult>> _results = new Dictionary<string, List<RequirementResult>>();
-
-
+        
         public StateStrategy(ClassCollection _cc, bool isState)
         {
             cc = _cc;
@@ -50,18 +51,6 @@ namespace idetector.Patterns
             }
         }
 
-        public bool GetResult(string Iidentifier, string req, bool correct)
-        {
-            foreach (ClassModel cls in cc.GetClasses().Values)
-            {
-                if (_results[Iidentifier].Contains(new RequirementResult(req, correct, cls)))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         public Dictionary<string, List<RequirementResult>> GetResults()
         {
             return _results;
@@ -69,21 +58,18 @@ namespace idetector.Patterns
 
         private void HasInterfaceOrAbstract()
         {
-            if (interfaces.Count < 1)
+            foreach (ClassModel cls in cc.GetClasses().Values)
             {
-                foreach (var cls in cc.GetClasses().Values)
+                if (API.ClassIsAbstractOrInterface(cls))
                 {
-                    if (cls.IsInterface || cls.IsAbstract)
-                    {
-                        interfaces.Add(cls);
-                        _results.Add(cls.Identifier, new List<RequirementResult>());
-                        _results[cls.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true, cls));
-                    }
-                    else
-                    {
-                        _results.Add(cls.Identifier, new List<RequirementResult>());
-                        _results[cls.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", false, cls));
-                    }
+                    interfaces.Add(cls);
+                    _results.Add(cls.Identifier, new List<RequirementResult>());
+                    _results[cls.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true, cls));
+                }
+                else
+                {
+                    _results.Add(cls.Identifier, new List<RequirementResult>());
+                    _results[cls.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", false, cls));
                 }
             }
         }
