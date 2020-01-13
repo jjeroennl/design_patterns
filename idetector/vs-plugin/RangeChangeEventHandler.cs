@@ -18,12 +18,13 @@ namespace vs_plugin
             weight.RangeSlider.ValueChanged += this.UpdateValue;
         }
 
-        private void UpdateValue(object sender, RoutedPropertyChangedEventArgs<double> e)
+        public void UpdateValue(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             var newValue = (float) e.NewValue;
-            var weight = newValue / 100;
+            var weight = (newValue / 100) * 2;
 
             ToolWindow1Control.Patterns[this.pattern].Find(r => r.Id == this.id).Weight = weight;
+            ToolWindow1Control.Calc = new idetector.ScoreCalculator(ToolWindow1Control.Patterns);
         }
     }
 }
