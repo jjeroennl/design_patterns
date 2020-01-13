@@ -21,7 +21,7 @@ namespace idetector.Models
 
         private List<MethodModel> Methods = new List<MethodModel>();
         private List<PropertyModel> Properties = new List<PropertyModel>();
-        private HashSet<ClassModel> Parents = new HashSet<ClassModel>();
+        public HashSet<ClassModel> Parents = new HashSet<ClassModel>();
         public HashSet<ClassModel> ObjectCreations = new HashSet<ClassModel>();
         public HashSet<string> UnknownParent = new HashSet<string>();
 
@@ -127,6 +127,19 @@ namespace idetector.Models
         public void AddObjectCreation(ClassModel node)
         {
             ObjectCreations.Add(node);
+        }
+
+        public List<MethodModel> getConstructors()
+        {
+            List<MethodModel> constructors = new List<MethodModel>();
+            foreach (var methods in Methods)
+            {
+                if (methods.isConstructor)
+                {
+                    constructors.Add(methods);
+                }
+            }
+            return constructors;
         }
 
         public List<MethodModel> getMethods()
