@@ -16,8 +16,8 @@ namespace idetector.Patterns
         //DECORATOR-BASE-CHILDREN-TYPES
         //DECORATOR-HAS-CHILDREN
         //DECORATOR-HAS-BASE-PROPERTY
-        //DECORATOR-CONSTRUCTOR-SETS-COMPONENT
-        //DECORATOR-CONCRETE-CALLS-BASE
+        //DECORATOR-METHOD-SETS-COMPONENT
+        //DECORATOR-CONCRETE-METHOD-SETS-PROPERTY
 
         private ClassModel _cls;
         private ClassCollection _collection;
@@ -29,7 +29,7 @@ namespace idetector.Patterns
 
         private Dictionary<string, List<RequirementResult>>
             _results = new Dictionary<string, List<RequirementResult>>();
-        
+
 
         public Decorator(ClassCollection collection)
         {
@@ -49,8 +49,8 @@ namespace idetector.Patterns
                 results.Add(CheckChildren());
                 results.Add(FindDecorators());
                 results.Add(DecoratorHasBaseProperty());
-                results.Add(ConstructorSetsComponent());
-                results.Add(DecoratorCallsBase());
+                results.Add(DecoratorHasBasePropertySetter());
+                results.Add(DecoratorBasePropertySetterSets());
                 _results.Add(_cls.Identifier, results);
             }
         }
@@ -104,12 +104,12 @@ namespace idetector.Patterns
             return new RequirementResult("DECORATOR-HAS-BASE-PROPERTY", result, _decoratorInterface);
         }
 
-        public RequirementResult ConstructorSetsComponent()
+        public RequirementResult DecoratorHasBasePropertySetter()
         {
-            var result = API.ClassHasConstructorOfType(_decoratorInterface, _cls.Identifier);
+            var result = API.ClassHasMethodWithParam(_decoratorInterface, _cls.Identifier);
 
 
-            return new RequirementResult("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", result, _decoratorInterface);
+            return new RequirementResult("DECORATOR-METHOD-SETS-COMPONENT", result, _decoratorInterface);
         }
 
         public RequirementResult FindDecorators()
@@ -123,22 +123,23 @@ namespace idetector.Patterns
 
             return new RequirementResult("DECORATOR-HAS-CHILDREN", true, _decoratorInterface);
         }
-
-        public RequirementResult DecoratorCallsBase()
+        public RequirementResult DecoratorBasePropertySetterSets()
         {
-            //if there are no decorators result will be false, otherwise true. 
-            bool result = _decorators.Count > 0;
-            ClassModel cls = _decoratorInterface;
-            foreach (var dec in _decorators)
+            bool result = false;
+            var methods = API.ClassGetMethodsWithParam(_decoratorInterface, _cls.Identifier);
+            var propertyNames = _decoratorInterface.getProperties().Where(e => e.ValueType.Equals(_cls.Identifier)).ToList();
+            foreach (var method in methods)
             {
-                if (!API.ChildCallsBaseConstructor(dec))
+                foreach (var property in propertyNames)
                 {
-                    cls = dec;
-                    result = false;
+                    if (method.Body.Contains(property.Identifier))
+                    {
+                        result = true;
+                    }
                 }
             }
-
-            return new RequirementResult("DECORATOR-CONCRETE-CALLS-BASE", result, cls);
+            return new RequirementResult("DECORATOR-CONCRETE-METHOD-SETS-PROPERTY", result, _decoratorInterface);
         }
+
     }
 }
