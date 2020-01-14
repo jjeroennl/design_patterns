@@ -10,8 +10,18 @@
              d:DesignHeight="300" d:DesignWidth="300"
              Name="MyToolWindow">
     <Grid>
-        <StackPanel Name="NoGuidance">
+        <StackPanel Name="NoGuidance" Grid.Row="0" Visibility="Collapsed">
             <TextBlock Margin="10,10,10,10" TextWrapping="WrapWithOverflow">You have not selected a pattern to be guided with, please pick a pattern first.</TextBlock>
         </StackPanel>
+        <Grid Name="ResultsGrid" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,10,10,10" Click="Button_Click">Refresh</Button>
+            <StackPanel Name="Results">
+
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

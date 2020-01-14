@@ -16,7 +16,7 @@
         <Button Content="Cancel" HorizontalAlignment="Right" Margin="0,0,100,0" Grid.Row="2" VerticalAlignment="Center" Width="75" Click="Button_Click"/>
         <Button Content="Next" HorizontalAlignment="Right" Margin="0,0,10,0" Grid.Row="2" VerticalAlignment="Center" Width="75" Click="Button_Click_1"/>
         <StackPanel Grid.Row="1">
-            <ComboBox HorizontalAlignment="Stretch" Margin="10,10,10,10" Grid.Row="1"  VerticalAlignment="Top" SelectionChanged="ComboBox_SelectionChanged">
+            <ComboBox Name="PatternBox" HorizontalAlignment="Stretch" Margin="10,10,10,10" Grid.Row="1"  VerticalAlignment="Top" SelectionChanged="ComboBox_SelectionChanged">
                 <ComboBoxItem Name="abs">Abstract factory</ComboBoxItem>
                 <ComboBoxItem Name="dec">Decorator</ComboBoxItem>
                 <ComboBoxItem Name="fac">Facade</ComboBoxItem>

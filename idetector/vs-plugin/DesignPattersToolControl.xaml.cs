@@ -37,7 +37,6 @@ namespace vs_plugin
         {
             InitializeComponent();
 
-            var u = new NewGuidance();
             var req = new Requirements();
             Patterns = req.GetRequirements();
             Calc = new ScoreCalculator(Patterns);
@@ -274,6 +273,11 @@ namespace vs_plugin
         {
             this.SettingsGrid.Visibility = Visibility.Collapsed;
             this.Default.Visibility = Visibility.Visible;
+        }
+
+        private void Pattern_Guide_Click(object sender, RoutedEventArgs e)
+        {
+            new NewGuidance();
         }
     }
 }

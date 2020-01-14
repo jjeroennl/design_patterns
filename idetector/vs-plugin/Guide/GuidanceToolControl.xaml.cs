@@ -21,6 +21,21 @@ namespace vs_plugin.Guide
         private Dictionary<string, List<PatternRequirement>> _results;
         private ScoreCalculator _calculator;
 
+        private Dictionary<string, string> patterns = new Dictionary<string, string>()
+        {
+            {"abs", "ABSTRACT-FACTORY" },
+            {"dec", "DECORATOR"},
+            {"fac", "FACADE"},
+            {"fcy", "FACTORY"},
+            {"sin", "SINGLETON"},
+            {"sta", "STATE"},
+            {"str", "STRATEGY"},
+            {"ite", "ITERATOR"},
+            {"obs", "OBSERVER"},
+            {"cmd", "COMMAND"},
+
+        };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GuidanceToolControl"/> class.
         /// </summary>
@@ -40,6 +55,7 @@ namespace vs_plugin.Guide
                 this._results = ToolWindow1Control.Patterns;
                 this._calculator = ToolWindow1Control.Calc;
                 this.NoGuidance.Visibility = Visibility.Collapsed;
+                this.ResultsGrid.Visibility = Visibility.Visible;
 
                 this.Scan();
             }
@@ -47,6 +63,7 @@ namespace vs_plugin.Guide
             {
                 this._pattern = null;
                 this.NoGuidance.Visibility = Visibility.Visible;
+                this.ResultsGrid.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -115,6 +132,24 @@ namespace vs_plugin.Guide
             }
 
             var results = pattern.GetResults();
+
+            foreach (var result in results)
+            {
+                var singleclass = new UIPattern();
+                singleclass.SetHandle(this._typename);
+                singleclass.SetScore(false);
+                singleclass.SetRequirements(this.patterns[_pattern], result.Value);
+
+                this.Results.Children.Add(singleclass);
+            }
+
+         
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Results.Children.Clear();
+            this.Scan();
         }
     }
 }

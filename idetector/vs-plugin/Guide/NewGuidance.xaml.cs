@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -37,10 +38,9 @@ namespace vs_plugin.Guide
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ComboBox box = (ComboBox) sender;
-            var value = box.Text;
-
-            this._currentSelected = value;
+            var item = (ComboBoxItem) PatternBox.SelectedItem;
+            var value = item.Name;
+            this._currentSelected = item.Name;
 
             if (value.Equals("sin") || value.Equals("ite"))
             {

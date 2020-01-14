@@ -43,8 +43,7 @@
                        VerticalAlignment="Stretch"/>
                 <StackPanel x:Name="ScanButtons" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
                             VerticalAlignment="Center" Margin="0,4,10,0">
-                    <Button x:Name="Pattern_Guide" Content="Pattern Guide" Margin="0,0,10,0" VerticalAlignment="Center" MinWidth="100"
-                            Click="Scan_Current_project" Background="{x:Null}" />
+                    <Button x:Name="Pattern_Guide" Content="Pattern Guide" Margin="0,0,10,0" VerticalAlignment="Center" MinWidth="100" Background="{x:Null}" Click="Pattern_Guide_Click" />
                     <Button x:Name="ScanProject" Content="Scan Project" Margin="0,0,10,0" VerticalAlignment="Center" MinWidth="100"
                             Click="Scan_Current_project" Background="{x:Null}" />
                     <Button x:Name="ScanFile" Content="Scan open File" Margin="0,0,10,0" VerticalAlignment="Center" MinWidth="100"
