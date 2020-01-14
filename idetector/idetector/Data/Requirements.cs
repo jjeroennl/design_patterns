@@ -151,6 +151,22 @@ namespace idetector.Data
             commandreqs.Add(new PatternRequirement("COMMAND-USES-RECEIVER", "Command implements Receiver", "At least one command pattern should implement the receiver in order to perform functions on the designated receiver.", "None of the commands are controlled by a receiver"));
             commandreqs.Add(new PatternRequirement("COMMAND-HAS-INVOKER-CLASS", "Invoker class","The pattern should contain an invoker class to perform the commands.", "The code does not contain an Invoker class"));
             PatternRequirements.Add("COMMAND", commandreqs);
+
+            //Observer
+            /*ID's:
+             * OBSERVER-HAS-OBSERVER-INTERFACE
+             * OBSERVER-HAS-SUBJECT-INTERFACE
+             * OBSERVER-HAS-OBSERVER-RELATIONS
+             * OBSERVER-HAS-OBSERVER-AND-SUBJECTS
+             */
+            List<PatternRequirement> observerreqs = new List<PatternRequirement>();
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-OBSERVER-INTERFACE", "Observer interface", "The pattern should contain an observer interface.", "The command pattern does not contain an observer interface."));
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-SUBJECT-INTERFACE", "Subject interface", "The pattern should contain a subject interface.", "The pattern should contain a subject interface."));
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-OBSERVERS-AND-SUBJECTS", "Concrete observer(s) and subject(s)", "The pattern should contain at least one subject and at least one observer.", "There are no concrete observers and subjects."));
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-OBSERVER-RELATIONS", "Observer relations", "The pattern should have a one-to-many relationship between the subject and its observer(s).", "There is no relation between the potential subject and its observer(s)."));
+
+
+            PatternRequirements.Add("OBSERVER", observerreqs);
         }
         public Dictionary<string, List<PatternRequirement>> GetRequirements()
         {

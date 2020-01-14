@@ -98,6 +98,12 @@ namespace idetector
             foreach (var result in strat.GetResults())
             {
                 Console.WriteLine(result.Key + ": ");
+                printBar(collection.GetClass(result.Key), "Strategy", Calculator.GetScore("STRATEGY", result.Value));
+            }
+
+            foreach (var result in obs.GetResults())
+            {
+                Console.WriteLine(result.Key + ": ");
                 printBar(collection.GetClass(result.Key), "Observer", Calculator.GetScore("OBSERVER", result.Value));
             }
         }

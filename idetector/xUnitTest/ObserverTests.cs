@@ -20,65 +20,106 @@ namespace xUnitTest
         SyntaxTree ObserverTree()
         {
             return CSharpSyntaxTree.ParseText(@"
-                public class Subject : ISubject
+               using System;
+using System.Collections.Generic;//We have used List<Observer> here
+namespace ObserverPattern
 {
-  private List<Observer> observers = new List<Observer>();
-  private int _int;
-  public int Inventory
-  {
-    get
+    interface IObserver
     {
-       return _int;
+        void Update(int i);
     }
-    set
+    class ObserverType1 : IObserver
     {
-       // Just to make sure that if there is an increase in inventory then only we are notifying 
-          the observers.
-          if (value > _int)
-             Notify();
-          _int = value;
+        string nameOfObserver;
+        public ObserverType1(String name)
+        {
+            this.nameOfObserver = name;
+        }
+        public void Update(int i)
+        {
+            Console.WriteLine(' {0} has received an alert: Someone has updated myValue in Subject to: {1}', nameOfObserver,i);
+        }
     }
-  }
-  public void Subscribe(Observer observer)
-  {
-     observers.Add(observer);
-  }
+    class ObserverType2 : IObserver
+    {
+        string nameOfObserver;
+        public ObserverType2(String name)
+        {
+            this.nameOfObserver = name;
+        }
+        public void Update(int i)
+        {
+            Console.WriteLine(' {0} notified: myValue in Subject at present: {1}', nameOfObserver, i);
+        }
+    }
 
-  public void Unsubscribe(Observer observer)
-  {
-     observers.Remove(observer);
-  }
-
-  public void Notify()
-  {
-     observers.ForEach(x => x.Update());
-  }
-}
-
-public interface IObserver
-{
-  void Update();
-}
-
-public interface ISubject
-{
-   void Subscribe(Observer observer);
-   void Unsubscribe(Observer observer);
-   void Notify();
-}
-
-public class ConcreteObserver : IObserver
-{
-  public string ObserverName { get;private set; }
-  public Observer(string name)
-  {
-    this.ObserverName = name;
-  }
-  public void Update()
-  {
-    Console.WriteLine('{0}: A new product has arrived at the
-    store',this.ObserverName);
-  }
+    interface ISubject
+    {
+        void Register(IObserver o);
+        void Unregister(IObserver o);
+        void NotifyRegisteredUsers(int i);
+    }
+    class Subject:ISubject
+    {
+        List<IObserver> observerList = new List<IObserver>();
+        private int flag;
+        public int Flag
+        {
+            get 
+            { 
+                return flag;
+            }
+            set
+            {
+                flag = value;
+                //Flag value changed.So notify observer/s.
+                NotifyRegisteredUsers(flag);
+            }
+        }
+        public void Register(IObserver anObserver)
+        { 
+            observerList.Add(anObserver);
+        }
+        public void Unregister(IObserver anObserver)
+        {
+            observerList.Remove(anObserver);
+        }
+        public void NotifyRegisteredUsers(int i) 
+        {
+            foreach (IObserver observer in observerList)
+            {
+                observer.Update(i);
+            }
+        }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine(' ***Observer Pattern Demo***\n');
+            //We have 3 observers- 2 of them are ObserverType1, 1 of them is of ObserverType2
+            IObserver myObserver1 = new ObserverType1('Roy');
+            IObserver myObserver2 = new ObserverType1('Kevin');
+            IObserver myObserver3 = new ObserverType2('Bose');
+            Subject subject = new Subject();
+            //Registering the observers-Roy,Kevin,Bose
+            subject.Register(myObserver1);
+            subject.Register(myObserver2);
+            subject.Register(myObserver3);
+            Console.WriteLine(' Setting Flag = 5 ');
+            subject.Flag = 5;           
+            //Unregistering an observer(Roy))
+            subject.Unregister(myObserver1);
+            //No notification this time Roy.Since it is unregistered.
+            Console.WriteLine('\n Setting Flag = 50 ');            
+            subject.Flag = 50;
+            //Roy is registering himself again
+            subject.Register(myObserver1);
+            Console.WriteLine('\n Setting Flag = 100 ');
+            subject.Flag = 100;
+            Console.ReadKey();
+        }
+    }
 }
 
 ");
@@ -410,9 +451,6 @@ public class ConcreteObserver : IObserver
                 }
             }
             Assert.True(passed);
-
-            //var score = calculator.GetScore("OBSERVER", observer.GetResults()["IObserver"]);
-            //Assert.Equal(100, score);
         }
 
         [Fact]
@@ -485,7 +523,8 @@ public class ConcreteObserver : IObserver
             Observer observer = new Observer(collection);
             observer.Scan();
             var results = observer.GetResults();
-
+            
+            // Checks if there is either an observer or subject, not both
             foreach (var cls in collection.GetClasses())
             {
                 if (results.ContainsKey(cls.Key))

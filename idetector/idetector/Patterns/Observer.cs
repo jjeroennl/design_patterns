@@ -139,14 +139,16 @@ namespace idetector.Patterns
         {
             foreach (var subject in subjects)
             {
+                Debug.WriteLine("142");
                 foreach (var property in subject.getProperties())
                 {
+                    Debug.WriteLine("145");
                     //checkt alleen voor dingen die parameters hebben zoals List<Interface> etc.
                     var collectionType = property.ValueType;
-
-                    if (collectionType.Contains(IObserverClass.Identifier) && collectionType != null &&
+                    if (collectionType.Contains(IObserverClass.Identifier.Replace("I", "")) && collectionType != null &&
                         observers.Count > 0)
                     {
+                        Debug.WriteLine("149");
                         hasRelations = true;
                         Debug.WriteLine("HasObserverRelations Added: " + subject.Identifier + " true, " +
                                         subject.Identifier);
@@ -157,6 +159,7 @@ namespace idetector.Patterns
 
                 if (!hasRelations)
                 {
+                    Debug.WriteLine("163");
                     bool add = true;
                     foreach (var result in _results[subject.Identifier].ToArray())
                     {
