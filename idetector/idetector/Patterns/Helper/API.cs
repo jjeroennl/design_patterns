@@ -32,7 +32,7 @@ namespace idetector.Patterns.Helper
         ///     Check if the given class has a property of the given type and if it has a setter.
         /// </summary>
         /// <param name="cls">ClassModel Object</param>
-        /// <param name="hasSetter">Wheter is should have an setter</param>
+        /// <param name="etter">Wheter is should have an setter</param>
         /// <param name="type">(optional) Returntype of property</param>
         /// <returns></returns>
         public static bool ClassHasPropertySyntaxSetter(ClassModel cls, string type = null)
@@ -48,6 +48,11 @@ namespace idetector.Patterns.Helper
                 }
             }
             return false;
+        }
+
+        internal static MethodModel ClassGetMethodWithName(ClassModel cls, string name)
+        {
+            return cls.getMethods().Where(e => e.Identifier.Equals(name))?.First();
         }
 
         /// <summary>
