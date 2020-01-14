@@ -110,7 +110,6 @@ namespace idetector.Patterns
                             case "STATE-STRATEGY-CONTEXT-LOGIC":
                                 score += i;
                                 break;
-
                         }
                     }
                 }
@@ -146,11 +145,11 @@ namespace idetector.Patterns
         {
             if (cls != null)
             {
-                foreach (var property in cls.getProperties())
+                foreach (ClassModel @interface in interfaces)
                 {
-                    foreach (ClassModel @interface in interfaces)
+                    foreach (var property in cls.getProperties())
                     {
-                        if (cc.GetClass(property.ValueType.ToString()) == @interface)
+                        if (property.ValueType == @interface.Identifier)
                         {
                             bool add = true;
                             foreach (var result in _results[@interface.Identifier].ToArray())

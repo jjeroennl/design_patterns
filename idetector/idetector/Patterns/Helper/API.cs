@@ -126,6 +126,22 @@ namespace idetector.Patterns.Helper
         }
 
         /// <summary>
+        ///     Check if the given class has a constructor of the given modifier
+        /// </summary>
+        /// <param name="cls">ClassModel Object</param>
+        /// <param name="modifer">Modifier of constructor</param>
+        /// <returns></returns>
+        public bool ClassHasConstructorModifier(ClassModel cls, string modifer)
+        {
+            return cls.getMethods().Any(
+                e =>
+                    e.Modifiers.All(
+                        i => modifer.Equals(i)
+                        )
+                    && e.isConstructor);
+        }
+
+        /// <summary>
         ///     Check if an object of a given type gets created in the given class
         /// </summary>
         /// <param name="cls">ClassModel Object</param>
