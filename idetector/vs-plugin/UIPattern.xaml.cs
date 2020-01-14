@@ -43,6 +43,11 @@ namespace vs_plugin
             }
         }
 
+        internal void SetScore(bool score)
+        {
+            this.ScoreBlock.Text = "";
+        }
+
         internal void SetRequirements(string pattern, List<RequirementResult> requirementResults)
         {
             foreach (var result in requirementResults)

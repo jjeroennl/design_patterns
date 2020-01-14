@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using idetector.Collections;
+﻿using System.Collections.Generic;
 using idetector.Models;
 using idetector.Patterns.Helper;
 
@@ -14,9 +12,12 @@ namespace idetector.Patterns
      */
     public class Singleton : IPattern
     {
+        private readonly ClassModel _cls;
+
+        private readonly Dictionary<string, List<RequirementResult>> _results =
+            new Dictionary<string, List<RequirementResult>>();
+
         private float _score;
-        private ClassModel _cls;
-        private  Dictionary<string, List<RequirementResult>>  _results = new Dictionary<string, List<RequirementResult>>() ;
 
         public Singleton(ClassModel cls)
         {
@@ -25,7 +26,7 @@ namespace idetector.Patterns
 
         public void Scan()
         {
-            List<RequirementResult> list = new List<RequirementResult>();
+            var list = new List<RequirementResult>();
             list.Add(IsStaticSelf());
             list.Add(IsCreateSelf());
 
@@ -44,36 +45,26 @@ namespace idetector.Patterns
         public void IsPrivateConstructor()
         {
             foreach (var constructor in _cls.getConstructors())
-            {
-                if (constructor.HasModifier("private"))
-                {
-                    _results[_cls.Identifier].Add(new RequirementResult("SINGLETON-PRIVATE-CONSTRUCTOR", true, _cls, constructor));
-                }
-                else
-                {
-                    _results[_cls.Identifier].Add(new RequirementResult("SINGLETON-PRIVATE-CONSTRUCTOR", false, _cls, constructor));
-                }
-            }
-
+                _results[_cls.Identifier].Add(
+                    new RequirementResult("SINGLETON-PRIVATE-CONSTRUCTOR", constructor.HasModifier("private"), _cls,
+                        constructor));
         }
 
         public RequirementResult IsStaticSelf()
         {
-            var checkStatic = API.ClassHasPropertyOfType(_cls, _cls.Identifier, new [] {"private", "static"});
+            var checkStatic = API.ClassHasPropertyOfType(_cls, _cls.Identifier, new[] {"private", "static"});
 
             return new RequirementResult("SINGLETON-STATIC-SELF", checkStatic, _cls);
         }
 
         public void IsGetInstance()
         {
-            var instances = API.ClassGetMethodOfType(_cls, _cls.Identifier, new [] {"static"});
+            var instances = API.ClassGetMethodOfType(_cls, _cls.Identifier, new[] {"static"});
             foreach (var instance in instances)
             {
                 _results[_cls.Identifier].Add(new RequirementResult("SINGLETON-GET-INSTANCE", true, _cls, instance));
                 return;
             }
-            _results[_cls.Identifier].Add(new RequirementResult("SINGLETON-GET-INSTANCE", false, _cls));
-            return;
         }
 
         public RequirementResult IsCreateSelf()

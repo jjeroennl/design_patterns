@@ -86,21 +86,16 @@ namespace idetector
             //    printBar(collection.GetClass(result.Key),"Decorator", Calculator.GetScore("DECORATOR", result.Value));
             //}
             
-            //printBar("Factory Method", Calculator.GetScore("FACTORY", fm.GetResult()));
-            //printBar("Abstract Factory", Calculator.GetScore("FACTORY", af.GetResult()));
+            printBar("Factory Method", Calculator.GetScore("FACTORY", fm.GetResult()));
 
-            //foreach (var result in state.GetResults())
-            //{
-            //    Console.WriteLine(result.Key + ": ");
-            //    printBar(collection.GetClass(result.Key), "State", Calculator.GetScore("STATE", result.Value));
-            //}
-            //foreach (var result in strat.GetResults())
-            //{
-            //    Console.WriteLine(result.Key + ": ");
-            //    printBar(collection.GetClass(result.Key), "Strategy", Calculator.GetScore("STRATEGY", result.Value));
-            //}
+            printBar("Abstract Factory", Calculator.GetScore("ABSTRACT-FACTORY", af.GetResult()));
 
-            foreach (var result in obs.GetResults())
+            foreach (var result in state.GetResults())
+            {
+                Console.WriteLine(result.Key + ": ");
+                printBar(collection.GetClass(result.Key), "State", Calculator.GetScore("STATE", result.Value));
+            }
+            foreach (var result in strat.GetResults())
             {
                 Console.WriteLine(result.Key + ": ");
                 printBar(collection.GetClass(result.Key), "Observer", Calculator.GetScore("OBSERVER", result.Value));
