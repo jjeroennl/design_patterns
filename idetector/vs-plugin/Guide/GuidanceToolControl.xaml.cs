@@ -151,7 +151,7 @@ namespace vs_plugin.Guide
                 }
             }
 
-         
+
         }
 
         private void DrawBorder()
