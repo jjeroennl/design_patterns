@@ -52,12 +52,30 @@ namespace idetector.Data
              *FACTORY-MULTIPLE-METHODS
              */
             List<PatternRequirement> factoryreqs = new List<PatternRequirement>();
-            factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", "", "", ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", "", "", ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-PRODUCT-INTERFACE", "", "", ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-FACTORY-CLASS", "", "", ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-RETURNS-PRODUCT", "", "", ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS", "", "", ""));
+            factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS",
+                "Factory Class",
+                "There should be an abstract class present that can function as an abstract factory.",
+                "There was no abstract class found that can function as an abstract factory."));
+            factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD",
+                "Factory with Product Method",
+                "There should be an abstract method with its type being the product interface.",
+                "There was no abstract method found with its type being the product interface. This should be placed in the factory class so instances can create products."));
+            factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-PRODUCT-INTERFACE",
+                "Concrete Product",
+                "There should be a class that inherits the product interface.",
+                "There was not a class found that inherits the product interface."));
+            factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-FACTORY-CLASS",
+                "Concrete Factory",
+                "There should be a class that inherits the abstract factory class.",
+                "There was not a class found that inherits the abstract factory class."));
+            factoryreqs.Add(new PatternRequirement("FACTORY-RETURNS-PRODUCT",
+                "Factory Product",
+                "The factory class should return a concrete product.",
+                "The factory class did not return a concrete product."));
+            factoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS",
+                "Single Factory Method",
+                "Factory class should not have zero or more than one methods.",
+                "The factory class has got either zero or more than one methods. It should only have a method that should return a concrete product."));
             PatternRequirements.Add("FACTORY", factoryreqs);
 
             //ABSTRACT-FACTORY
