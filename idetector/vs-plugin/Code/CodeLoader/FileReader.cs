@@ -61,13 +61,21 @@ namespace idetector.CodeLoader
                 Console.WriteLine(excpt.Message);
             }
 
-            foreach (string file in Directory.GetFiles(sDir))
+            try
             {
-                if (file.EndsWith(".cs") && !file.ToLower().Contains("assemblyinfo.cs"))
+                foreach (string file in Directory.GetFiles(sDir))
                 {
-                    s.Add((file));
+                    if (file.EndsWith(".cs") && !file.ToLower().Contains("assemblyinfo.cs"))
+                    {
+                        s.Add((file));
+                    }
                 }
             }
+            catch (System.Exception excpt)
+            {
+                Console.WriteLine(excpt.Message);
+            }
+
 
             return s;
         }

@@ -15,6 +15,7 @@ using idetector.Patterns.Facade;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using vs_plugin.Code;
+using vs_plugin.Guide;
 using Decorator = idetector.Patterns.Decorator;
 
 namespace vs_plugin
@@ -35,6 +36,8 @@ namespace vs_plugin
         public ToolWindow1Control()
         {
             InitializeComponent();
+
+            var u = new NewGuidance();
             var req = new Requirements();
             Patterns = req.GetRequirements();
             Calc = new ScoreCalculator(Patterns);
@@ -79,7 +82,7 @@ namespace vs_plugin
             return FileReader.ReadSingleFile(filename);
         }
 
-        public ClassCollection ReadProjectCode()
+        public static ClassCollection ReadProjectCode()
         {
             var dte = (DTE) ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
             if (dte.Solution.Projects == null)
@@ -109,6 +112,17 @@ namespace vs_plugin
 
             //Scan file
             collection = GetOpenWindowText();
+            if (collection == null) return;
+
+            AddClasses();
+        }
+
+        private void Scan_Current_project(object sender, RoutedEventArgs e)
+        {
+            PatternList.Children.Clear();
+
+            //Scan file
+            collection = ReadProjectCode();
             if (collection == null) return;
 
             AddClasses();
@@ -188,16 +202,7 @@ namespace vs_plugin
             PatternList.Children.Add(p);
         }
 
-        private void Scan_Current_project(object sender, RoutedEventArgs e)
-        {
-            PatternList.Children.Clear();
-
-            //Scan file
-            collection = ReadProjectCode();
-            if (collection == null) return;
-
-            AddClasses();
-        }
+       
 
         /// <summary>
         ///     Method to replace summary's information and reset the text wrapping.

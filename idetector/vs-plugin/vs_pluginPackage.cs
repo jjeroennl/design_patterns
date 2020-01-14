@@ -27,6 +27,7 @@ namespace vs_plugin
     [Guid(vs_pluginPackage.PackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(DesignPattersTool))]
+    [ProvideToolWindow(typeof(vs_plugin.Guide.GuidanceTool))]
     public sealed class vs_pluginPackage : AsyncPackage
     {
         /// <summary>
@@ -49,6 +50,7 @@ namespace vs_plugin
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await DesignPatternsToolCommand.InitializeAsync(this);
+            await vs_plugin.Guide.GuidanceToolCommand.InitializeAsync(this);
         }
 
         #endregion
