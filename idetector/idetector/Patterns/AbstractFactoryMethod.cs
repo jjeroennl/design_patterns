@@ -17,6 +17,7 @@ namespace idetector.Patterns
          *FACTORY-CONTAINS-PRODUCT-INTERFACE
          *FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD
          *FACTORY-INHERITING-PRODUCT-INTERFACE
+         *FACTORY-INHERITING-FACTORY-CLASS
          *FACTORY-RETURNS-PRODUCT
          *FACTORY-MULTIPLE-METHODS
          */
@@ -55,12 +56,15 @@ namespace idetector.Patterns
                 _results = new List<RequirementResult>();
                 ifactory = ifac;
                 _results.Add(ContainsIFactoryClass());
-                _results.Add(ContainsProductInterface());
                 _results.Add(ContainsAbstractProductInterfaceMethod());
                 _results.Add(IsInheritingProductInterface());
+                _results.Add(IsInheritingFactoryClass());
                 _results.Add(ConcreteFactoryIsReturningConcreteProduct());
                 _results.Add(HasMultipleMethods());
-                _results.Add(ConcreteProductsFollowOneProductInterface());
+                if (!isMethod)
+                {
+                    _results.Add(ConcreteProductsFollowOneProductInterface());
+                }
                 _reqs.Add(ifac.Identifier, _results);
             }
         }
@@ -161,20 +165,6 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", false, ifactory);
         }
 
-
-        /// <summary>
-        /// Checks if there is any (product) interfaces present.
-        /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
-        public RequirementResult ContainsProductInterface()
-        {
-            if (abstractClasses.Count == 0 && interfaces.Count == 0)
-            {
-                return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", false, ifactory);
-            }
-            return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", true, ifactory);
-        }
-
         /// <summary>
         /// Checks if there is any classes present that have an abstract method with the return type of a product interface.
         /// </summary>
@@ -207,7 +197,7 @@ namespace idetector.Patterns
                     }
                 }
             }
-            return new RequirementResult("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", false, ifactory);
+            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", false, ifactory);
         }
 
         /// <summary>
@@ -280,11 +270,7 @@ namespace idetector.Patterns
                             {
                                 if (temp != null && temp != @interface)
                                 {
-                                    if (isMethod)
-                                    {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false, ifactory);
-                                    }
-                                    else
+                                    if (!isMethod)
                                     {
                                         return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true, ifactory);
                                     }
@@ -298,11 +284,7 @@ namespace idetector.Patterns
                     }
                 }
             }
-            else if (isMethod)
-            {
-                return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", true, ifactory);
-            }
-            else
+            else if (!isMethod)
             {
                 return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", false, ifactory);
             }

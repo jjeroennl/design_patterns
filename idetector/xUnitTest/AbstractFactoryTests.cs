@@ -274,7 +274,7 @@ namespace xUnitTest
             {
                 if (results.ContainsKey(cls.Key))
                 {
-                    int val = calculator.GetScore("FACTORY", results[cls.Key]);
+                    int val = calculator.GetScore("ABSTRACT-FACTORY", results[cls.Key]);
                     if (val > score) score = val;
                 }
             }

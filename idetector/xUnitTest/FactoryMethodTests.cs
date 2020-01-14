@@ -146,6 +146,20 @@ namespace xUnitTest
         SyntaxTree MissingProductInterfaceSetup()
         {
             return CSharpSyntaxTree.ParseText(@"
+                abstract class Creator
+                {
+                    public abstract IProduct FactoryMethod();
+
+                    public string SomeOperation()
+                    {
+                        var product = FactoryMethod();
+                        var result = 'Creator: The same creator's code has just worked with '
+                            + product.Operation();
+
+                        return result;
+                    }
+                }
+
                 public class IProduct
                 {
                     string Operation();
@@ -156,7 +170,7 @@ namespace xUnitTest
         SyntaxTree IsNotInheritingProductInterfaceSetup()
         {
             return CSharpSyntaxTree.ParseText(@"
-                abstract class SomethingElse
+                abstract class Creator
                 {
                     string Operation();
                 }
@@ -166,7 +180,7 @@ namespace xUnitTest
                     string Operation();
                 }
 
-                class ConcreteProduct1 : SomethingElse
+                class ConcreteProduct1 : Creator
                 {
                     public string Operation()
                     {
@@ -344,17 +358,6 @@ namespace xUnitTest
         }
 
         [Fact]
-        public void Test_FactoryMethod_ContainsProductInterface()
-        {
-            var tree = SuccessSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            Assert.True(factoryMethod.ContainsProductInterface().Passed);
-        }
-
-        [Fact]
         public void Test_FactoryMethod_IsInheritingProductInterface()
         {
             var tree = SuccessSetup();
@@ -433,8 +436,9 @@ namespace xUnitTest
 
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
-            Assert.True(factoryMethod.ContainsIFactoryClass().Passed);
-            Assert.False(factoryMethod.IsInheritingFactoryClass().Passed);
+            var results = factoryMethod.GetResults()["Creator"];
+            Assert.True(results[0].Passed);
+            Assert.False(results[4].Passed);
         }
 
         [Fact]
@@ -445,7 +449,8 @@ namespace xUnitTest
             
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
-            Assert.False(factoryMethod.ContainsProductInterface().Passed);
+            var results = factoryMethod.GetResults()["Creator"];
+            Assert.False(results[1].Passed);
         }
 
         [Fact]
@@ -456,8 +461,9 @@ namespace xUnitTest
 
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
-            Assert.True(factoryMethod.ContainsProductInterface().Passed);
-            Assert.False(factoryMethod.IsInheritingProductInterface().Passed);
+            var results = factoryMethod.GetResults()["Creator"];
+            Assert.True(results[1].Passed);
+            Assert.False(results[2].Passed);
         }
 
         [Fact]
@@ -468,7 +474,8 @@ namespace xUnitTest
 
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
-            Assert.False(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().Passed);
+            var results = factoryMethod.GetResults()["Creator"];
+            Assert.False(results[4].Passed);
         }
 
         [Fact]
@@ -480,10 +487,9 @@ namespace xUnitTest
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
             var results = factoryMethod.GetResults()["Creator"];
-            Assert.True(results[0].Passed);
-            Assert.False(factoryMethod.HasMultipleMethods().Passed);
+            Assert.True(results[5].Passed);
         }
-
+            
         [Fact]
         public void Test_FactoryMethod_ConcreteProductsDontFollowOneProductInterface()
         {
@@ -492,7 +498,8 @@ namespace xUnitTest
 
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
-            Assert.False(factoryMethod.ConcreteProductsFollowOneProductInterface().Passed);
+            var results = factoryMethod.GetResults()["Creator"];
+            Assert.False(results[5].Passed);
         }
         #endregion
 
@@ -507,16 +514,6 @@ namespace xUnitTest
 
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
-
-            Assert.True(factoryMethod.ContainsIFactoryClass().Passed);
-            Assert.True(factoryMethod.ContainsProductInterface().Passed);
-            Assert.True(factoryMethod.ContainsAbstractProductInterfaceMethod().Passed);
-            Assert.True(factoryMethod.IsInheritingFactoryClass().Passed);
-            Assert.True(factoryMethod.IsInheritingProductInterface().Passed);
-            Assert.True(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().Passed);
-            Assert.True(factoryMethod.HasMultipleMethods().Passed);
-            Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().Passed);
-
 
             var score = calculator.GetScore("FACTORY", factoryMethod.GetResults());
 
@@ -536,7 +533,7 @@ namespace xUnitTest
 
             var score = calculator.GetScore("FACTORY", factoryMethod.GetResults());
 
-            Assert.Equal(57, score["Creator"]);
+            Assert.Equal(33, score["Creator"]);
         }
         #endregion
     }

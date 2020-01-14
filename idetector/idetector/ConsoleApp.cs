@@ -85,7 +85,7 @@ namespace idetector
             
             printBar("Factory Method", Calculator.GetScore("FACTORY", fm.GetResult()));
 
-            printBar("Abstract Factory", Calculator.GetScore("FACTORY", af.GetResult()));
+            printBar("Abstract Factory", Calculator.GetScore("ABSTRACT-FACTORY", af.GetResult()));
 
             foreach (var result in state.GetResults())
             {
