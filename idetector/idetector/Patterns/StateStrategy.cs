@@ -147,19 +147,16 @@ namespace idetector.Patterns
             {
                 foreach (ClassModel @interface in interfaces)
                 {
-                    foreach (var property in cls.getProperties())
+                    if (API.ClassHasPropertyOfType(cls, @interface.Identifier))
                     {
-                        if (property.ValueType == @interface.Identifier)
+                        bool add = true;
+                        foreach (var result in _results[@interface.Identifier].ToArray())
                         {
-                            bool add = true;
-                            foreach (var result in _results[@interface.Identifier].ToArray())
-                            {
-                                if (result.Id.Equals("STATE-STRATEGY-CONTEXT-HAS-STRATEGY")) add = false;
-                            }
-                            if (add) _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true, cls));
-
-                            ContextHasPrivateStrategy(cls, @interface, property);
+                            if (result.Id.Equals("STATE-STRATEGY-CONTEXT-HAS-STRATEGY")) add = false;
                         }
+                        if (add) _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", true, cls));
+
+                        ContextHasPrivateStrategy(cls, @interface);
                     }
                 }
             }
@@ -178,19 +175,16 @@ namespace idetector.Patterns
             }
         }
 
-        private void ContextHasPrivateStrategy(ClassModel cls, ClassModel @interface ,PropertyModel property)
+        private void ContextHasPrivateStrategy(ClassModel cls, ClassModel @interface)
         {
             bool add = true;
-            if (property.Modifiers.Length > 0)
+            if (API.ClassHasPropertyOfType(cls, null, new[] { "private" }))
             {
-                if (property.Modifiers[0].ToLower().Equals("private"))
+                foreach (var result in _results[@interface.Identifier].ToArray())
                 {
-                    foreach (var result in _results[@interface.Identifier].ToArray())
-                    {
-                        if (result.Id.Equals("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY")) add = false;
-                    }
-                    if (add) _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", true, cls));
+                    if (result.Id.Equals("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY")) add = false;
                 }
+                if (add) _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", true, cls));
             }
             foreach (var result in _results[@interface.Identifier].ToArray())
             {
@@ -204,25 +198,16 @@ namespace idetector.Patterns
         {
             if (cls != null)
             {
-                foreach (var method in cls.getMethods())
+                if (API.ClassHasConstructorOfType(cls, null, new[] { "public" }))
                 {
-                    if (method.isConstructor)
+                    foreach (ClassModel @interface in interfaces)
                     {
-                        foreach (var modifier in method.Modifiers)
+                        bool add = true;
+                        foreach (var result in _results[@interface.Identifier].ToArray())
                         {
-                            if (modifier.ToLower().Equals("public"))
-                            {
-                                foreach (ClassModel @interface in interfaces)
-                                {
-                                    bool add = true;
-                                    foreach (var result in _results[@interface.Identifier].ToArray())
-                                    {
-                                        if (result.Id.Equals("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR")) add = false;
-                                    }
-                                    if (add) _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", true, cls));
-                                }
-                            }
+                            if (result.Id.Equals("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR")) add = false;
                         }
+                        if (add) _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", true, cls));
                     }
                 }
             }
