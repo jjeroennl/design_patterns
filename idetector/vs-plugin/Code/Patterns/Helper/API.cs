@@ -50,6 +50,41 @@ namespace idetector.Patterns.Helper
             return false;
         }
 
+        /// <summary>
+        ///     Check if the given class has a consturctor of the given type and (optionally) the given modifiers
+        /// </summary>
+        /// <param name="cls">ClassModel Object</param>
+        /// <param name="type">(optional) Returntype of property</param>
+        /// <param name="modifiers">(optional) A list of modifiers of property</param>
+        /// <returns>True or False</returns>
+        public static bool ClassHasConstructorOfType(ClassModel cls, string type = null, string[] modifiers = null)
+        {
+            if (modifiers != null && type != null)
+                return cls.getMethods().Any(
+                    e =>
+                        e.Modifiers.All(
+                            i => modifiers.Any(m => m == i)
+                        )
+                        && e.Parameters.Contains(type)
+                        && e.isConstructor);
+            else if (modifiers == null && type != null)
+                return cls.getMethods().Any(
+                    e =>
+                        e.Parameters.Contains(type)
+                        && e.isConstructor);
+            else if (modifiers != null && type == null)
+                return cls.getMethods().Any(
+                    e =>
+                        e.Modifiers.All(
+                            i => modifiers.Any(m => m == i)
+                        )
+                        && e.isConstructor);
+            else return cls.getMethods().Any(
+                e =>
+                    e.Parameters.Contains(type)
+                    && e.isConstructor);
+
+        }
         internal static MethodModel ClassGetMethodWithName(ClassModel cls, string name)
         {
             return cls.getMethods().Where(e => e.Identifier.Equals(name))?.First();
