@@ -138,6 +138,7 @@ namespace vs_plugin
             var abstractFactoryList = new List<Pattern>();
             var singletonList = new List<Pattern>();
             var decoratorList = new List<Pattern>();
+            var commandList = new List<Pattern>();
 
             var f = new Facade(collection);
             f.Scan();
@@ -148,6 +149,9 @@ namespace vs_plugin
 
             var strat = new StateStrategy(collection, false);
             strat.Scan();
+
+            var c = new idetector.Patterns.Command(collection);
+            c.Scan();
 
             //var fm = new AbstractFactoryMethod(collection, false);
             //fm.Scan();
@@ -169,6 +173,7 @@ namespace vs_plugin
             }
             decoratorList = this.HandleResults("DECORATOR", decoratorList, d.GetResults());
             facadeList = this.HandleResults("FACADE", facadeList, f.GetResults());
+            commandList = this.HandleResults("COMMAND", commandList, c.GetResults());
             //abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
             //factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
 
@@ -181,6 +186,9 @@ namespace vs_plugin
             PopulatePattern("Facade", facadeList);
             PopulatePattern("Factory", factoryList);
             PopulatePattern("Abstract Factory", abstractFactoryList);
+            PopulatePattern("State", stateList);
+            PopulatePattern("Strategy", strategyList);
+            PopulatePattern("Command", commandList);
             // this.PopulatePattern("factory", factoryList);
             // this.PopulatePattern("singleton", singletonList);
             // this.PopulatePattern("state", stateList);
