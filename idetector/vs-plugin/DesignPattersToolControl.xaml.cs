@@ -25,7 +25,7 @@ namespace vs_plugin
     public partial class ToolWindow1Control : UserControl
     {
         public static Dictionary<string, List<PatternRequirement>> Patterns;
-        private ScoreCalculator calc;
+        public static ScoreCalculator Calc;
         private int cutoff = 50;
         private ClassCollection collection;
 
@@ -37,6 +37,7 @@ namespace vs_plugin
             InitializeComponent();
             var req = new Requirements();
             Patterns = req.GetRequirements();
+            Calc = new ScoreCalculator(Patterns);
             UIHandler.ToolWindow1Control = this;
 
             this.CreateSettings();
@@ -53,13 +54,17 @@ namespace vs_plugin
                     var weight = patternWeight.AddWeight(pattern.Key, requirement.Id, requirement.Title, requirement.Weight);
 
                     var rangeEventHandler = new RangeChangeEventHandler(pattern.Key, requirement.Id, weight);
-                    
+                    weight.RangeSlider.ValueChanged += rangeEventHandler.UpdateValue;
                 }
 
                 this.Ranges.Children.Add(patternWeight);
             }
+            this.updateScoreCalculator();
         }
-
+        private void updateScoreCalculator()
+        {
+            Calc = new ScoreCalculator(Patterns);
+        }
         public ClassCollection GetOpenWindowText()
         {
             var dte = (DTE) ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
@@ -111,7 +116,7 @@ namespace vs_plugin
 
         private void AddClasses()
         {
-            calc = new ScoreCalculator(Patterns);
+            Calc = new ScoreCalculator(Patterns);
 
             var stateList = new List<Pattern>();
             var strategyList = new List<Pattern>();
@@ -142,12 +147,12 @@ namespace vs_plugin
                 var s = new Singleton(item.Value);
                 s.Scan();
 
-                singletonList = this.HandleResults(singletonList, s.GetResults());
-                decoratorList = this.HandleResults(decoratorList, d.GetResults());
-                facadeList = this.HandleResults(facadeList, f.GetResults());
-                factoryList = this.HandleResults(factoryList, fm.GetResults());
-            }
+                singletonList = this.HandleResults("SINGLETON",singletonList, s.GetResults());
 
+            }
+            decoratorList = this.HandleResults("DECORATOR", decoratorList, d.GetResults());
+            facadeList = this.HandleResults("FACADE", facadeList, f.GetResults());
+            factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
             PatternList.Children.Clear();
 
 
@@ -157,14 +162,14 @@ namespace vs_plugin
             PopulatePattern("factory", factoryList);
             // this.PopulatePattern("singleton", singletonList);
             // this.PopulatePattern("state", stateList);
-            // this.PopulatePattern("strategory", strategyList);    
+            // this.PopulatePattern("strategory", strategyList);
         }
 
-        private List<Pattern> HandleResults(List<Pattern> patternList, Dictionary<string, List<RequirementResult>> results)
+        private List<Pattern> HandleResults(string pattern, List<Pattern> patternList, Dictionary<string, List<RequirementResult>> results)
         {
             foreach (var patternResult in results)
             {
-                var patternScore = calc.GetScore("SINGLETON", patternResult.Value);
+                var patternScore = Calc.GetScore(pattern, patternResult.Value);
                 if (patternScore >= cutoff)
                     patternList.Add(new Pattern(collection.GetClass(patternResult.Key), patternScore,
                         patternResult.Value));
@@ -177,7 +182,6 @@ namespace vs_plugin
         {
             var p = new SinglePattern();
             p.SetHandle(patternName?.First().ToString().ToUpper() + patternName?.Substring(1).ToLower());
-
             foreach (var pattern in patternList)
                 if (pattern.Score >= 50)
                     p.AddPattern(patternName, pattern);

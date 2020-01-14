@@ -24,19 +24,30 @@ namespace xUnitTest
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
+            int score = 0;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            //var score = calculator.GetScore("STRATEGY", strategy.GetResult());
-            //Assert.Equal(100, score);
+            var results = strategy.GetResults();
+
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STRATEGY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
+            Assert.Equal(100, score);
         }
+
         [Fact]
         public void Test_State()
         {
             var tree = StateSetup();
             var collection = Walker.GenerateModels(tree);
-
             StateStrategy strategy = new StateStrategy(collection, false);
+
             //Assert.True(strategy.HasRelationsBetweenConcreteClasses().Passed);
         }
 
@@ -123,11 +134,21 @@ namespace xUnitTest
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = FailSetup();
             var collection = Walker.GenerateModels(tree);
+            int score = 0;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            //var score = calculator.GetScore("STRATEGY", strategy.GetResult());
-            //Assert.InRange(score, 0, 20);
+            var results = strategy.GetResults();
+
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STRATEGY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
+            Assert.InRange(score, 0, 20);
         }
         [Fact]
         public void Test_OnlineCode()
@@ -135,11 +156,21 @@ namespace xUnitTest
             Requirements r = new Requirements();
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var collection = Walker.GenerateModels(CSharpSyntaxTree.ParseText(TestStrings.StrategyExample()));
+            int score = 0;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
-            //var score = calculator.GetScore("STRATEGY", strategy.GetResult());
-            //Assert.InRange(score, 80, 100);
+            var results = strategy.GetResults();
+
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STRATEGY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
+            Assert.InRange(score, 50, 100);
         }
 
         SyntaxTree SuccessSetup()
