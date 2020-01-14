@@ -36,13 +36,13 @@ namespace idetector.Data
             //DECORATOR-CONCRETE-CALLS-BASE
             List<PatternRequirement> decoratorreqs = new List<PatternRequirement>();
             decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-HAS-CHILDREN", 
-                "Base classes", 
+                "Interface is implemented", 
                 "A decorator pattern should contain an interface or abstract class with atleast 2 children: 1 base class and an abstract decorator", 
-                "The base interface"));
+                "A decorator pattern should contain an interface or abstract class with atleast 2 children: 1 base class and an abstract decorator, please make sure both the base class and the abstract decorator implement the interface"));
             decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-CHILDREN", 
                 "Abstract decorator implemented", 
-                "The abstract decorator class should have atleast 1 child which should be the concrete decorator.",
-                "The abstract decorator did not have any children"));
+                "An abstract decorator should be implemented by one or more concrete decorator(s) so that data or logic can be added to the base item by casting the base item to the concrete decorator type",
+                "Please make sure the abstract decorator is implemented by atleast one or more concrete decorators. A class cannot be cast to the abstract decorator type"));
             decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", 
                 "Abstract decorator contains parent property", 
                 "The abstract decorator class should contain a property of it's parent type to use as a base item.", 
