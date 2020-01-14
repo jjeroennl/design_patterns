@@ -12,7 +12,6 @@ namespace idetector.Patterns
 {
     public class AbstractFactoryMethod : IPattern
     {
-
         /*ID's:
          *FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS
          *FACTORY-CONTAINS-PRODUCT-INTERFACE
@@ -53,6 +52,7 @@ namespace idetector.Patterns
             var classes = abstractClasses.Concat(interfaces).ToList();
             foreach (var ifac in classes)
             {
+                _results = new List<RequirementResult>();
                 ifactory = ifac;
                 _results.Add(ContainsIFactoryClass());
                 _results.Add(ContainsProductInterface());

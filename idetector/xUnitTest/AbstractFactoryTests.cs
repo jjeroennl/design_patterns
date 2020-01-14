@@ -264,13 +264,21 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
             Requirements r = new Requirements();
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            int score = 0;
 
             AbstractFactoryMethod abstractFactory = new AbstractFactoryMethod(collection, false);
             abstractFactory.Scan();
-            var score = calculator.GetScore("FACTORY", abstractFactory.GetResults());
-            var results = abstractFactory.GetResults()["IAbstractFactory"];
-            Assert.True(results[0].Passed);
-            Assert.Equal(100, score["IAbstractFactory"]);
+            var results = abstractFactory.GetResults();
+
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("FACTORY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
+            Assert.Equal(100, score);
         }
 
         #region Tests for individual failing checks.
