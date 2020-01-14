@@ -51,7 +51,7 @@ namespace vs_plugin
 
             if (loadrequirement)
             {
-                var requirements = ToolWindow1Control.Patterns[pattern.ToUpper()];
+                var requirements = ToolWindow1Control.Patterns[pattern.ToUpper().Replace(" ", "-")];
                 _patternRequirement = requirements.Find(e => e.Id.Equals(result.Id));
                 var errormessage = _patternRequirement.Title;
                 this.RequirementText.Text = errormessage;

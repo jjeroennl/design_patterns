@@ -122,7 +122,7 @@ namespace vs_plugin.Guide
                     break;
                 case "cmd":
                     if (nameSpaceClassCollection == null) { return; }
-                    //pattern = new Command(nameSpaceClassCollection, false);
+                    pattern = new Command(nameSpaceClassCollection);
                     break;
             }
 

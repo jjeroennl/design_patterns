@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -153,10 +154,10 @@ namespace vs_plugin
             var c = new idetector.Patterns.Command(collection);
             c.Scan();
 
-            var fm = new AbstractFactoryMethod(collection, false);
+            var fm = new AbstractFactoryMethod(collection, true);
             fm.Scan();
 
-            var am = new AbstractFactoryMethod(collection, true);
+            var am = new AbstractFactoryMethod(collection, false);
             am.Scan();
 
             var d = new Decorator(collection);
