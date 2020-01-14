@@ -1,4 +1,5 @@
-﻿using idetector.Collections;
+﻿using System.Windows.Media;
+using idetector.Collections;
 using idetector.Patterns;
 
 namespace vs_plugin.Guide
@@ -131,19 +132,61 @@ namespace vs_plugin.Guide
                 return;
             }
 
+            pattern.Scan();
+
             var results = pattern.GetResults();
 
             foreach (var result in results)
-            {
-                var singleclass = new UIPattern();
-                singleclass.SetHandle(this._typename);
-                singleclass.SetScore(false);
-                singleclass.SetRequirements(this.patterns[_pattern], result.Value);
+            { 
+                TextBlock t = new TextBlock();
+                t.FontWeight = FontWeights.Bold;
+                t.FontSize = 15.0;
+                t.Text = this._typename;
+                this.Results.Children.Add(t);
 
-                this.Results.Children.Add(singleclass);
+                foreach (var requirement in result.Value)
+                {
+                    this.SetRequirements(requirement);
+                    this.ShowInfo(requirement);
+                    this.DrawBorder();
+                }
             }
 
          
+        }
+
+        private void DrawBorder()
+        {
+            var border = new Border();
+            border.Height = 1;
+            border.BorderBrush = new SolidColorBrush(Color.FromRgb(220,220,220));
+            border.Margin = new Thickness(0,10,0,10);
+            this.Results.Children.Add(border);
+        }
+
+        private void ShowInfo(RequirementResult requirement)
+        {
+            var requirements = ToolWindow1Control.Patterns[this.patterns[_pattern]];
+            var patternRequirement = requirements.Find(e => e.Id.Equals(requirement.Id));
+
+            string message;
+            if (requirement.Passed)
+                message = patternRequirement.Description;
+            else
+                message = patternRequirement.ErrorMessage;
+
+            TextBlock t = new TextBlock();
+            t.Text = message;
+            this.Results.Children.Add(t);
+        }
+
+        private void SetRequirements(RequirementResult resultValue)
+        {
+            var requirement = new Requirement();
+            requirement.SetRequirement(this.patterns[_pattern], resultValue);
+            requirement.openInfoScreen = false;
+
+            this.Results.Children.Add(requirement);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

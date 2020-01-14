@@ -19,7 +19,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Button VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,10,10,10" Click="Button_Click">Refresh</Button>
-            <StackPanel Name="Results">
+            <StackPanel Name="Results" Grid.Row="1">
 
             </StackPanel>
         </Grid>
