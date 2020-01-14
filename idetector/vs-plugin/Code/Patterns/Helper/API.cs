@@ -152,40 +152,27 @@ namespace idetector.Patterns.Helper
 
 
         /// <summary>
-        ///     Check if the given class has a consturctor of the given type and (optionally) the given modifiers
+        ///     Check if a given class has a method with a certain parameter type
         /// </summary>
         /// <param name="cls">ClassModel Object</param>
-        /// <param name="type">(optional) Returntype of property</param>
-        /// <param name="modifiers">(optional) A list of modifiers of property</param>
+        /// <param name="type">parameter type to search for</param>
         /// <returns>True or False</returns>
-        public static bool ClassHasConstructorOfType(ClassModel cls, string type = null, string[] modifiers = null)
+        public static bool ClassHasMethodWithParam(ClassModel cls, string type)
         {
-            if (modifiers != null && type != null)
-                return cls.getMethods().Any(
-                    e =>
-                        e.Modifiers.All(
-                            i => modifiers.Any(m => m == i)
-                        )
-                        && e.Parameters.Contains(type)
-                        && e.isConstructor);
-            else if (modifiers == null && type != null)
-                return cls.getMethods().Any(
-                    e =>
-                        e.Parameters.Contains(type)
-                        && e.isConstructor);
-            else if (modifiers != null && type == null)
-                return cls.getMethods().Any(
-                    e =>
-                        e.Modifiers.All(
-                            i => modifiers.Any(m => m == i)
-                        )
-                        && e.isConstructor);
-            else return cls.getMethods().Any(
-                e =>
-                    e.Parameters.Contains(type)
-                    && e.isConstructor);
-
+            return cls.getMethods().Any(e => e.Parameters.Contains(type));
         }
+      
+        /// <summary>
+        ///  Returns all methods from a certain class that have a specified parameter
+        /// </summary>
+        /// <param name="cls">ClassModel Object</param>
+        /// <param name="type">parameter type to search for</param>
+        /// <returns>List<MethodModel></returns>
+        public static List<MethodModel> ClassGetMethodsWithParam(ClassModel cls, string type)
+        {
+            return cls.getMethods().Where(e => e.Parameters.Contains(type)).ToList();
+        }
+
 
         /// <summary>
         ///     Check if an object of a given type gets created in the given class
