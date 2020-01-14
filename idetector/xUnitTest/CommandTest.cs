@@ -13,30 +13,43 @@ namespace xUnitTest
 {
     public class CommandTest
     {
-        private ClassCollection _command;
 
         [Fact]
         public void Test_Command_Succeed()
         {
-            SuccessSetup();
-            Command c = new Command(this._command);
-            c.Scan();
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            int score = 0;
 
-            var requirements = new Requirements();
-            var calc = new ScoreCalculator(requirements.GetRequirements());
-            var scores = calc.GetScore("COMMAND",c.GetResults());
+            Command command = new Command(collection);
+            command.Scan();
 
-           //Assert.Equal(100, scores[]);
+            var results = command.GetResults();
+
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("COMMAND", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
+            //Assert.Equal(100, score);
+
         }
-
+        /*
         [Fact]
         public void Test_NoInterface()
         {
             var tree = NoInterface();
             var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            int score;
 
             Command command = new Command(collection);
-            //Assert.False(command.HasInterfaceOrAbstract().Passed);
         }
 
         [Fact]
@@ -47,7 +60,7 @@ namespace xUnitTest
 
             Command command = new Command(collection);
             command.HasInterfaceOrAbstract();
-            Assert.False(command.HasCommandClasses().Passed);
+
         }
         
 
@@ -80,9 +93,9 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             Command command = new Command(collection);
-            command.HasInterfaceOrAbstract();
-            command.HasCommandClasses();
-            command.HasReceiverClasses();
+            //command.HasInterfaceOrAbstract();
+            //command.HasCommandClasses();
+            //command.HasReceiverClasses();
             //Assert.False(command.CommandsUseReceiver().Passed);
         }
 
@@ -96,16 +109,21 @@ namespace xUnitTest
 
             //Assert.False(command.HasInvokerClass().Passed);
         }
+        */
 
         [Fact]
         public void Test_Interface()
         {
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            int score;
 
             Command command = new Command(collection);
+            score = calculator.GetScore("COMMAND", command.GetResults()["ICommand"]);
+            Assert.Equal(100, score);
 
-            //Assert.True(command.HasInterfaceOrAbstract().Passed);
         }
 
         [Fact]
@@ -113,11 +131,14 @@ namespace xUnitTest
         {
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
-
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            
             Command command = new Command(collection);
+            command.Scan();
 
-            command.HasInterfaceOrAbstract();
-            //Assert.True(command.HasCommandClasses().Passed);
+            /*var score = calculator.GetScore("COMMAND", command.GetResults()["ComplexCommand"]);
+            Assert.Equal(100, score);*/
         }
 
         [Fact]
@@ -128,8 +149,8 @@ namespace xUnitTest
 
             Command command = new Command(collection);
 
-            command.HasInterfaceOrAbstract();
-            command.HasCommandClasses();
+            //command.HasInterfaceOrAbstract();
+            //command.HasCommandClasses();
             //Assert.True(command.CommandsHavePublicConstructor().Passed);
         }
 
@@ -151,9 +172,9 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
 
             Command command = new Command(collection);
-            command.HasInterfaceOrAbstract();
-            command.HasCommandClasses();
-            command.HasReceiverClasses();
+            //command.HasInterfaceOrAbstract();
+            //command.HasCommandClasses();
+            //command.HasReceiverClasses();
             //Assert.True(command.CommandsUseReceiver().Passed);
         }
 
