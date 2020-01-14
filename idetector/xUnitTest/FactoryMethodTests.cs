@@ -547,7 +547,7 @@ namespace xUnitTest
         }
         
         [Fact]
-        public void Test_FactoryMethod_Score42()
+        public void Test_FactoryMethod_Score33()
         {
             var tree = FailureSetup();
             var collection = Walker.GenerateModels(tree);
@@ -567,7 +567,7 @@ namespace xUnitTest
             Assert.False(factoryMethod.HasMultipleMethods().Passed);
             Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().Passed);
 
-            Assert.Equal(42, score);
+            Assert.Equal(33, score);
         }
         #endregion
     }
