@@ -96,19 +96,19 @@ namespace idetector.Patterns
                         switch(result.Id)
                         {
                             case "STATE-STRATEGY-CONTEXT-HAS-STRATEGY":
-                                score += i;
+                                if (result.Passed) score += i;
                                 break;
                             case "STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY":
-                                score += i;
+                                if (result.Passed) score += i;
                                 break;
                             case "STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR":
-                                score += i;
+                                if (result.Passed) score += i;
                                 break;
                             case "STATE-STRATEGY-CONTEXT-STRATEGY-SETTER":
-                                score += i;
+                                if (result.Passed) score += i;
                                 break;
                             case "STATE-STRATEGY-CONTEXT-LOGIC":
-                                score += i;
+                                if (result.Passed) score += i;
                                 break;
                         }
                     }
