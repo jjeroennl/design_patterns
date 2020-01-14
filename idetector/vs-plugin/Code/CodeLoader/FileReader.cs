@@ -47,13 +47,11 @@ namespace idetector.CodeLoader
             {
                 foreach (string dir in Directory.GetDirectories(sDir))
                 {
-                    foreach (string file in Directory.GetFiles(dir))
+                    if (dir.Contains(".vs") || dir.Contains("\\obj\\") || dir.Contains("\\bin\\"))
                     {
-                        if (file.EndsWith(".cs"))
-                        {
-                            s.Add((file));
-                        }
+                        continue;
                     }
+                    
 
                     SearchDirectoryForCSFiles(dir, s);
                 }
@@ -62,6 +60,22 @@ namespace idetector.CodeLoader
             {
                 Console.WriteLine(excpt.Message);
             }
+
+            try
+            {
+                foreach (string file in Directory.GetFiles(sDir))
+                {
+                    if (file.EndsWith(".cs") && !file.ToLower().Contains("assemblyinfo.cs"))
+                    {
+                        s.Add((file));
+                    }
+                }
+            }
+            catch (System.Exception excpt)
+            {
+                Console.WriteLine(excpt.Message);
+            }
+
 
             return s;
         }
