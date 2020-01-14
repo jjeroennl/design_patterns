@@ -37,9 +37,9 @@ namespace idetector.Data
             List<PatternRequirement> decoratorreqs = new List<PatternRequirement>();
             decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-HAS-CHILDREN", "Base classes", "A decorator pattern should contain an interface or abstract class with atleast 2 children: 1 base class and an abstract decorato.r", "The base interface/abstract did not have any children"));
             decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-CHILDREN", "Abstract decorator implemented", "The abstract decorator class should have atleast 1 child which should be the concrete decorator.", "The abstract decorator did not have any children"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", "Abstract decorator contains parenty property", "The abstract decorator class should contain a property of it's parent type to use as a base item.", "The abstract decorator did not contain a field of the parent type"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", "", "", "The abstract decorator' constructor does not set component field"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-CALLS-BASE", "", "", "The concrete decorators do not call the abstract decorator's constructor"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", "Abstract decorator contains parent property", "The abstract decorator class should contain a property of it's parent type to use as a base item.", "The abstract decorator did not contain a field of the parent type"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", "Abstract decorator sets parent property", "The abstract decorator's constructor should set the parent property. This is to pass the base product to the decorator so that the concrete decorators can add to it.", "The abstract decorator' constructor does not set component field"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-CALLS-BASE", "Concrete decorator calls base", "The concrete decorator should always call the base constructor so that the base product is set.", "The concrete decorators do not call the abstract decorator's constructor"));
             PatternRequirements.Add("DECORATOR", decoratorreqs);
 
             //ABSTRACT FACTORY METHOD
