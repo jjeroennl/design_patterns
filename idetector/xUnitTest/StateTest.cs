@@ -90,7 +90,7 @@ namespace xUnitTest
                     if (val > score) score = val;
                 }
             }
-            Assert.InRange(score, 80, 90);
+            Assert.InRange(score, 80, 100);
         }
 
         SyntaxTree SuccessSetup()
