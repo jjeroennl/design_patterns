@@ -37,7 +37,6 @@ namespace vs_plugin
         {
             InitializeComponent();
 
-            var u = new NewGuidance();
             var req = new Requirements();
             Patterns = req.GetRequirements();
             Calc = new ScoreCalculator(Patterns);
@@ -170,8 +169,6 @@ namespace vs_plugin
             }
             decoratorList = this.HandleResults("DECORATOR", decoratorList, d.GetResults());
             facadeList = this.HandleResults("FACADE", facadeList, f.GetResults());
-
-
             //abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
             //factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
 
@@ -187,7 +184,7 @@ namespace vs_plugin
             // this.PopulatePattern("factory", factoryList);
             // this.PopulatePattern("singleton", singletonList);
             // this.PopulatePattern("state", stateList);
-            // this.PopulatePattern("strategory", strategyList);    
+            // this.PopulatePattern("strategory", strategyList);
         }
 
         private List<Pattern> HandleResults(string pattern, List<Pattern> patternList, Dictionary<string, List<RequirementResult>> results)
@@ -275,6 +272,11 @@ namespace vs_plugin
         {
             this.SettingsGrid.Visibility = Visibility.Collapsed;
             this.Default.Visibility = Visibility.Visible;
+        }
+
+        private void Pattern_Guide_Click(object sender, RoutedEventArgs e)
+        {
+            new NewGuidance();
         }
     }
 }

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using idetector.Patterns.Helper;
 
 namespace idetector.Patterns
 {
@@ -24,10 +23,9 @@ namespace idetector.Patterns
         private List<RequirementResult> _results = new List<RequirementResult>();
 
         private bool isMethod;
-        private HashSet<ClassModel> ifactories = new HashSet<ClassModel>();
         private ClassModel ifactory;
 
-        private Dictionary<string, List<RequirementResult>> _reqs = new Dictionary<string, List<RequirementResult>>();
+        private Dictionary<ClassModel, int> _scores = new Dictionary<ClassModel, int>();
         private ClassCollection cc;
         private List<ClassModel> abstractClasses = new List<ClassModel>();
         private List<ClassModel> interfaces = new List<ClassModel>();
@@ -38,8 +36,6 @@ namespace idetector.Patterns
 
         public AbstractFactoryMethod(ClassCollection _cc, bool ismethod)
         {
-            abstractClasses = API.ListAbstract(cc);
-            interfaces = API.ListInterfaces(cc);
             cc = _cc;
             isMethod = ismethod;
             ifactory = null;
@@ -47,35 +43,62 @@ namespace idetector.Patterns
 
         public void Scan()
         {
+            SetAbstractClasses();
+            SetInterfaces();
             SetParents();
             SetIFactoryClass();
             SetPossibleFactoriesAndProductInterfaces();
 
-            foreach (var ifac in ifactories)
-            {
-                ifactory = ifac;
-                _results.Add(ContainsIFactoryClass());
-                _results.Add(ContainsProductInterface());
-                _results.Add(ContainsAbstractProductInterfaceMethod());
-                _results.Add(IsInheritingProductInterface());
-                _results.Add(ConcreteFactoryIsReturningConcreteProduct());
-                _results.Add(HasMultipleMethods());
-                _reqs.Add(ifac.Identifier, _results);
-            }
+            _results.Add(ContainsIFactoryClass());
+            _results.Add(ContainsProductInterface());
+            _results.Add(ContainsAbstractProductInterfaceMethod());
+            _results.Add(IsInheritingProductInterface());
+            _results.Add(ConcreteFactoryIsReturningConcreteProduct());
+            _results.Add(HasMultipleMethods());
         }
 
         public Dictionary<string, List<RequirementResult>> GetResults()
         {
-            return _reqs;
+            throw new NotImplementedException();
         }
 
         public List<RequirementResult> GetResult()
         {
             return _results;
         }
-        
+
+
+        public int Score(ClassModel clsModel)
+        {
+            if (this._scores.ContainsKey(clsModel)) return this._scores[clsModel];
+
+            return 0;
+        }
 
         #region Lists
+
+        private void SetAbstractClasses()
+        {
+            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            {
+                if (cls.Value.IsAbstract)
+                {
+                    abstractClasses.Add(cls.Value);
+                }
+            }
+        }
+
+
+        private void SetInterfaces()
+        {
+            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
+            {
+                if (cls.Value.IsInterface)
+                {
+                    interfaces.Add(cls.Value);
+                }
+            }
+        }
 
         public void SetPossibleFactoriesAndProductInterfaces()
         {
@@ -126,8 +149,7 @@ namespace idetector.Patterns
                         {
                             if (property.ValueType.Equals(prnt.Identifier))
                             {
-                                
-                                ifactories.Add(ifctr);
+                                ifactory = ifctr;
                             }
                         }
                     }
@@ -140,7 +162,7 @@ namespace idetector.Patterns
                         {
                             if (method.ReturnType.Equals(prnt.Identifier))
                             {
-                                ifactories.Add(ifctr);
+                                ifactory = ifctr;
                             }
                         }
                     }
@@ -151,20 +173,15 @@ namespace idetector.Patterns
 
         #region Checks
         /// <summary>
-        /// Checks if there is any (abstract) factory classes present.
+        /// Method that checks if there's any (abstract) factory classes present.
         /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
+        /// <returns>Whether or not the check passes.</returns>
         public RequirementResult ContainsIFactoryClass()
         {
             if (ifactory != null) return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", true, ifactory);
             return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", false, ifactory);
         }
 
-
-        /// <summary>
-        /// Checks if there is any (product) interfaces present.
-        /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ContainsProductInterface()
         {
             if (abstractClasses.Count == 0 && interfaces.Count == 0)
@@ -174,10 +191,6 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", true, ifactory);
         }
 
-        /// <summary>
-        /// Checks if there is any classes present that have an abstract method with the return type of a product interface.
-        /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ContainsAbstractProductInterfaceMethod()
         {
             if (interfaces.Count == 0)
@@ -187,10 +200,6 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", true, ifactory);
         }
 
-        /// <summary>
-        /// Checks if there is any classes that inherit an abstract (factory) class.
-        /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult IsInheritingFactoryClass()
         {
             if (parents != null)
@@ -201,7 +210,7 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.HasParent(prnt.Identifier))
                         {
-                            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", true, cls.Value);
+                            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", true, ifactory);
                         }
                     }
                 }
@@ -209,10 +218,6 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", false, ifactory);
         }
 
-        /// <summary>
-        /// Checks if there is any classes that inherit a (product) interface.
-        /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult IsInheritingProductInterface()
         {
             foreach (var @interface in productInterfaces)
@@ -223,7 +228,7 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.HasParent(@interface.Identifier))
                         {
-                            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", true, cls.Value);
+                            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", true, ifactory);
                         }
                     }
                 }
@@ -231,10 +236,6 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", false, ifactory);
         }
 
-        /// <summary>
-        /// Checks if there is a concrete factory that returns a concrete product.
-        /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ConcreteFactoryIsReturningConcreteProduct()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -249,7 +250,7 @@ namespace idetector.Patterns
                             {
                                 if (method.ReturnType == @interface.Identifier)
                                 {
-                                    return new RequirementResult("FACTORY-RETURNS-PRODUCT", true, cls.Value);
+                                    return new RequirementResult("FACTORY-RETURNS-PRODUCT", true, ifactory);
 
                                 }
                             }
@@ -261,9 +262,9 @@ namespace idetector.Patterns
         }
 
         /// <summary>
-        /// Checks if the concrete products follow just one product interface.
+        /// Method that checks if the concrete products follow just one product interface.
         /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
+        /// <returns>Whether or not the check passes.</returns>
         public RequirementResult ConcreteProductsFollowOneProductInterface()
         {
             if (productInterfaces.Count != 1)
@@ -281,11 +282,11 @@ namespace idetector.Patterns
                                 {
                                     if (isMethod)
                                     {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false, cls.Value);
+                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", false, ifactory);
                                     }
                                     else
                                     {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true, cls.Value);
+                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", true, ifactory);
                                     }
                                 }
                                 else
@@ -317,7 +318,7 @@ namespace idetector.Patterns
         {
             int count = 0;
 
-            if(ifactory != null)
+            if (ifactory != null)
             {
                 if (ifactory.getMethods().Count() > 1)
                 {
