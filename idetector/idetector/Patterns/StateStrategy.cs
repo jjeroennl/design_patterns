@@ -226,44 +226,42 @@ namespace idetector.Patterns
         {
             if (cls != null)
             {
-                foreach (var property in cls.getProperties())
+                if (API.ClassHasPropertySyntaxSetter(cls, Models.Type.PropertySyntax.ToString()))
                 {
-                    if (property.Type.Equals(Models.Type.PropertySyntax))
-                    {
-                        var node = (PropertyDeclarationSyntax)property.GetNode();
-                        if (node.AccessorList.ToString().Contains("set"))
-                        {
-                            foreach (ClassModel @interface in interfaces)
-                            {
-                                bool add = true;
-                                foreach (var result in _results[@interface.Identifier].ToArray())
-                                {
-                                    if (result.Id.Equals("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER")) add = false;
-                                }
-                                if (add) _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", true, cls));
-                            }
-                        }
-                    }
-
                     foreach (ClassModel @interface in interfaces)
                     {
                         bool add = true;
-                        if (property.ValueType.ToString() == @interface.Identifier)
+                        foreach (var result in _results[@interface.Identifier].ToArray())
                         {
-                            foreach (var method in cls.getMethods())
+                            if (result.Id.Equals("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER")) add = false;
+                        }
+                        if (add) _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", true, cls));
+                    }
+                }
+                else
+                {
+                    foreach (var property in cls.getProperties())
+                    {
+                        foreach (ClassModel @interface in interfaces)
+                        {
+                            bool add = true;
+                            if (property.ValueType.ToString() == @interface.Identifier)
                             {
-                                if (method.Parameters.Contains(property.ValueType.ToString()) &&
-                                    method.Body.Contains(property.Identifier))
+                                foreach (var method in cls.getMethods())
                                 {
-                                    if (!method.isConstructor)
+                                    if (method.Parameters.Contains(property.ValueType.ToString()) &&
+                                        method.Body.Contains(property.Identifier))
                                     {
-                                        Setter = method;
-
-                                        foreach (var result in _results[@interface.Identifier].ToArray())
+                                        if (!method.isConstructor)
                                         {
-                                            if (result.Id.Equals("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER")) add = false;
+                                            Setter = method;
+
+                                            foreach (var result in _results[@interface.Identifier].ToArray())
+                                            {
+                                                if (result.Id.Equals("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER")) add = false;
+                                            }
+                                            if (add) _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", true, cls));
                                         }
-                                        if (add) _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", true, cls));
                                     }
                                 }
                             }
