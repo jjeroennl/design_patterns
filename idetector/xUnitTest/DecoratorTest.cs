@@ -36,7 +36,7 @@ namespace xUnitTest
             Decorator d = new Decorator(collection);
             d.Scan();
             var score = calculator.GetScore("DECORATOR", d.GetResults()["ComponentBase"]);
-            Assert.Equal(80, score);
+            Assert.Equal(60, score);
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace xUnitTest
             Decorator d = new Decorator(collection);
             d.Scan();
             var score = calculator.GetScore("DECORATOR", d.GetResults()["ComponentBase"]);
-            Assert.Equal(80, score);
+            Assert.Equal(60, score);
         }
 
         [Fact]

@@ -35,11 +35,26 @@ namespace idetector.Data
             //DECORATOR-CONSTRUCTOR-SETS-COMPONENT
             //DECORATOR-CONCRETE-CALLS-BASE
             List<PatternRequirement> decoratorreqs = new List<PatternRequirement>();
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-HAS-CHILDREN", "Base classes", "A decorator pattern should contain an interface or abstract class with atleast 2 children: 1 base class and an abstract decorato.r", "The base interface/abstract did not have any children"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-CHILDREN", "Abstract decorator implemented", "The abstract decorator class should have atleast 1 child which should be the concrete decorator.", "The abstract decorator did not have any children"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", "Abstract decorator contains parent property", "The abstract decorator class should contain a property of it's parent type to use as a base item.", "The abstract decorator did not contain a field of the parent type"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", "Abstract decorator sets parent property", "The abstract decorator's constructor should set the parent property. This is to pass the base product to the decorator so that the concrete decorators can add to it.", "The abstract decorator' constructor does not set component field"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-CALLS-BASE", "Concrete decorator calls base", "The concrete decorator should always call the base constructor so that the base product is set.", "The concrete decorators do not call the abstract decorator's constructor"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-HAS-CHILDREN", 
+                "Interface is implemented",
+                "A decorator pattern should contain an interface with atleast 2 children: 1 base class and an abstract decorator", 
+                "A decorator pattern should contain an interface with atleast 2 children: 1 base class and an abstract decorator, please make sure both the base class and the abstract decorator implement the interface"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-CHILDREN", 
+                "Abstract decorator implemented", 
+                "An abstract decorator should be implemented by one or more concrete decorator(s) so that data or logic can be added to the base item by casting the base item to the concrete decorator type",
+                "Please make sure the abstract decorator is implemented by atleast one or more concrete decorators. A class cannot be cast to the abstract decorator type."));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", 
+                "Abstract decorator contains parent property", 
+                "The abstract decorator class should contain a property of it's parent type to use as a base item.", 
+                "The abstract decorator did not contain a field of the parent type"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-METHOD-SETS-COMPONENT", 
+                "Abstract decorator sets parent property", 
+                "The abstract decorator's constructor should set the parent property. This is to pass the base product to the decorator so that the concrete decorators can add to it.", 
+                "The abstract decorator' constructor does not set component field"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-METHOD-SETS-PROPERTY", 
+                "Concrete decorator calls base", 
+                "The concrete decorator has a method that sets the class' property of the interface type. This is in order to add data or logic to the saved base object in the concrete decorator", 
+                "The concrete decorator should have a method that saves a base object in order for it to add data or logic to it"));
             PatternRequirements.Add("DECORATOR", decoratorreqs);
 
             //ABSTRACT FACTORY METHOD
