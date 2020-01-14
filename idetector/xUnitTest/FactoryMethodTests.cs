@@ -87,11 +87,6 @@ namespace xUnitTest
                         return result;
                     }
                 }
-
-                public interface IProduct
-                {
-                    string Operation();
-                }
         ");
         }
 
@@ -229,8 +224,6 @@ namespace xUnitTest
                 {
                     public abstract IProduct FactoryMethod();
 
-                    public override IProduct IetsAnders();
-
                     public string SomeOperation()
                     {
                         var product = FactoryMethod();
@@ -241,26 +234,9 @@ namespace xUnitTest
                     }
                 }
 
-                class ConcreteCreator1 : Creator
-                {
-                    public override IProduct FactoryMethod()
-                    {
-                        return new ConcreteProduct1();
-                    }
-                }
-
                 public interface IProduct
                 {
                     string Operation();
-                }
-
-                class ConcreteProduct1 : IProduct
-                {
-                    public string Operation()
-                    {
-                        return '{ Result of ConcreteProduct1}
-                        ';
-                    }
                 }
 
         ");
@@ -445,7 +421,7 @@ namespace xUnitTest
 
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
-            Assert.False(factoryMethod.ContainsIFactoryClass().Passed);
+            Assert.True(factoryMethod.ContainsIFactoryClass().Passed);
             Assert.False(factoryMethod.ContainsAbstractProductInterfaceMethod().Passed);
         }
 
@@ -457,7 +433,7 @@ namespace xUnitTest
 
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
-            Assert.False(factoryMethod.ContainsIFactoryClass().Passed);
+            Assert.True(factoryMethod.ContainsIFactoryClass().Passed);
             Assert.False(factoryMethod.IsInheritingFactoryClass().Passed);
         }
 
@@ -503,6 +479,8 @@ namespace xUnitTest
 
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
+            var results = factoryMethod.GetResults()["Creator"];
+            Assert.True(results[0].Passed);
             Assert.False(factoryMethod.HasMultipleMethods().Passed);
         }
 
@@ -539,11 +517,10 @@ namespace xUnitTest
             Assert.True(factoryMethod.HasMultipleMethods().Passed);
             Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().Passed);
 
-            
-            int score = calculator.GetScore("FACTORY", factoryMethod.GetResult());
 
+            var score = calculator.GetScore("FACTORY", factoryMethod.GetResults());
 
-            Assert.Equal(100, score);
+            Assert.Equal(100, score["Creator"]);
         }
         
         [Fact]
@@ -556,18 +533,10 @@ namespace xUnitTest
 
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
-            int score = calculator.GetScore("FACTORY", factoryMethod.GetResult());
 
-            Assert.False(factoryMethod.ContainsIFactoryClass().Passed);
-            Assert.True(factoryMethod.ContainsProductInterface().Passed);
-            Assert.True(factoryMethod.ContainsAbstractProductInterfaceMethod().Passed);
-            Assert.False(factoryMethod.IsInheritingFactoryClass().Passed);
-            Assert.False(factoryMethod.IsInheritingProductInterface().Passed);
-            Assert.False(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().Passed);
-            Assert.False(factoryMethod.HasMultipleMethods().Passed);
-            Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().Passed);
+            var score = calculator.GetScore("FACTORY", factoryMethod.GetResults());
 
-            Assert.Equal(33, score);
+            Assert.Equal(57, score["Creator"]);
         }
         #endregion
     }

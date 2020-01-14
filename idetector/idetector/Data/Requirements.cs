@@ -60,6 +60,7 @@ namespace idetector.Data
             factoryreqs.Add(new PatternRequirement("FACTORY-RETURNS-PRODUCT", 1, "There is no concrete factory that return a concrete product."));
             factoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS", 1, "Concrete factories should only have one method."));
             factoryreqs.Add(new PatternRequirement("FACTORY-ONE-PRODUCT-INTERFACE", 1, "Concrete factories should only have one method."));
+
             PatternRequirements.Add("FACTORY", factoryreqs);
 
             //STATESTRATEGY

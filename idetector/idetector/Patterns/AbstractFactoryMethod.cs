@@ -38,9 +38,9 @@ namespace idetector.Patterns
 
         public AbstractFactoryMethod(ClassCollection _cc, bool ismethod)
         {
+            cc = _cc;
             abstractClasses = API.ListAbstract(cc);
             interfaces = API.ListInterfaces(cc);
-            cc = _cc;
             isMethod = ismethod;
             ifactory = null;
         }
@@ -50,8 +50,8 @@ namespace idetector.Patterns
             SetParents();
             SetIFactoryClass();
             SetPossibleFactoriesAndProductInterfaces();
-
-            foreach (var ifac in ifactories)
+            var classes = abstractClasses.Concat(interfaces).ToList();
+            foreach (var ifac in classes)
             {
                 ifactory = ifac;
                 _results.Add(ContainsIFactoryClass());
@@ -60,6 +60,7 @@ namespace idetector.Patterns
                 _results.Add(IsInheritingProductInterface());
                 _results.Add(ConcreteFactoryIsReturningConcreteProduct());
                 _results.Add(HasMultipleMethods());
+                _results.Add(ConcreteProductsFollowOneProductInterface());
                 _reqs.Add(ifac.Identifier, _results);
             }
         }
@@ -201,7 +202,7 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.HasParent(prnt.Identifier))
                         {
-                            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", true, cls.Value);
+                            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", true, ifactory);
                         }
                     }
                 }
@@ -223,7 +224,7 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.HasParent(@interface.Identifier))
                         {
-                            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", true, cls.Value);
+                            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", true, ifactory);
                         }
                     }
                 }
@@ -249,7 +250,7 @@ namespace idetector.Patterns
                             {
                                 if (method.ReturnType == @interface.Identifier)
                                 {
-                                    return new RequirementResult("FACTORY-RETURNS-PRODUCT", true, cls.Value);
+                                    return new RequirementResult("FACTORY-RETURNS-PRODUCT", true, ifactory);
 
                                 }
                             }
@@ -281,11 +282,11 @@ namespace idetector.Patterns
                                 {
                                     if (isMethod)
                                     {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false, cls.Value);
+                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false, ifactory);
                                     }
                                     else
                                     {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true, cls.Value);
+                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true, ifactory);
                                     }
                                 }
                                 else

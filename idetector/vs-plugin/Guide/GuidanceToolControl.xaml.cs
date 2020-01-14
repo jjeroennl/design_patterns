@@ -85,7 +85,7 @@ namespace vs_plugin.Guide
                     break;
                 case "abs":
                     if (cls == null) { return; }
-                    pattern = new FactoryMethod(nameSpaceClassCollection);
+                    pattern = new AbstractFactoryMethod(nameSpaceClassCollection, true);
                     break;
             }
         }

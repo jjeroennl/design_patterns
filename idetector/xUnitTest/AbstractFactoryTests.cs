@@ -267,18 +267,10 @@ namespace xUnitTest
 
             AbstractFactoryMethod abstractFactory = new AbstractFactoryMethod(collection, false);
             abstractFactory.Scan();
-            int score = calculator.GetScore("FACTORY", abstractFactory.GetResult());
-
-            Assert.True(abstractFactory.ContainsIFactoryClass().Passed);
-            Assert.True(abstractFactory.ContainsProductInterface().Passed);
-            Assert.True(abstractFactory.ContainsAbstractProductInterfaceMethod().Passed);
-            Assert.True(abstractFactory.IsInheritingFactoryClass().Passed);
-            Assert.True(abstractFactory.IsInheritingProductInterface().Passed);
-            Assert.True(abstractFactory.ConcreteFactoryIsReturningConcreteProduct().Passed);
-            Assert.True(abstractFactory.HasMultipleMethods().Passed);
-            Assert.True(abstractFactory.ConcreteProductsFollowOneProductInterface().Passed);
-
-            Assert.Equal(100, score);
+            var score = calculator.GetScore("FACTORY", abstractFactory.GetResults());
+            var results = abstractFactory.GetResults()["IAbstractFactory"];
+            Assert.True(results[0].Passed);
+            Assert.Equal(100, score["IAbstractFactory"]);
         }
 
         #region Tests for individual failing checks.
