@@ -65,6 +65,7 @@
     <Compile Include="Code\Parser\CodeParser.cs" />
     <Compile Include="Code\Parser\Walker.cs" />
     <Compile Include="Code\Patterns\AbstractFactoryMethod.cs" />
+    <Compile Include="Code\Patterns\Command.cs" />
     <Compile Include="Code\Patterns\Decorator.cs" />
     <Compile Include="Code\Patterns\Facade\Facade.cs" />
     <Compile Include="Code\Patterns\Helper\API.cs" />

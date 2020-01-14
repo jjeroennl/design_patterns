@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using idetector.Collections;
@@ -13,13 +12,13 @@ namespace idetector.Patterns.Helper
         ///     Check if the given class has a property of the given type and (optionally) the given modifiers
         /// </summary>
         /// <param name="cls">ClassModel Object</param>
-        /// <param name="type">Returntype of property</param>
+        /// <param name="type">(optional) Returntype of property</param>
         /// <param name="modifiers">(optional) A list of modifiers of property</param>
         /// <returns>True or False</returns>
-        public static bool ClassHasPropertyOfType(ClassModel cls, string type, string[] modifiers = null)
+        public static bool ClassHasPropertyOfType(ClassModel cls, string type = null, string[] modifiers = null)
         {
             foreach (var property in cls.getProperties())
-                if (property.ValueType.Equals(type))
+                if (type == null || property.ValueType.Equals(type))
                 {
                     if (modifiers == null) return true;
 
@@ -29,10 +28,53 @@ namespace idetector.Patterns.Helper
             return false;
         }
 
+        /// <summary>
+        ///     Check if the given class has a property of the given type and if it has a setter.
+        /// </summary>
+        /// <param name="cls">ClassModel Object</param>
+        /// <param name="hasSetter">Wheter is should have an setter</param>
+        /// <param name="type">(optional) Returntype of property</param>
+        /// <returns></returns>
+        public static bool ClassHasPropertySyntaxSetter(ClassModel cls, string type = null)
+        {
+            foreach (var property in cls.getProperties())
+            {
+                if (type == null || property.ValueType.Equals(type))
+                {
+                    var node = (PropertyDeclarationSyntax)property.GetNode();
+
+                    if (node.AccessorList.ToString().Contains("set"))
+                        return true;
+                }
+            }
+            return false;
+        }
+
         internal static MethodModel ClassGetMethodWithName(ClassModel cls, string name)
         {
             return cls.getMethods().Where(e => e.Identifier.Equals(name))?.First();
+        }
 
+        /// <summary>
+        ///     Check if the given class has a property of the given type and if it has a getter.
+        /// </summary>
+        /// <param name="cls">ClassModel Object</param>
+        /// <param name="hasSetter">Wheter is should have an getter</param>
+        /// <param name="type">(optional) Returntype of property</param>
+        /// <returns></returns>
+        public static bool ClassHasPropertySyntaxGetter(ClassModel cls, string type = null)
+        {
+            foreach (var property in cls.getProperties())
+            {
+                if (type == null || property.ValueType.Equals(type))
+                {
+                    var node = (PropertyDeclarationSyntax)property.GetNode();
+
+                    if (node.AccessorList.ToString().Contains("get"))
+                        return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -99,7 +141,8 @@ namespace idetector.Patterns.Helper
                     e =>
                         modifiers.All(e.HasModifier)
                         && e.ReturnType == type
-                        && e.isConstructor == false)){
+                        && e.isConstructor == false))
+                {
                     methodList.Add(method);
                 }
             }
@@ -118,6 +161,7 @@ namespace idetector.Patterns.Helper
         {
             return cls.getMethods().Any(e => e.Parameters.Contains(type));
         }
+      
         /// <summary>
         ///  Returns all methods from a certain class that have a specified parameter
         /// </summary>
@@ -144,6 +188,18 @@ namespace idetector.Patterns.Helper
             return false;
         }
 
+        public static bool ClassIsAbstractOrInterface(ClassModel cls)
+        {
+            if (cls.IsAbstract || cls.IsInterface)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static List<ClassModel> ListChildren(ClassCollection collection, string type)
         {
             List<ClassModel> result = collection.GetClasses().Values.Where(e => e.HasParent(type)).Distinct().ToList();
@@ -158,7 +214,7 @@ namespace idetector.Patterns.Helper
         {
             foreach (var cons in cls.getConstructors())
             {
-                var node = (ConstructorDeclarationSyntax) cons.getNode();
+                var node = (ConstructorDeclarationSyntax)cons.getNode();
                 if (node.Initializer.ThisOrBaseKeyword.ToString().ToLower().Equals("base"))
                 {
                     return true;
