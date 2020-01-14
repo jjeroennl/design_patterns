@@ -45,7 +45,7 @@ namespace vs_plugin
 
         internal void SetWeight(float weight)
         {
-            this.RangeSlider.Value = weight;
+            this.RangeSlider.Value = weight * 50.0;
         }
     }
 }

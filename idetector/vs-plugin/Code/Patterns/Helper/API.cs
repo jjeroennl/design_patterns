@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using idetector.Collections;
@@ -26,6 +27,12 @@ namespace idetector.Patterns.Helper
                 }
 
             return false;
+        }
+
+        internal static MethodModel ClassGetMethodWithName(ClassModel cls, string name)
+        {
+            return cls.getMethods().Where(e => e.Identifier.Equals(name))?.First();
+
         }
 
         /// <summary>

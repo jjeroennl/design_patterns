@@ -15,6 +15,7 @@ using idetector.Patterns.Facade;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using vs_plugin.Code;
+using vs_plugin.Guide;
 using Decorator = idetector.Patterns.Decorator;
 
 namespace vs_plugin
@@ -25,7 +26,7 @@ namespace vs_plugin
     public partial class ToolWindow1Control : UserControl
     {
         public static Dictionary<string, List<PatternRequirement>> Patterns;
-        private ScoreCalculator calc;
+        public static ScoreCalculator Calc;
         private int cutoff = 50;
         private ClassCollection collection;
 
@@ -35,8 +36,11 @@ namespace vs_plugin
         public ToolWindow1Control()
         {
             InitializeComponent();
+
+            var u = new NewGuidance();
             var req = new Requirements();
             Patterns = req.GetRequirements();
+            Calc = new ScoreCalculator(Patterns);
             UIHandler.ToolWindow1Control = this;
 
             this.CreateSettings();
@@ -53,13 +57,17 @@ namespace vs_plugin
                     var weight = patternWeight.AddWeight(pattern.Key, requirement.Id, requirement.Title, requirement.Weight);
 
                     var rangeEventHandler = new RangeChangeEventHandler(pattern.Key, requirement.Id, weight);
-                    //weight.RangeSlider.ValueChanged += this.UpdateValue;
+                    weight.RangeSlider.ValueChanged += rangeEventHandler.UpdateValue;
                 }
 
                 this.Ranges.Children.Add(patternWeight);
             }
+            this.updateScoreCalculator();
         }
-
+        private void updateScoreCalculator()
+        {
+            Calc = new ScoreCalculator(Patterns);
+        }
         public ClassCollection GetOpenWindowText()
         {
             var dte = (DTE) ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
@@ -74,7 +82,7 @@ namespace vs_plugin
             return FileReader.ReadSingleFile(filename);
         }
 
-        public ClassCollection ReadProjectCode()
+        public static ClassCollection ReadProjectCode()
         {
             var dte = (DTE) ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
             if (dte.Solution.Projects == null)
@@ -109,9 +117,20 @@ namespace vs_plugin
             AddClasses();
         }
 
+        private void Scan_Current_project(object sender, RoutedEventArgs e)
+        {
+            PatternList.Children.Clear();
+
+            //Scan file
+            collection = ReadProjectCode();
+            if (collection == null) return;
+
+            AddClasses();
+        }
+
         private void AddClasses()
         {
-            calc = new ScoreCalculator(Patterns);
+            Calc = new ScoreCalculator(Patterns);
 
             var stateList = new List<Pattern>();
             var strategyList = new List<Pattern>();
@@ -142,10 +161,11 @@ namespace vs_plugin
                 var s = new Singleton(item.Value);
                 s.Scan();
 
-                singletonList = this.HandleResults(singletonList, s.GetResults());
-                decoratorList = this.HandleResults(decoratorList, d.GetResults());
-                facadeList = this.HandleResults(facadeList, f.GetResults());
-            }
+                singletonList = this.HandleResults("SINGLETON",singletonList, s.GetResults());
+
+            }   
+            decoratorList = this.HandleResults("DECORATOR", decoratorList, d.GetResults());
+            facadeList = this.HandleResults("FACADE", facadeList, f.GetResults());
 
             PatternList.Children.Clear();
 
@@ -159,11 +179,11 @@ namespace vs_plugin
             // this.PopulatePattern("strategory", strategyList);    
         }
 
-        private List<Pattern> HandleResults(List<Pattern> patternList, Dictionary<string, List<RequirementResult>> results)
+        private List<Pattern> HandleResults(string pattern, List<Pattern> patternList, Dictionary<string, List<RequirementResult>> results)
         {
             foreach (var patternResult in results)
             {
-                var patternScore = calc.GetScore("SINGLETON", patternResult.Value);
+                var patternScore = Calc.GetScore(pattern, patternResult.Value);
                 if (patternScore >= cutoff)
                     patternList.Add(new Pattern(collection.GetClass(patternResult.Key), patternScore,
                         patternResult.Value));
@@ -176,23 +196,13 @@ namespace vs_plugin
         {
             var p = new SinglePattern();
             p.SetHandle(patternName?.First().ToString().ToUpper() + patternName?.Substring(1).ToLower());
-
             foreach (var pattern in patternList)
                 if (pattern.Score >= 50)
                     p.AddPattern(patternName, pattern);
             PatternList.Children.Add(p);
         }
 
-        private void Scan_Current_project(object sender, RoutedEventArgs e)
-        {
-            PatternList.Children.Clear();
-
-            //Scan file
-            collection = ReadProjectCode();
-            if (collection == null) return;
-
-            AddClasses();
-        }
+       
 
         /// <summary>
         ///     Method to replace summary's information and reset the text wrapping.
@@ -205,7 +215,6 @@ namespace vs_plugin
             {
                 this.ConditionIcon.Content = "✔️";
                 this.ConditionIcon.Foreground = new SolidColorBrush(Color.FromRgb(0, 128, 0));
-                ;
             }
             else
             {

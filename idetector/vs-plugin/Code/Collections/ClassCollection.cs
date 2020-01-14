@@ -58,7 +58,15 @@ namespace idetector.Collections
             return result;
         }
 
+        public ClassCollection GetNamespace(string @namespace)
+        {
+            ClassCollection n = new ClassCollection();
+            foreach (var model in this.GetClasses().Where(e => e.Value.Namespace == @namespace))
+            {
+                n.AddClass(model.Value);
+            }
 
-
+            return n;
+        }
     }
 }

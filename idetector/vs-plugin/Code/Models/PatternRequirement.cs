@@ -12,7 +12,7 @@ namespace idetector.Models
         public string Description;
         public string ErrorMessage;
 
-        public PatternRequirement(string id, string title, string description, string errormessage, float weight = 1f)
+        public PatternRequirement(string id, string title, string description, string errormessage, float weight = 1)
         {
             Weight = weight;
             ErrorMessage = errormessage;

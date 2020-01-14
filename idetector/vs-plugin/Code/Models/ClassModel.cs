@@ -18,6 +18,7 @@ namespace idetector.Models
         public string Identifier { get; set; }
         public bool IsInterface { get; set; } = false;
         public bool IsAbstract { get; set; } = false;
+        public string Namespace;
 
         private List<MethodModel> Methods = new List<MethodModel>();
         private List<PropertyModel> Properties = new List<PropertyModel>();
@@ -30,11 +31,29 @@ namespace idetector.Models
             _node = node;
             Keyword = node.Keyword.ToString();
             Identifier = node.Identifier.ToString();
-            
+
+            _setNamespace(node);
             _setMembers();
             _setAttributes();
             _setModifiers();
         }
+
+        private void _setNamespace(ClassDeclarationSyntax node)
+        {
+            SyntaxNode parent = node;
+            while (parent.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax") && node.Parent != null)
+            {
+                parent = node.Parent;
+            }
+
+            if (parent.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax"))
+            {
+                var @namespace =(NamespaceDeclarationSyntax) parent;
+                this.Namespace = @namespace.Name.ToString();
+            }
+
+        }
+
         public ClassModel(InterfaceDeclarationSyntax node)
         {
             _node = node;
