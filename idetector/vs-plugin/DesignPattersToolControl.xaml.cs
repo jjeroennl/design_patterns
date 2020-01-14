@@ -70,7 +70,7 @@ namespace vs_plugin
         }
         public ClassCollection GetOpenWindowText()
         {
-            var dte = (DTE) ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
+            var dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
             if (dte.ActiveDocument == null)
             {
                 MessageBox.Show("Please open a file before scanning it.");
@@ -84,7 +84,7 @@ namespace vs_plugin
 
         public static ClassCollection ReadProjectCode()
         {
-            var dte = (DTE) ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
+            var dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
             if (dte.Solution.Projects == null)
             {
                 MessageBox.Show("Please open a project before scanning it.");
@@ -93,7 +93,7 @@ namespace vs_plugin
 
             foreach (var project in dte.Solution.Projects)
             {
-                var p = (Project) project;
+                var p = (Project)project;
 
                 var fileName = p.FullName;
                 var arrpath = fileName.Split('\\');
@@ -136,6 +136,7 @@ namespace vs_plugin
             var strategyList = new List<Pattern>();
             var facadeList = new List<Pattern>();
             var factoryList = new List<Pattern>();
+            var abstractFactoryList = new List<Pattern>();
             var singletonList = new List<Pattern>();
             var decoratorList = new List<Pattern>();
 
@@ -149,8 +150,11 @@ namespace vs_plugin
             var strat = new StateStrategy(collection, false);
             strat.Scan();
 
-            var fm = new FactoryMethod(collection);
+            var fm = new AbstractFactoryMethod(collection, false);
             fm.Scan();
+
+            var am = new AbstractFactoryMethod(collection, true);
+            am.Scan();
 
             var d = new Decorator(collection);
             d.Scan();
@@ -161,19 +165,25 @@ namespace vs_plugin
                 var s = new Singleton(item.Value);
                 s.Scan();
 
-                singletonList = this.HandleResults("SINGLETON",singletonList, s.GetResults());
+                singletonList = this.HandleResults("SINGLETON", singletonList, s.GetResults());
 
             }
             decoratorList = this.HandleResults("DECORATOR", decoratorList, d.GetResults());
             facadeList = this.HandleResults("FACADE", facadeList, f.GetResults());
+
+            abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
             factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
+
+
             PatternList.Children.Clear();
 
 
-            PopulatePattern("singleton", singletonList);
-            PopulatePattern("decorator", decoratorList);
-            PopulatePattern("facade", facadeList);
-            PopulatePattern("factory", factoryList);
+            PopulatePattern("Singleton", singletonList);
+            PopulatePattern("Decorator", decoratorList);
+            PopulatePattern("Facade", facadeList);
+            PopulatePattern("Factory", factoryList);
+            PopulatePattern("Abstract Factory", abstractFactoryList);
+            // this.PopulatePattern("factory", factoryList);
             // this.PopulatePattern("singleton", singletonList);
             // this.PopulatePattern("state", stateList);
             // this.PopulatePattern("strategory", strategyList);
@@ -194,12 +204,16 @@ namespace vs_plugin
 
         private void PopulatePattern(string patternName, List<Pattern> patternList)
         {
-            var p = new SinglePattern();
-            p.SetHandle(patternName?.First().ToString().ToUpper() + patternName?.Substring(1).ToLower());
-            foreach (var pattern in patternList)
-                if (pattern.Score >= 50)
-                    p.AddPattern(patternName, pattern);
-            PatternList.Children.Add(p);
+            if (patternList.Any(e => e.Score > 50))
+            {
+                var p = new SinglePattern();
+                p.SetHandle(patternName?.First().ToString().ToUpper() + patternName?.Substring(1).ToLower());
+                foreach (var pattern in patternList)
+                    if (pattern.Score >= 50)
+                        p.AddPattern(patternName, pattern);
+                PatternList.Children.Add(p);
+            }
+
         }
 
        

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using idetector.Patterns.Helper;
 
 namespace idetector.Patterns
 {
@@ -23,9 +24,10 @@ namespace idetector.Patterns
         private List<RequirementResult> _results = new List<RequirementResult>();
 
         private bool isMethod;
+        private HashSet<ClassModel> ifactories = new HashSet<ClassModel>();
         private ClassModel ifactory;
 
-        private Dictionary<ClassModel, int> _scores = new Dictionary<ClassModel, int>();
+        private Dictionary<string, List<RequirementResult>> _reqs = new Dictionary<string, List<RequirementResult>>();
         private ClassCollection cc;
         private List<ClassModel> abstractClasses = new List<ClassModel>();
         private List<ClassModel> interfaces = new List<ClassModel>();
@@ -36,6 +38,8 @@ namespace idetector.Patterns
 
         public AbstractFactoryMethod(ClassCollection _cc, bool ismethod)
         {
+            abstractClasses = API.ListAbstract(cc);
+            interfaces = API.ListInterfaces(cc);
             cc = _cc;
             isMethod = ismethod;
             ifactory = null;
@@ -43,63 +47,35 @@ namespace idetector.Patterns
 
         public void Scan()
         {
-            SetAbstractClasses();
-            SetInterfaces();
             SetParents();
             SetIFactoryClass();
             SetPossibleFactoriesAndProductInterfaces();
 
-            _results.Add(ContainsIFactoryClass());
-            _results.Add(ContainsProductInterface());
-            _results.Add(ContainsAbstractProductInterfaceMethod());
-            _results.Add(IsInheritingProductInterface());
-            _results.Add(ConcreteFactoryIsReturningConcreteProduct());
-            _results.Add(HasMultipleMethods());
-            _results.Add(ConcreteProductsFollowOneProductInterface());
+            foreach (var ifac in ifactories)
+            {
+                ifactory = ifac;
+                _results.Add(ContainsIFactoryClass());
+                _results.Add(ContainsProductInterface());
+                _results.Add(ContainsAbstractProductInterfaceMethod());
+                _results.Add(IsInheritingProductInterface());
+                _results.Add(ConcreteFactoryIsReturningConcreteProduct());
+                _results.Add(HasMultipleMethods());
+                _reqs.Add(ifac.Identifier, _results);
+            }
         }
 
         public Dictionary<string, List<RequirementResult>> GetResults()
         {
-            throw new NotImplementedException();
+            return _reqs;
         }
 
         public List<RequirementResult> GetResult()
         {
             return _results;
         }
-
-
-        public int Score(ClassModel clsModel)
-        {
-            if (this._scores.ContainsKey(clsModel)) return this._scores[clsModel];
-
-            return 0;
-        }
+        
 
         #region Lists
-
-        private void SetAbstractClasses()
-        {
-            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
-            {
-                if (cls.Value.IsAbstract)
-                {
-                    abstractClasses.Add(cls.Value);
-                }
-            }
-        }
-
-
-        private void SetInterfaces()
-        {
-            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
-            {
-                if (cls.Value.IsInterface)
-                {
-                    interfaces.Add(cls.Value);
-                }
-            }
-        }
 
         public void SetPossibleFactoriesAndProductInterfaces()
         {
@@ -150,7 +126,8 @@ namespace idetector.Patterns
                         {
                             if (property.ValueType.Equals(prnt.Identifier))
                             {
-                                ifactory = ifctr;
+                                
+                                ifactories.Add(ifctr);
                             }
                         }
                     }
@@ -163,7 +140,7 @@ namespace idetector.Patterns
                         {
                             if (method.ReturnType.Equals(prnt.Identifier))
                             {
-                                ifactory = ifctr;
+                                ifactories.Add(ifctr);
                             }
                         }
                     }

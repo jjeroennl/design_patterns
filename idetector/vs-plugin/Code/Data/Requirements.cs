@@ -59,7 +59,28 @@ namespace idetector.Data
             factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-PRODUCT-INTERFACE", "", "", ""));
             factoryreqs.Add(new PatternRequirement("FACTORY-RETURNS-PRODUCT", "","", ""));
             factoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS", "", "", ""));
+            factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", "", "", ""));
             PatternRequirements.Add("FACTORY", factoryreqs);
+
+            //ABSTRACT-FACTORY
+            /*ID's:
+             *FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS
+             *FACTORY-CONTAINS-PRODUCT-INTERFACE
+             *FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD
+             *FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS
+             *FACTORY-INHERITING-PRODUCT-INTERFACE
+             *FACTORY-RETURNS-PRODUCT         
+             *FACTORY-MULTIPLE-METHODS
+             */
+            List<PatternRequirement> absfactoryreqs = new List<PatternRequirement>();
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", "", "", ""));
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-PRODUCT-INTERFACE", "", "", ""));
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", "", "", ""));
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-PRODUCT-INTERFACE", "", "", ""));
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-RETURNS-PRODUCT", "", "", ""));
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS", "", "", ""));
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", "", "", ""));
+            PatternRequirements.Add("ABSTRACT-FACTORY", absfactoryreqs);
 
             //STATESTRATEGY
             /*ID's:
