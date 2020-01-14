@@ -95,15 +95,19 @@ namespace idetector.Data
              * STATE-CONCRETE-CLASS-RELATIONS
              */
             List<PatternRequirement> statereqs = new List<PatternRequirement>();
-            statereqs.Add(new PatternRequirement("STATE-STRATEGY-INTERFACE-ABSTRACT", "", "", ""));
-            statereqs.Add(new PatternRequirement("STATE-STRATEGY-HAS-CONTEXT", "", "", ""));
-            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", "", "", ""));
-            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", "", "", ""));
-            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", "", "", ""));
-            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", "", "", ""));
-            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-LOGIC", "", "", ""));
-            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONCRETE-CLASS", "", "", ""));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-INTERFACE-ABSTRACT", "Parent classes", "There should be an parent class", "There are no interfaces or abstract classes found"));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-HAS-CONTEXT", "Context class", "There should be an context class, to call all the States/Strategies", "There is no class which suffices to be an Context class"));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", "State/Strategy implementation", "In the Context class, there should be an implementation of the State/Strategy", "There is either no class which suffices to be an Context class, or in the Context class there is no implementation of the State/Strategy"));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", "Private State/Strategy implementation", "In the Context class, there should be an private implementation of the State/Strategy", "There is either no class which suffices to be an Context class, or no implementation of the State/Strategy, or that implementation is not private"));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", "Context public constructor", "The Context class should have an public constructor", "There is either no class which suffices to be an Context class, or the context class has no public constructor"));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER", "State/Strategy setter", "In the Context class it should contain an setter for the State/Strategy", "There is either no class which suffices to be an Context class, or there is no setter for the State/Strategy in the Context class"));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-LOGIC", "Context logic", "The Context class should contain any logic for the State/Strategy to utilize", "There is either no class which suffices to be an Context class, or the Context class contains no logic that call the States/Strategies"));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONCRETE-CLASS", "Concrete classes", "There should be concrete classes which implement the interface or abstract class: State/Strategy", "There is either no class which suffices to be an Context class, or"));
             PatternRequirements.Add("STATE", statereqs);
+
+            var strategyreqs = new List<PatternRequirement>(statereqs);
+            strategyreqs.Add(new PatternRequirement("STRATEGY-CONCRETE-CLASS-RELATIONS", "Concrete classes relations", "The concrete classes should have no relation with each other", "The concrete classes, which implement the Strategy, should not call each other in the code"));
+            PatternRequirements.Add("STRATEGY", strategyreqs);
 
             //FACADE
             /*ID's:
@@ -112,10 +116,6 @@ namespace idetector.Data
             List<PatternRequirement> facadereqs = new List<PatternRequirement>();
             facadereqs.Add(new PatternRequirement("FACADE-IS-FACADE", "Facade detected", "This class has been detected as a Facade, this means it is part of a group of classes that only interact with it or each other.", ""));
             PatternRequirements.Add("FACADE", facadereqs);
-
-            var strategyreqs = new List<PatternRequirement>(statereqs);
-            strategyreqs.Add(new PatternRequirement("STRATEGY-CONCRETE-CLASS-RELATIONS", "", "", ""));
-            PatternRequirements.Add("STRATEGY", strategyreqs);
 
             //Command
             /*ID's:
