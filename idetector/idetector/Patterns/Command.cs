@@ -61,7 +61,6 @@ namespace idetector.Patterns
                     CommandsUseReceiver();
                 }
                 HasInvokerClass();
-                Debug.WriteLine(invoker.Identifier);
 
             }
         }
