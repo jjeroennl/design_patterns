@@ -21,6 +21,21 @@ namespace vs_plugin.Guide
         private Dictionary<string, List<PatternRequirement>> _results;
         private ScoreCalculator _calculator;
 
+        private Dictionary<string, string> patterns = new Dictionary<string, string>()
+        {
+            {"abs", "ABSTRACT-FACTORY" },
+            {"dec", "DECORATOR"},
+            {"fac", "FACADE"},
+            {"fcy", "FACTORY"},
+            {"sin", "SINGLETON"},
+            {"sta", "STATE"},
+            {"str", "STRATEGY"},
+            {"ite", "ITERATOR"},
+            {"obs", "OBSERVER"},
+            {"cmd", "COMMAND"},
+
+        };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GuidanceToolControl"/> class.
         /// </summary>
@@ -40,6 +55,7 @@ namespace vs_plugin.Guide
                 this._results = ToolWindow1Control.Patterns;
                 this._calculator = ToolWindow1Control.Calc;
                 this.NoGuidance.Visibility = Visibility.Collapsed;
+                this.ResultsGrid.Visibility = Visibility.Visible;
 
                 this.Scan();
             }
@@ -47,6 +63,7 @@ namespace vs_plugin.Guide
             {
                 this._pattern = null;
                 this.NoGuidance.Visibility = Visibility.Visible;
+                this.ResultsGrid.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -63,7 +80,7 @@ namespace vs_plugin.Guide
             ClassModel cls = collection.GetClass(this._typename);
             ClassCollection nameSpaceClassCollection = collection.GetNamespace(this._typename);
 
-            IPattern pattern;
+            IPattern pattern = null;
 
             switch (this._pattern)
             {
@@ -85,9 +102,54 @@ namespace vs_plugin.Guide
                     break;
                 case "abs":
                     if (cls == null) { return; }
+                    pattern = new AbstractFactoryMethod(nameSpaceClassCollection, false);
+                    break;
+                case "fcy":
+                    if (cls == null) { return; }
                     pattern = new AbstractFactoryMethod(nameSpaceClassCollection, true);
                     break;
+                case "sta":
+                    if (cls == null) { return; }
+                    pattern = new StateStrategy(nameSpaceClassCollection, true);
+                    break;
+                case "str":
+                    if (cls == null) { return; }
+                    pattern = new StateStrategy(nameSpaceClassCollection, false);
+                    break;
+                case "obs":
+                    if (cls == null) { return; }
+                    //pattern = new Observer(nameSpaceClassCollection, false);
+                    break;
+                case "cmd":
+                    if (cls == null) { return; }
+                    //pattern = new Command(nameSpaceClassCollection, false);
+                    break;
             }
+
+            if (pattern == null)
+            {
+                return;
+            }
+
+            var results = pattern.GetResults();
+
+            foreach (var result in results)
+            {
+                var singleclass = new UIPattern();
+                singleclass.SetHandle(this._typename);
+                singleclass.SetScore(false);
+                singleclass.SetRequirements(this.patterns[_pattern], result.Value);
+
+                this.Results.Children.Add(singleclass);
+            }
+
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Results.Children.Clear();
+            this.Scan();
         }
     }
 }

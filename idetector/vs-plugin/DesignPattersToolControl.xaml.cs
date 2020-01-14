@@ -37,7 +37,6 @@ namespace vs_plugin
         {
             InitializeComponent();
 
-            var u = new NewGuidance();
             var req = new Requirements();
             Patterns = req.GetRequirements();
             Calc = new ScoreCalculator(Patterns);
@@ -150,11 +149,11 @@ namespace vs_plugin
             var strat = new StateStrategy(collection, false);
             strat.Scan();
 
-            var fm = new AbstractFactoryMethod(collection, false);
-            fm.Scan();
+            //var fm = new AbstractFactoryMethod(collection, false);
+            //fm.Scan();
 
-            var am = new AbstractFactoryMethod(collection, true);
-            am.Scan();
+            //var am = new AbstractFactoryMethod(collection, true);
+            //am.Scan();
 
             var d = new Decorator(collection);
             d.Scan();
@@ -170,9 +169,8 @@ namespace vs_plugin
             }
             decoratorList = this.HandleResults("DECORATOR", decoratorList, d.GetResults());
             facadeList = this.HandleResults("FACADE", facadeList, f.GetResults());
-
-            abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
-            factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
+            //abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
+            //factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
 
 
             PatternList.Children.Clear();
@@ -274,6 +272,11 @@ namespace vs_plugin
         {
             this.SettingsGrid.Visibility = Visibility.Collapsed;
             this.Default.Visibility = Visibility.Visible;
+        }
+
+        private void Pattern_Guide_Click(object sender, RoutedEventArgs e)
+        {
+            new NewGuidance();
         }
     }
 }
