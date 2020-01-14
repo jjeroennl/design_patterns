@@ -50,6 +50,7 @@ namespace idetector.Patterns
             SetParents();
             SetIFactoryClass();
             SetPossibleFactoriesAndProductInterfaces();
+
             foreach (var ifac in ifactories)
             {
                 ifactory = ifac;
@@ -150,15 +151,20 @@ namespace idetector.Patterns
 
         #region Checks
         /// <summary>
-        /// Method that checks if there's any (abstract) factory classes present.
+        /// Checks if there is any (abstract) factory classes present.
         /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ContainsIFactoryClass()
         {
             if (ifactory != null) return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", true, ifactory);
             return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", false, ifactory);
         }
 
+
+        /// <summary>
+        /// Checks if there is any (product) interfaces present.
+        /// </summary>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ContainsProductInterface()
         {
             if (abstractClasses.Count == 0 && interfaces.Count == 0)
@@ -168,6 +174,10 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-CONTAINS-PRODUCT-INTERFACE", true, ifactory);
         }
 
+        /// <summary>
+        /// Checks if there is any classes present that have an abstract method with the return type of a product interface.
+        /// </summary>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ContainsAbstractProductInterfaceMethod()
         {
             if (interfaces.Count == 0)
@@ -177,6 +187,10 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", true, ifactory);
         }
 
+        /// <summary>
+        /// Checks if there is any classes that inherit an abstract (factory) class.
+        /// </summary>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult IsInheritingFactoryClass()
         {
             if (parents != null)
@@ -187,7 +201,7 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.HasParent(prnt.Identifier))
                         {
-                            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", true, ifactory);
+                            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", true, cls.Value);
                         }
                     }
                 }
@@ -195,6 +209,10 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", false, ifactory);
         }
 
+        /// <summary>
+        /// Checks if there is any classes that inherit a (product) interface.
+        /// </summary>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult IsInheritingProductInterface()
         {
             foreach (var @interface in productInterfaces)
@@ -205,7 +223,7 @@ namespace idetector.Patterns
                     {
                         if (cls.Value.HasParent(@interface.Identifier))
                         {
-                            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", true, ifactory);
+                            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", true, cls.Value);
                         }
                     }
                 }
@@ -213,6 +231,10 @@ namespace idetector.Patterns
             return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", false, ifactory);
         }
 
+        /// <summary>
+        /// Checks if there is a concrete factory that returns a concrete product.
+        /// </summary>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ConcreteFactoryIsReturningConcreteProduct()
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
@@ -227,7 +249,7 @@ namespace idetector.Patterns
                             {
                                 if (method.ReturnType == @interface.Identifier)
                                 {
-                                    return new RequirementResult("FACTORY-RETURNS-PRODUCT", true, ifactory);
+                                    return new RequirementResult("FACTORY-RETURNS-PRODUCT", true, cls.Value);
 
                                 }
                             }
@@ -239,9 +261,9 @@ namespace idetector.Patterns
         }
 
         /// <summary>
-        /// Method that checks if the concrete products follow just one product interface.
+        /// Checks if the concrete products follow just one product interface.
         /// </summary>
-        /// <returns>Whether or not the check passes.</returns>
+        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ConcreteProductsFollowOneProductInterface()
         {
             if (productInterfaces.Count != 1)
@@ -259,11 +281,11 @@ namespace idetector.Patterns
                                 {
                                     if (isMethod)
                                     {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false, ifactory);
+                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false, cls.Value);
                                     }
                                     else
                                     {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true, ifactory);
+                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true, cls.Value);
                                     }
                                 }
                                 else

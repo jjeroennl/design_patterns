@@ -170,6 +170,7 @@ namespace vs_plugin
             }
             decoratorList = this.HandleResults("DECORATOR", decoratorList, d.GetResults());
             facadeList = this.HandleResults("FACADE", facadeList, f.GetResults());
+
             abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
             factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
 
@@ -185,7 +186,7 @@ namespace vs_plugin
             // this.PopulatePattern("factory", factoryList);
             // this.PopulatePattern("singleton", singletonList);
             // this.PopulatePattern("state", stateList);
-            // this.PopulatePattern("strategory", strategyList);    
+            // this.PopulatePattern("strategory", strategyList);
         }
 
         private List<Pattern> HandleResults(string pattern, List<Pattern> patternList, Dictionary<string, List<RequirementResult>> results)
