@@ -63,7 +63,7 @@ namespace vs_plugin.Guide
             ClassModel cls = collection.GetClass(this._typename);
             ClassCollection nameSpaceClassCollection = collection.GetNamespace(this._typename);
 
-            IPattern pattern;
+            IPattern pattern = null;
 
             switch (this._pattern)
             {
@@ -85,9 +85,36 @@ namespace vs_plugin.Guide
                     break;
                 case "abs":
                     if (cls == null) { return; }
-                    pattern = new FactoryMethod(nameSpaceClassCollection);
+                    pattern = new AbstractFactoryMethod(nameSpaceClassCollection, false);
+                    break;
+                case "fcy":
+                    if (cls == null) { return; }
+                    pattern = new AbstractFactoryMethod(nameSpaceClassCollection, true);
+                    break;
+                case "sta":
+                    if (cls == null) { return; }
+                    pattern = new StateStrategy(nameSpaceClassCollection, true);
+                    break;
+                case "str":
+                    if (cls == null) { return; }
+                    pattern = new StateStrategy(nameSpaceClassCollection, false);
+                    break;
+                case "obs":
+                    if (cls == null) { return; }
+                    //pattern = new Observer(nameSpaceClassCollection, false);
+                    break;
+                case "cmd":
+                    if (cls == null) { return; }
+                    //pattern = new Command(nameSpaceClassCollection, false);
                     break;
             }
+
+            if (pattern == null)
+            {
+                return;
+            }
+
+            var results = pattern.GetResults();
         }
     }
 }

@@ -149,7 +149,7 @@ namespace vs_plugin
             var strat = new StateStrategy(collection, false);
             strat.Scan();
 
-            var fm = new FactoryMethod(collection);
+            var fm = new AbstractFactoryMethod(collection, true);
             fm.Scan();
 
             var d = new Decorator(collection);
