@@ -36,12 +36,12 @@ namespace idetector.Patterns
         private List<ClassModel> productInterfaces = new List<ClassModel>();
 
 
-        public AbstractFactoryMethod(ClassCollection _cc, bool isAbstract)
+        public AbstractFactoryMethod(ClassCollection _cc, bool ismethod)
         {
             abstractClasses = API.ListAbstract(cc);
             interfaces = API.ListInterfaces(cc);
             cc = _cc;
-            isMethod = !isAbstract;
+            isMethod = ismethod;
             ifactory = null;
         }
 

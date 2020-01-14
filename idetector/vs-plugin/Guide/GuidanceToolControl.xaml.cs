@@ -93,35 +93,35 @@ namespace vs_plugin.Guide
                     //pattern = new Iterator(cls);
                     break;
                 case "dec":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     pattern = new idetector.Patterns.Decorator(nameSpaceClassCollection);
                     break;
                 case "fac":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     pattern = new idetector.Patterns.Decorator(nameSpaceClassCollection);
                     break;
                 case "abs":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     pattern = new AbstractFactoryMethod(nameSpaceClassCollection, false);
                     break;
                 case "fcy":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     pattern = new AbstractFactoryMethod(nameSpaceClassCollection, true);
                     break;
                 case "sta":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     pattern = new StateStrategy(nameSpaceClassCollection, true);
                     break;
                 case "str":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     pattern = new StateStrategy(nameSpaceClassCollection, false);
                     break;
                 case "obs":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     //pattern = new Observer(nameSpaceClassCollection, false);
                     break;
                 case "cmd":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     //pattern = new Command(nameSpaceClassCollection, false);
                     break;
             }

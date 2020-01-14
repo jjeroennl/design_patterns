@@ -64,7 +64,9 @@
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <StackPanel x:Name="PatternList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="PatternList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                </ScrollViewer>
                 <StackPanel Grid.Column="1">
                     <StackPanel x:Name="Summary" Visibility="Collapsed" HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch" Orientation="Vertical">

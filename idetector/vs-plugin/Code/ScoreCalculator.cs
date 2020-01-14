@@ -70,11 +70,6 @@ namespace idetector
                     {
                         score += _priorities[pattern][r.Id].Weight;
                     }
-
-                    if (r.Class != null)
-                    {
-                        classes.Add(r.Class.Identifier);
-                    }
                 }
                 score = (((int)((score / _scores[pattern]) * 100) / classes.Count));
 
