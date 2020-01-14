@@ -127,12 +127,12 @@ namespace idetector.Data
              * COMMAND-HAS-INVOKER-CLASS
              */
             List<PatternRequirement> commandreqs = new List<PatternRequirement>();
-            commandreqs.Add(new PatternRequirement("COMMAND-HAS-INTERFACE", 2, "The command pattern does not contain either an interface or an abstract class."));
-            commandreqs.Add(new PatternRequirement("COMMAND-HAS-COMMAND-CLASS", 3, "There are no commands that implement the abstract class or interface."));
-            commandreqs.Add(new PatternRequirement("COMMAND-HAS-PUBLIC-CONSTRUCTOR", 1, "One or all of the commands do not have a public constructor."));
-            commandreqs.Add(new PatternRequirement("COMMAND-HAS-RECEIVER-CLASS", 2, "There are no receiver classes implemented"));
-            commandreqs.Add(new PatternRequirement("COMMAND-USES-RECEIVER",2, "None of the commands are controlled by a receiver"));
-            commandreqs.Add(new PatternRequirement("COMMAND-HAS-INVOKER-CLASS", 3, "The code does not contain an Invoker class"));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-INTERFACE", "Interface or Abstract","The pattern should contain an interface for all the commands.", "The command pattern does not contain either an interface or an abstract class."));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-COMMAND-CLASS", "Command classes","The pattern should contain command classes in order to execute functions through them.", "There are no commands that implement the abstract class or interface."));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-PUBLIC-CONSTRUCTOR", "Command public constructor","The pattern should contain a public constructor so this can be called through the interface.", "One or all of the commands do not have a public constructor."));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-RECEIVER-CLASS","Receiver classes" ,"The pattern should contain one or more receiver classes to perform commands on.","There are no receiver classes implemented"));
+            commandreqs.Add(new PatternRequirement("COMMAND-USES-RECEIVER", "Command implements Receiver", "At least one command pattern should implement the receiver in order to perform functions on the designated receiver.", "None of the commands are controlled by a receiver"));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-INVOKER-CLASS", "Invoker class","The pattern should contain an invoker class to perform the commands.", "The code does not contain an Invoker class"));
             PatternRequirements.Add("COMMAND", commandreqs);
         }
         public Dictionary<string, List<PatternRequirement>> GetRequirements()
