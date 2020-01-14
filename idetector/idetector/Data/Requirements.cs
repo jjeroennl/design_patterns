@@ -104,18 +104,15 @@ namespace idetector.Data
              * OBSERVER-HAS-OBSERVER-RELATIONS
              */
             List<PatternRequirement> observerreqs = new List<PatternRequirement>();
-            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-OBSERVER-INTERFACE", 4, ""));
-            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-SUBJECT-INTERFACE", 3, ""));
-            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-OBSERVER-RELATIONS", 2, ""));
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-OBSERVER-INTERFACE", 1, ""));
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-SUBJECT-INTERFACE", 1, ""));
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-OBSERVER-RELATIONS", 1, ""));
+            observerreqs.Add(new PatternRequirement("OBSERVER-HAS-OBSERVERS-AND-SUBJECTS", 1, ""));
             PatternRequirements.Add("OBSERVER", observerreqs);
-
-
-
         }
         public Dictionary<string, List<PatternRequirement>> GetRequirements()
         {
             return PatternRequirements;
         }
-
     }
 }

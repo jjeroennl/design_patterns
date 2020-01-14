@@ -191,5 +191,19 @@ namespace idetector.Patterns.Helper
 
             return classes;
         }
+
+        public static List<ClassModel> ListInterfacesAndAbstracts(ClassCollection collection)
+        {
+            List<ClassModel> classes = new List<ClassModel>();
+            foreach (var cls in collection.GetClasses())
+            {
+                if (cls.Value.IsInterface || cls.Value.IsAbstract)
+                {
+                    classes.Add(cls.Value);
+                }
+            }
+
+            return classes;
+        }
     }
 }
