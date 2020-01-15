@@ -52,7 +52,6 @@ namespace idetector.Patterns
                 ConcreteFactoryIsReturningConcreteProduct();
                 ConcreteProductsFollowOneProductInterface();
                 HasMultipleMethods();
-
                 _reqs.Add(ifac.Identifier, _results);
             }
         }

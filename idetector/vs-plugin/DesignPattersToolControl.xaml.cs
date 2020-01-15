@@ -143,6 +143,7 @@ namespace vs_plugin
             var singletonList = new List<Pattern>();
             var decoratorList = new List<Pattern>();
             var commandList = new List<Pattern>();
+            var observerList = new List<Pattern>();
 
             var f = new Facade(collection);
             f.Scan();
@@ -166,6 +167,8 @@ namespace vs_plugin
             var d = new Decorator(collection);
             d.Scan();
 
+            var o = new Observer(collection);
+            o.Scan();
 
             foreach (var item in collection.GetClasses())
             {
@@ -180,6 +183,7 @@ namespace vs_plugin
             commandList = this.HandleResults("COMMAND", commandList, c.GetResults());
             abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
             factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
+            //observerList = this.HandleResults("OBSERVER", observerList, o.GetResults());
 
 
             PatternList.Children.Clear();
@@ -193,10 +197,8 @@ namespace vs_plugin
             PopulatePattern("State", stateList);
             PopulatePattern("Strategy", strategyList);
             PopulatePattern("Command", commandList);
-            // this.PopulatePattern("factory", factoryList);
-            // this.PopulatePattern("singleton", singletonList);
-            // this.PopulatePattern("state", stateList);
-            // this.PopulatePattern("strategory", strategyList);
+            PopulatePattern("Observer", observerList);
+
         }
 
         private List<Pattern> HandleResults(string pattern, List<Pattern> patternList, Dictionary<string, List<RequirementResult>> results)
@@ -265,6 +267,8 @@ namespace vs_plugin
             ht.Text = "Found in: ";
             ht.FontWeight = FontWeights.Bold;
             this.ClassList.Children.Add(ht);
+
+            WikiLink = req.WikipediaURL;
 
             foreach (var res in results)
             {

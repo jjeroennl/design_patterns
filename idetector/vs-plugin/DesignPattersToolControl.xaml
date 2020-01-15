@@ -93,7 +93,7 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel Name="ClassList"></StackPanel>
                             <Label VerticalAlignment="Bottom" FontStyle="Italic" Grid.Column="1" HorizontalAlignment="Right" MouseDown="MoreInfoClick">
-                                <Hyperlink>More info...</Hyperlink>
+                                More info...
                             </Label>
                         </Grid>
                     </StackPanel>
