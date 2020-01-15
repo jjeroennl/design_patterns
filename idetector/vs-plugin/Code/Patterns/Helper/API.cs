@@ -17,7 +17,7 @@ namespace idetector.Patterns.Helper
         /// <returns>True or False</returns>
         public static bool ClassHasPropertyOfType(ClassModel cls, string type = null, string[] modifiers = null)
         {
-            foreach (var property in cls.getProperties())
+            foreach (var property in cls.GetProperties())
                 if (type == null || property.ValueType.Equals(type))
                 {
                     if (modifiers == null) return true;
@@ -37,7 +37,7 @@ namespace idetector.Patterns.Helper
         /// <returns></returns>
         public static bool ClassHasPropertySyntaxSetter(ClassModel cls, string type = null)
         {
-            foreach (var property in cls.getProperties())
+            foreach (var property in cls.GetProperties())
             {
                 if (type == null || property.ValueType.Equals(type))
                 {
@@ -60,7 +60,7 @@ namespace idetector.Patterns.Helper
         public static bool ClassHasConstructorOfType(ClassModel cls, string type = null, string[] modifiers = null)
         {
             if (modifiers != null && type != null)
-                return cls.getMethods().Any(
+                return cls.GetMethods().Any(
                     e =>
                         e.Modifiers.All(
                             i => modifiers.Any(m => m == i)
@@ -68,18 +68,18 @@ namespace idetector.Patterns.Helper
                         && e.Parameters.Contains(type)
                         && e.isConstructor);
             else if (modifiers == null && type != null)
-                return cls.getMethods().Any(
+                return cls.GetMethods().Any(
                     e =>
                         e.Parameters.Contains(type)
                         && e.isConstructor);
             else if (modifiers != null && type == null)
-                return cls.getMethods().Any(
+                return cls.GetMethods().Any(
                     e =>
                         e.Modifiers.All(
                             i => modifiers.Any(m => m == i)
                         )
                         && e.isConstructor);
-            else return cls.getMethods().Any(
+            else return cls.GetMethods().Any(
                 e =>
                     e.Parameters.Contains(type)
                     && e.isConstructor);
@@ -87,7 +87,7 @@ namespace idetector.Patterns.Helper
         }
         internal static MethodModel ClassGetMethodWithName(ClassModel cls, string name)
         {
-            return cls.getMethods().Where(e => e.Identifier.Equals(name))?.First();
+            return cls.GetMethods().Where(e => e.Identifier.Equals(name))?.First();
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace idetector.Patterns.Helper
         /// <returns></returns>
         public static bool ClassHasPropertySyntaxGetter(ClassModel cls, string type = null)
         {
-            foreach (var property in cls.getProperties())
+            foreach (var property in cls.GetProperties())
             {
                 if (type == null || property.ValueType.Equals(type))
                 {
@@ -123,7 +123,7 @@ namespace idetector.Patterns.Helper
             string[] modifiers = null)
         {
             List<PropertyModel> properties = new List<PropertyModel>();
-            foreach (var property in cls.getProperties())
+            foreach (var property in cls.GetProperties())
                 if (property.ValueType.Equals(type))
                 {
                     if (modifiers == null) continue;
@@ -148,12 +148,12 @@ namespace idetector.Patterns.Helper
             bool allowConstructor = false)
         {
             if (modifiers != null)
-                return cls.getMethods().Any(
+                return cls.GetMethods().Any(
                     e =>
                         modifiers.All(e.HasModifier)
                         && e.ReturnType == type
                         && (e.isConstructor && allowConstructor || e.isConstructor == false && !allowConstructor));
-            return cls.getMethods().Any(
+            return cls.GetMethods().Any(
                 e =>
                     e.ReturnType == type
                     && (e.isConstructor && allowConstructor || e.isConstructor == false && !allowConstructor));
@@ -172,7 +172,7 @@ namespace idetector.Patterns.Helper
             List<MethodModel> methodList = new List<MethodModel>();
             if (modifiers != null)
             {
-                foreach (var method in cls.getMethods().Where(
+                foreach (var method in cls.GetMethods().Where(
                     e =>
                         modifiers.All(e.HasModifier)
                         && e.ReturnType == type
@@ -194,7 +194,7 @@ namespace idetector.Patterns.Helper
         /// <returns>True or False</returns>
         public static bool ClassHasMethodWithParam(ClassModel cls, string type)
         {
-            return cls.getMethods().Any(e => e.Parameters.Contains(type));
+            return cls.GetMethods().Any(e => e.Parameters.Contains(type));
         }
       
         /// <summary>
@@ -205,7 +205,7 @@ namespace idetector.Patterns.Helper
         /// <returns>List<MethodModel></returns>
         public static List<MethodModel> ClassGetMethodsWithParam(ClassModel cls, string type)
         {
-            return cls.getMethods().Where(e => e.Parameters.Contains(type)).ToList();
+            return cls.GetMethods().Where(e => e.Parameters.Contains(type)).ToList();
         }
 
 
@@ -247,7 +247,7 @@ namespace idetector.Patterns.Helper
         /// <returns>True/False</returns>
         public static bool ChildCallsBaseConstructor(ClassModel cls)
         {
-            foreach (var cons in cls.getConstructors())
+            foreach (var cons in cls.GetConstructors())
             {
                 var node = (ConstructorDeclarationSyntax)cons.getNode();
                 if (node.Initializer.ThisOrBaseKeyword.ToString().ToLower().Equals("base"))
@@ -280,6 +280,20 @@ namespace idetector.Patterns.Helper
             foreach (var cls in collection.GetClasses())
             {
                 if (cls.Value.IsInterface)
+                {
+                    classes.Add(cls.Value);
+                }
+            }
+
+            return classes;
+        }
+
+        public static List<ClassModel> ListInterfacesAndAbstracts(ClassCollection collection)
+        {
+            List<ClassModel> classes = new List<ClassModel>();
+            foreach (var cls in collection.GetClasses())
+            {
+                if (cls.Value.IsInterface || cls.Value.IsAbstract)
                 {
                     classes.Add(cls.Value);
                 }
