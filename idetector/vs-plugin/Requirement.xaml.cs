@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using idetector.Models;
@@ -13,6 +14,7 @@ namespace vs_plugin
     {
         private RequirementResult _result;
         private PatternRequirement _patternRequirement;
+        public bool openInfoScreen = true;
         private string _pattern;
         public Requirement()
         {
@@ -24,11 +26,14 @@ namespace vs_plugin
 
         private void pattern_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            UIHandler.SummarySelection(this._pattern, _patternRequirement, this._result.Passed);
+            if (openInfoScreen)
+            {
+                UIHandler.SummarySelection(this._pattern, _patternRequirement, this._result.Passed);
+            }
         }
 
 
-        public void SetRequirement(string pattern, RequirementResult result)
+        public void SetRequirement(string pattern, RequirementResult result, bool loadrequirement = true)
         {
             this._result = result;
             this._pattern = pattern;
@@ -44,10 +49,18 @@ namespace vs_plugin
                 this.Check.Foreground = new SolidColorBrush(Color.FromRgb(128, 0, 0));
             }
 
-            var requirements = ToolWindow1Control.Patterns[pattern.ToUpper()];
-            _patternRequirement = requirements.Find(e => e.Id.Equals(result.Id));
-            var errormessage = _patternRequirement.Title;
-            this.RequirementText.Text = errormessage;
+            if (loadrequirement)
+            {
+                var requirements = ToolWindow1Control.Patterns[pattern.ToUpper().Replace(" ", "-")];
+                _patternRequirement = requirements.Find(e => e.Id.Equals(result.Id));
+                var errormessage = _patternRequirement.Title;
+                this.RequirementText.Text = errormessage;
+            }
+        }
+
+        internal void SetRequirement(object result)
+        {
+            throw new NotImplementedException();
         }
     }
 }

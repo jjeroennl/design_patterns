@@ -24,13 +24,15 @@ namespace idetector.Models
         public HashSet<ClassModel> Parents = new HashSet<ClassModel>();
         public HashSet<ClassModel> ObjectCreations = new HashSet<ClassModel>();
         public HashSet<string> UnknownParent = new HashSet<string>();
+        public string Namespace;
 
         public ClassModel(ClassDeclarationSyntax node)
         {
             _node = node;
             Keyword = node.Keyword.ToString();
             Identifier = node.Identifier.ToString();
-            
+
+            _setNamespace(node);
             _setMembers();
             _setAttributes();
             _setModifiers();
@@ -41,12 +43,26 @@ namespace idetector.Models
             Keyword = node.Keyword.ToString();
             Identifier = node.Identifier.ToString();
             IsInterface = true;
-            
+
             _setMembers();
             _setAttributes();
             _setModifiers();
         }
-        
+
+        private void _setNamespace(TypeDeclarationSyntax node)
+        {
+            SyntaxNode parent = node;
+            while (!parent.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax") && node.Parent != null)
+            {
+                parent = node.Parent;
+            }
+
+            if (parent.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax"))
+            {
+                var @namespace = (NamespaceDeclarationSyntax)parent;
+                this.Namespace = @namespace.Name.ToString();
+            }
+        }
 
         private void _setModifiers()
         {
@@ -155,8 +171,8 @@ namespace idetector.Models
         public bool HasParent(string name)
         {
             var hasUnknownParent = false;
-            
-            if(this.UnknownParent.Count > 0)
+
+            if (this.UnknownParent.Count > 0)
             {
                 hasUnknownParent = this.UnknownParent.Any(e => e.Equals(name));
             }

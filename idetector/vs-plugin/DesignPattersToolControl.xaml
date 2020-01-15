@@ -18,28 +18,45 @@
         </Style>
     </UserControl.Resources>
     <StackPanel VerticalAlignment="Stretch">
-        <Grid Name="Default" Visibility="Visible">
+        <Grid Name="Default" Visibility="Visible" VerticalAlignment="Stretch" >
             <Grid.RowDefinitions>
-                <RowDefinition Height="32" />
+                <RowDefinition Height="64" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid x:Name="idetectorPlugin" VerticalAlignment="Stretch">
+            <Grid x:Name="idetectorPlugin" VerticalAlignment="Stretch" Background="White">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
+                    <ColumnDefinition Width="0.4*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="1"></RowDefinition>
+                    <RowDefinition Height="5"></RowDefinition>
+                    <RowDefinition Height="1"></RowDefinition>
+                    <RowDefinition Height="1"></RowDefinition>
+                    <RowDefinition Height="1"></RowDefinition>
+                    <RowDefinition Height="1"></RowDefinition>
+                    <RowDefinition Height="1"></RowDefinition>
+                </Grid.RowDefinitions>
 
-                <Image Source="Resources/Logo.png" HorizontalAlignment="Left" Grid.Column="0" Margin="0,0,0,0"
-                       Width="140" />
+                <Image Source="Resources/small-logo.png"  HorizontalAlignment="Left" Grid.Column="0" Margin="0,0,0,0"
+                       VerticalAlignment="Stretch"/>
                 <StackPanel x:Name="ScanButtons" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
-                            VerticalAlignment="Center">
-                    <Button x:Name="ScanProject" Content="Scan Project" VerticalAlignment="Center" MinWidth="100"
+                            VerticalAlignment="Center" Margin="0,4,10,0">
+                    <Button x:Name="Pattern_Guide" Content="Pattern Guide" Margin="0,0,10,0" VerticalAlignment="Center" MinWidth="100" Background="{x:Null}" Click="Pattern_Guide_Click" />
+                    <Button x:Name="ScanProject" Content="Scan Project" Margin="0,0,10,0" VerticalAlignment="Center" MinWidth="100"
                             Click="Scan_Current_project" Background="{x:Null}" />
-                    <Button x:Name="ScanFile" Content="Scan open File" VerticalAlignment="Center" MinWidth="100"
+                    <Button x:Name="ScanFile" Content="Scan open File" Margin="0,0,10,0" VerticalAlignment="Center" MinWidth="100"
                             Click="Scan_Current_file" Background="{x:Null}" />
                     <Button x:Name="Settings" Content="⚙️" VerticalAlignment="Center" MinWidth="32"
                             Click="OpenSettingsPanel" Background="{x:Null}" />
                 </StackPanel>
+
+                <Border Grid.Row="3" Grid.ColumnSpan="2" Background="#FFB8B8B8" />
+                <Border Grid.Row="4" Grid.ColumnSpan="2" Background="#FFC3C3C3"  />
+                <Border Grid.Row="5" Grid.ColumnSpan="2" Background="#FFCFCFCF" />
+                <Border Grid.Row="6" Grid.ColumnSpan="2" Background="#FFDFDFDF" />
+                <Border Grid.Row="7" Grid.ColumnSpan="2" Background="#FFE5E5E5" />
             </Grid>
             <Grid HorizontalAlignment="Stretch" Grid.Row="2" VerticalAlignment="Stretch" Name="DesignPatterns"
                   Grid.ColumnSpan="2" Height="auto">
@@ -47,7 +64,9 @@
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <StackPanel x:Name="PatternList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Height="900" HorizontalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
+                    <StackPanel x:Name="PatternList"  ScrollViewer.CanContentScroll="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                </ScrollViewer>
                 <StackPanel Grid.Column="1">
                     <StackPanel x:Name="Summary" Visibility="Collapsed" HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch" Orientation="Vertical">
@@ -74,20 +93,21 @@
                 </StackPanel>
             </Grid>
         </Grid>
-        <Grid Name="SettingsGrid" Visibility="Collapsed">
+        <Grid Name="SettingsGrid" Visibility="Collapsed" VerticalAlignment="Stretch" Height="Auto">
             <Grid.RowDefinitions>
                 <RowDefinition Height="20"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Grid HorizontalAlignment="Stretch">
+            <Grid HorizontalAlignment="Stretch" Grid.Row="0">
                 <TextBlock Text="Settings" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <Button Content="Back" HorizontalAlignment="Right" Click="Button_Click" />
+                <Button Content="Back" HorizontalAlignment="Right" Click="Button_Click" Background="{x:Null}" />
             </Grid>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Height="900"  HorizontalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
+                <StackPanel Name="Ranges"  ScrollViewer.CanContentScroll="True" CanVerticallyScroll="True" Orientation="Vertical" Visibility="Visible">
+                </StackPanel>
+            </ScrollViewer>
 
-            <StackPanel Name="Ranges" Grid.Row="1" CanVerticallyScroll="True" Orientation="Vertical" Visibility="Visible">
-
-            </StackPanel>
         </Grid>
 
 

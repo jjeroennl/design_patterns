@@ -13,7 +13,6 @@ namespace vs_plugin
         {
             TextBlock textBlock = new TextBlock();
             textBlock.Text = handle;
-            PatternName1.Name = handle;
             PatternName1.Header = textBlock;
         }
 

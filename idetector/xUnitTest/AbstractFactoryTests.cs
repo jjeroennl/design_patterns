@@ -264,20 +264,20 @@ namespace xUnitTest
             var collection = Walker.GenerateModels(tree);
             Requirements r = new Requirements();
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            int score = 0;
 
             AbstractFactoryMethod abstractFactory = new AbstractFactoryMethod(collection, false);
             abstractFactory.Scan();
-            int score = calculator.GetScore("FACTORY", abstractFactory.GetResult());
+            var results = abstractFactory.GetResults();
 
-            Assert.True(abstractFactory.ContainsIFactoryClass().Passed);
-            Assert.True(abstractFactory.ContainsProductInterface().Passed);
-            Assert.True(abstractFactory.ContainsAbstractProductInterfaceMethod().Passed);
-            Assert.True(abstractFactory.IsInheritingFactoryClass().Passed);
-            Assert.True(abstractFactory.IsInheritingProductInterface().Passed);
-            Assert.True(abstractFactory.ConcreteFactoryIsReturningConcreteProduct().Passed);
-            Assert.True(abstractFactory.HasMultipleMethods().Passed);
-            Assert.True(abstractFactory.ConcreteProductsFollowOneProductInterface().Passed);
-
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("ABSTRACT-FACTORY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
             Assert.Equal(100, score);
         }
 

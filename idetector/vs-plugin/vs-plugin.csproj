@@ -64,18 +64,28 @@
     <Compile Include="Code\Parser\ClassWalker.cs" />
     <Compile Include="Code\Parser\CodeParser.cs" />
     <Compile Include="Code\Parser\Walker.cs" />
+    <Compile Include="Code\Patterns\AbstractFactoryMethod.cs" />
+    <Compile Include="Code\Patterns\Command.cs" />
     <Compile Include="Code\Patterns\Decorator.cs" />
     <Compile Include="Code\Patterns\Facade\Facade.cs" />
-    <Compile Include="Code\Patterns\FactoryMethod.cs" />
     <Compile Include="Code\Patterns\Helper\API.cs" />
     <Compile Include="Code\Patterns\Helper\ChildList.cs" />
     <Compile Include="Code\Patterns\Helper\FacadeRelationTable.cs" />
     <Compile Include="Code\Patterns\Helper\RelationTable.cs" />
     <Compile Include="Code\Patterns\IPattern.cs" />
+    <Compile Include="Code\Patterns\Iterator.cs" />
     <Compile Include="Code\Patterns\Singleton.cs" />
     <Compile Include="Code\Patterns\StateStrategy.cs" />
     <Compile Include="Code\ScoreCalculator.cs" />
     <Compile Include="Code\UIHandler.cs" />
+    <Compile Include="Guide\GuidanceTool.cs" />
+    <Compile Include="Guide\GuidanceToolCommand.cs" />
+    <Compile Include="Guide\GuidanceToolControl.xaml.cs">
+      <DependentUpon>GuidanceToolControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Guide\NewGuidance.xaml.cs">
+      <DependentUpon>NewGuidance.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PatternWeight.xaml.cs">
       <DependentUpon>PatternWeight.xaml</DependentUpon>
     </Compile>
@@ -123,6 +133,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Guide\GuidanceToolControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Guide\NewGuidance.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="PatternWeight.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -145,7 +163,12 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Logo.png" />
+    <Content Include="Guide\Resources\GuidanceToolCommand.png" />
+    <Content Include="Logo.png" />
+    <Content Include="Resources\Logo.png" />
+    <Resource Include="Resources\small-logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\ToolWindow1Command.png" />
     <VSCTCompile Include="vs_pluginPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
@@ -162,6 +185,7 @@
       <Version>15.9.3</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Target Name="IncludeNuGetResolvedAssets" DependsOnTargets="ResolveNuGetPackageAssets">
     <ItemGroup>
       <VSIXCopyLocalReferenceSourceItem Include="@(ReferenceCopyLocalPaths)" />
