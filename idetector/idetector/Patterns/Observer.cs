@@ -68,8 +68,8 @@ namespace idetector.Patterns
         {
             foreach (var cls in interfaces)
             {
-                if (cls.getMethods().Count == 1 && cls.getMethods()[0].ReturnType == "void" &&
-                    !cls.getMethods()[0].Modifiers.Contains("private"))
+                if (cls.GetMethods().Count == 1 && cls.GetMethods()[0].ReturnType == "void" &&
+                    !cls.GetMethods()[0].Modifiers.Contains("private"))
                 {
                     IObserverClass = cls;
                     Debug.WriteLine("HasObserverInterface Added: " + cls.Identifier + " true");
@@ -100,7 +100,7 @@ namespace idetector.Patterns
         {
             foreach (var cls in interfaces)
             {
-                foreach (var method in cls.getMethods())
+                foreach (var method in cls.GetMethods())
                 {
                     if (method.ReturnType == "void")
                     {
@@ -140,7 +140,7 @@ namespace idetector.Patterns
             foreach (var subject in subjects)
             {
                 Debug.WriteLine("142");
-                foreach (var property in subject.getProperties())
+                foreach (var property in subject.GetProperties())
                 {
                     Debug.WriteLine("145");
                     //checkt alleen voor dingen die parameters hebben zoals List<Interface> etc.
