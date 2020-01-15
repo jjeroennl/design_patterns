@@ -72,197 +72,12 @@ namespace xUnitTest
                 }
         ");
         }
-
-        SyntaxTree FailureSetup()
-        {
-            return CSharpSyntaxTree.ParseText(@"
-                abstract class Creator
-                {
-                    public string SomeOperation()
-                    {
-                        var product = FactoryMethod();
-                        var result = 'Creator: The same creator's code has just worked with '
-                            + product.Operation();
-
-                        return result;
-                    }
-                }
-        ");
-        }
-
-        SyntaxTree MissingAbstractFactoryClassSetup()
-        {
-            return CSharpSyntaxTree.ParseText(@"
-                class Creator
-                { }
-        ");
-        }
-
-        SyntaxTree MissingAbstractProductInterfaceMethodSetup()
-        {
-            return CSharpSyntaxTree.ParseText(@"
-                abstract class Creator
-                {
-                    public string SomeOperation()
-                    {
-                        var product = FactoryMethod();
-                        var result = 'Creator: The same creator's code has just worked with '
-                            + product.Operation();
-
-                        return result;
-                    }
-                }
-        ");
-        }
-
-        SyntaxTree IsNotInheritingAbstractFactoryClassSetup()
+        SyntaxTree noIProductSetup()
         {
             return CSharpSyntaxTree.ParseText(@"
                 abstract class Creator
                 {
                     public abstract IProduct FactoryMethod();
-
-                    public string SomeOperation()
-                    {
-                        var product = FactoryMethod();
-                        var result = 'Creator: The same creator's code has just worked with '
-                            + product.Operation();
-
-                        return result;
-                    }
-                }
-
-                class ConcreteCreator1
-                {
-                    public IProduct FactoryMethod()
-                    {
-                        return new ConcreteProduct1();
-                    }
-                }
-
-        ");
-        }
-
-        SyntaxTree MissingProductInterfaceSetup()
-        {
-            return CSharpSyntaxTree.ParseText(@"
-                abstract class Creator
-                {
-                    public abstract IProduct FactoryMethod();
-
-                    public string SomeOperation()
-                    {
-                        var product = FactoryMethod();
-                        var result = 'Creator: The same creator's code has just worked with '
-                            + product.Operation();
-
-                        return result;
-                    }
-                }
-
-                public class IProduct
-                {
-                    string Operation();
-                }
-        ");
-        }
-
-        SyntaxTree IsNotInheritingProductInterfaceSetup()
-        {
-            return CSharpSyntaxTree.ParseText(@"
-                abstract class Creator
-                {
-                    string Operation();
-                }
-
-                public interface IProduct
-                {
-                    string Operation();
-                }
-
-                class ConcreteProduct1 : Creator
-                {
-                    public string Operation()
-                    {
-                        return '{ Result of ConcreteProduct1}
-                        ';
-                    }
-                }
-
-        ");
-        }
-
-        SyntaxTree ConcreteFactoryIsNotReturningConcreteProductSetup()
-        {
-            return CSharpSyntaxTree.ParseText(@"
-                abstract class Creator
-                {
-                    public abstract IProduct FactoryMethod();
-
-                    public string SomeOperation()
-                    {
-                        var product = FactoryMethod();
-                        var result = 'Creator: The same creator's code has just worked with '
-                            + product.Operation();
-
-                        return result;
-                    }
-                }
-
-                class ConcreteCreator1 : Creator
-                {
-                    //
-                }
-
-                public interface IProduct
-                {
-                    string Operation();
-                }
-
-                class ConcreteProduct1 : IProduct
-                {
-                    public string Operation()
-                    {
-                        return '{ Result of ConcreteProduct1}
-                        ';
-                    }
-                }
-
-        ");
-        }
-
-        SyntaxTree ConcreteFactoriesDoNotHaveOneMethodSetup()
-        {
-            return CSharpSyntaxTree.ParseText(@"
-                abstract class Creator
-                {
-                    public abstract IProduct FactoryMethod();
-
-                    public string SomeOperation()
-                    {
-                        var product = FactoryMethod();
-                        var result = 'Creator: The same creator's code has just worked with '
-                            + product.Operation();
-
-                        return result;
-                    }
-                }
-
-                public interface IProduct
-                {
-                    string Operation();
-                }
-
-        ");
-        }
-
-        SyntaxTree ConcreteProductsDontFollowOneProductInterfaceSetup()
-        {
-            return CSharpSyntaxTree.ParseText(@"
-                abstract class Creator
-                {
-                    public abstract IProduct FactoryMethod();
-                    public abstract IProduct2 FactoryMethod();
 
                     public string SomeOperation()
                     {
@@ -290,12 +105,60 @@ namespace xUnitTest
                     }
                 }
 
-                public interface IProduct
+
+                class ConcreteProduct1 : IProduct
                 {
-                    string Operation();
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct1}
+                        ';
+                    }
                 }
 
-                public interface IProduct2
+                class ConcreteProduct2 : IProduct
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct2}
+                        ';
+                    }
+                }
+        ");
+        }
+        SyntaxTree NoConcreteProductReturned()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+                abstract class Creator
+                {
+                    public abstract IProduct FactoryMethod();
+
+                    public string SomeOperation()
+                    {
+                        var product = FactoryMethod();
+                        var result = 'Creator: The same creator's code has just worked with '
+                            + product.Operation();
+
+                        return result;
+                    }
+                }
+
+                class ConcreteCreator1 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        
+                    }
+                }
+
+                class ConcreteCreator2 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct2();
+                    }
+                }
+
+                public interface IProduct
                 {
                     string Operation();
                 }
@@ -309,7 +172,7 @@ namespace xUnitTest
                     }
                 }
 
-                class ConcreteProduct2 : IProduct2
+                class ConcreteProduct2 : IProduct
                 {
                     public string Operation()
                     {
@@ -319,187 +182,137 @@ namespace xUnitTest
                 }
         ");
         }
-        #endregion
-
-
-        #region Tests for individual succeeding checks.
-
-        [Fact]
-        public void Test_FactoryMethod_ContainsAbstractFactoryClass()
+        SyntaxTree MultipleInterfaceProducts()
         {
-            var tree = SuccessSetup();
-            var collection = Walker.GenerateModels(tree);
+            return CSharpSyntaxTree.ParseText(@"
+                abstract class Creator
+                {
+                    public abstract IProduct FactoryMethod();
+
+                    public string SomeOperation()
+                    {
+                        var product = FactoryMethod();
+                        var result = 'Creator: The same creator's code has just worked with '
+                            + product.Operation();
+
+                        return result;
+                    }
+                }
+
+                class ConcreteCreator1 : Creator
+                {
+                    public override IProduct2 FactoryMethod()
+                    {
+                        return new ConcreteProduct1();
+                    }
+                }
+
+                class ConcreteCreator2 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct2();
+                    }
+                }
             
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            Assert.True(factoryMethod.ContainsIFactoryClass().Passed);
-        }
+                public interface IProduct
+                {
+                    string Operation();
+                }
+                public interface IProduct2
+                {
+                    string Operation();
+                }
 
-        [Fact]
-        public void Test_FactoryMethod_ContainsAbstractProductInterfaceMethod()
+                class ConcreteProduct1 : IProduct2
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct1}
+                        ';
+                    }
+                }
+
+                class ConcreteProduct2 : IProduct
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct2}
+                        ';
+                    }
+                }
+        ");
+        }
+        SyntaxTree MultipleMethods()
         {
-            var tree = SuccessSetup();
-            var collection = Walker.GenerateModels(tree);
+            return CSharpSyntaxTree.ParseText(@"
+                abstract class Creator
+                {
+                    public abstract IProduct FactoryMethod();
+
+                    public string SomeOperation()
+                    {
+                        var product = FactoryMethod();
+                        var result = 'Creator: The same creator's code has just worked with '
+                            + product.Operation();
+
+                        return result;
+                    }
+                }
+
+                class ConcreteCreator1 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct1();
+                    }
+                    public IProduct2 FactoryMethod2(){
+                        return new ConcreteProduct3();
+                    }
+                }
+
+                class ConcreteCreator2 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct2();
+                    }
+                }
             
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            Assert.True(factoryMethod.ContainsAbstractProductInterfaceMethod().Passed);
-        }
+                public interface IProduct
+                {
+                    string Operation();
+                }
+                public interface IProduct2
+                {
+                    string Operation();
+                }
+                class ConcreteProduct3 : IProduct2(){
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct3}
+                        ';
+                    }
+                 }
 
-        [Fact]
-        public void Test_FactoryMethod_IsInheritingAbstractFactoryClass()
-        {
-            var tree = SuccessSetup();
-            var collection = Walker.GenerateModels(tree);
+                class ConcreteProduct1 : IProduct
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct1}
+                        ';
+                    }
+                }
 
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            Assert.True(factoryMethod.IsInheritingFactoryClass().Passed);
-        }
-
-        [Fact]
-        public void Test_FactoryMethod_IsInheritingProductInterface()
-        {
-            var tree = SuccessSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            Assert.True(factoryMethod.IsInheritingProductInterface().Passed);
-        }
-
-        [Fact]
-        public void Test_FactoryMethod_ConcreteFactoryIsReturningProduct()
-        {
-            var tree = SuccessSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-
-            Assert.True(factoryMethod.ConcreteFactoryIsReturningConcreteProduct().Passed);
-        }
-
-        [Fact]
-        public void Test_FactoryMethod_ConcreteFactoryHasOneMethod()
-        {
-            var tree = SuccessSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            Assert.True(factoryMethod.HasMultipleMethods().Passed);
-        }
-
-        [Fact]
-        public void Test_FactoryMethod_ConcreteProductsFollowOneProductInterface()
-        {
-            var tree = SuccessSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            Assert.True(factoryMethod.ConcreteProductsFollowOneProductInterface().Passed);
-        }
-        #endregion
-
-        #region Tests for individual failing checks.
-
-        [Fact]
-        public void Test_FactoryMethod_MissingFactoryClassSetup()
-        {
-            var tree = MissingAbstractFactoryClassSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            Assert.False(factoryMethod.ContainsIFactoryClass().Passed);
-        }
-
-        [Fact]
-        public void Test_FactoryMethod_MissingAbstractProductInterfaceMethod()
-        {
-            var tree = MissingAbstractProductInterfaceMethodSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            Assert.True(factoryMethod.ContainsIFactoryClass().Passed);
-            Assert.False(factoryMethod.ContainsAbstractProductInterfaceMethod().Passed);
-        }
-
-        [Fact]
-        public void Test_FactoryMethod_IsNotInheritingAbstractFactoryClass()
-        {
-            var tree = IsNotInheritingAbstractFactoryClassSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            var results = factoryMethod.GetResults()["Creator"];
-            Assert.True(results[0].Passed);
-            Assert.False(results[4].Passed);
-        }
-
-        [Fact]
-        public void Test_FactoryMethod_MissingProductInterface()
-        {
-            var tree = MissingProductInterfaceSetup();
-            var collection = Walker.GenerateModels(tree);
-            
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            var results = factoryMethod.GetResults()["Creator"];
-            Assert.False(results[1].Passed);
-        }
-
-        [Fact]
-        public void Test_FactoryMethod_IsNotInheritingProductInterface()
-        {
-            var tree = IsNotInheritingProductInterfaceSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            var results = factoryMethod.GetResults()["Creator"];
-            Assert.True(results[1].Passed);
-            Assert.False(results[2].Passed);
-        }
-
-        [Fact]
-        public void Test_FactoryMethod_ConcreteFactoryIsNotReturningConcreteProduct()
-        {
-            var tree = ConcreteFactoryIsNotReturningConcreteProductSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            var results = factoryMethod.GetResults()["Creator"];
-            Assert.False(results[4].Passed);
-        }
-
-        [Fact]
-        public void Test_FactoryMethod_ConcreteFactoryHasNotOneMethod()
-        {
-            var tree = ConcreteFactoriesDoNotHaveOneMethodSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            var results = factoryMethod.GetResults()["Creator"];
-            Assert.True(results[5].Passed);
-        }
-            
-        [Fact]
-        public void Test_FactoryMethod_ConcreteProductsDontFollowOneProductInterface()
-        {
-            var tree = ConcreteProductsDontFollowOneProductInterfaceSetup();
-            var collection = Walker.GenerateModels(tree);
-
-            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
-            factoryMethod.Scan();
-            var results = factoryMethod.GetResults()["Creator"];
-            Assert.False(results[5].Passed);
+                class ConcreteProduct2 : IProduct
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct2}
+                        ';
+                    }
+                }
+        ");
         }
         #endregion
 
@@ -515,15 +328,15 @@ namespace xUnitTest
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
 
-            var score = calculator.GetScore("FACTORY", factoryMethod.GetResults());
+            var score = calculator.GetScore("FACTORY", factoryMethod.GetResults()["Creator"]);
 
-            Assert.Equal(100, score["Creator"]);
+            Assert.Equal(100, score);
         }
-        
         [Fact]
-        public void Test_FactoryMethod_Score33()
+        public void Test_FactoryMethod_NoIProduct()
         {
-            var tree = FailureSetup();
+            //if there is no product interface, factory cannot return products at all.
+            var tree = noIProductSetup();
             var collection = Walker.GenerateModels(tree);
             Requirements r = new Requirements();
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
@@ -531,9 +344,54 @@ namespace xUnitTest
             AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
             factoryMethod.Scan();
 
-            var score = calculator.GetScore("FACTORY", factoryMethod.GetResults());
 
-            Assert.Equal(33, score["Creator"]);
+
+            Assert.Empty((factoryMethod.GetResults()));
+        }
+        [Fact]
+        public void Test_FactoryMethod_NoConcreteProductReturned()
+        {
+            var tree = NoConcreteProductReturned();
+            var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+
+            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
+            factoryMethod.Scan();
+
+            var score = calculator.GetScore("FACTORY", factoryMethod.GetResults()["Creator"]);
+
+            Assert.Equal(80, score);
+        }
+        [Fact]
+        public void Test_FactoryMethod_MultipleProductInterfaces()
+        {
+            var tree = MultipleInterfaceProducts();
+            var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+
+            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
+            factoryMethod.Scan();
+
+            var score = calculator.GetScore("FACTORY", factoryMethod.GetResults()["Creator"]);
+            //should fail both multiple products and multiple methods (since concrete factories return more then one type of interface)
+            Assert.Equal(60, score);
+        }
+        [Fact]
+        public void Test_FactoryMethod_MultipleMethods()
+        {
+            var tree = MultipleInterfaceProducts();
+            var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+
+            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, true);
+            factoryMethod.Scan();
+
+            var score = calculator.GetScore("FACTORY", factoryMethod.GetResults()["Creator"]);
+            //should fail both multiple products and multiple methods (since concrete factories return more then one type of interface)
+            Assert.Equal(60, score);
         }
         #endregion
     }
