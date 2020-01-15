@@ -44,7 +44,7 @@ namespace idetector.Patterns
 
         public void IsPrivateConstructor()
         {
-            foreach (var constructor in _cls.getConstructors())
+            foreach (var constructor in _cls.GetConstructors())
                 _results[_cls.Identifier].Add(
                     new RequirementResult("SINGLETON-PRIVATE-CONSTRUCTOR", constructor.HasModifier("private"), _cls,
                         constructor));

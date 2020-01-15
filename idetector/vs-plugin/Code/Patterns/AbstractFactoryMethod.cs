@@ -86,7 +86,7 @@ namespace idetector.Patterns
         {
             foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
             {
-                foreach (var method in cls.Value.getMethods())
+                foreach (var method in cls.Value.GetMethods())
                 {
                     if (cls.Value.IsAbstract || cls.Value.IsInterface)
                     {
@@ -123,7 +123,7 @@ namespace idetector.Patterns
         {
             foreach (var ifctr in parents)
             {
-                foreach (var property in ifctr.getProperties())
+                foreach (var property in ifctr.GetProperties())
                 {
                     foreach (var prnt in parents)
                     {
@@ -137,7 +137,7 @@ namespace idetector.Patterns
                         }
                     }
                 }
-                foreach (var method in ifctr.getMethods())
+                foreach (var method in ifctr.GetMethods())
                 {
                     foreach (var prnt in parents)
                     {
@@ -234,7 +234,7 @@ namespace idetector.Patterns
                 {
                     if (cls.Value.HasParent(@class.Identifier))
                     {
-                        foreach (var method in cls.Value.getMethods())
+                        foreach (var method in cls.Value.GetMethods())
                         {
                             foreach (var @interface in interfaces)
                             {
@@ -302,9 +302,9 @@ namespace idetector.Patterns
 
             if (ifactory != null)
             {
-                if (ifactory.getMethods().Count() > 1)
+                if (ifactory.GetMethods().Count() > 1)
                 {
-                    foreach (var method in ifactory.getMethods())
+                    foreach (var method in ifactory.GetMethods())
                     {
                         foreach (var prnt in parents)
                         {
