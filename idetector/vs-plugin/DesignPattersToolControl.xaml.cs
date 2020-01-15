@@ -4,6 +4,8 @@ using System.Data.SqlTypes;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using EnvDTE;
 using idetector;
@@ -30,6 +32,7 @@ namespace vs_plugin
         public static ScoreCalculator Calc;
         private int cutoff = 50;
         private ClassCollection collection;
+        public static string WikiLink;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ToolWindow1Control" /> class.
@@ -229,7 +232,8 @@ namespace vs_plugin
         ///     Method to replace summary's information and reset the text wrapping.
         /// </summary>
         /// <param name="text">Text to be placed inside TextBlock.</param>
-        public void UpdateSummary(string pattern, PatternRequirement req, bool passed)
+        public void UpdateSummary(string pattern, PatternRequirement req, bool passed, IEnumerable<RequirementResult> results)
+
         {
 
             if (passed)
@@ -255,6 +259,25 @@ namespace vs_plugin
             }
 
             ConditionText.TextWrapping = TextWrapping.Wrap;
+            this.ClassList.Children.Clear();
+
+            var ht = new TextBlock();
+            ht.Text = "Found in: ";
+            ht.FontWeight = FontWeights.Bold;
+            this.ClassList.Children.Add(ht);
+
+            foreach (var res in results)
+            {
+                if (res.Class == null)
+                {
+                    continue;
+                }
+
+                var t = new TextBlock();
+                t.Inlines.Add(res.Class.Identifier);
+
+                this.ClassList.Children.Add(t);
+            }
         }
 
         private Dictionary<ClassModel, List<RequirementResult>> GroupResults(List<RequirementResult> unGroupedList)
@@ -286,6 +309,11 @@ namespace vs_plugin
         private void Pattern_Guide_Click(object sender, RoutedEventArgs e)
         {
             new NewGuidance();
+        }
+
+        private void MoreInfoClick(object sender, MouseButtonEventArgs e)
+        {
+            System.Diagnostics.Process.Start(WikiLink.ToString());
         }
     }
 }

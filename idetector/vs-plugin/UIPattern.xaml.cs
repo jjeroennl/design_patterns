@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -13,6 +14,7 @@ namespace vs_plugin
     /// </summary>
     public partial class UIPattern : UserControl
     {
+        private List<string> _ids = new List<string>();
         public UIPattern()
         {
             InitializeComponent();
@@ -52,9 +54,15 @@ namespace vs_plugin
         {
             foreach (var result in requirementResults)
             {
-                var req = new Requirement();
-                req.SetRequirement(pattern, result);
-                this.RequirementList.Children.Add(req);
+                if (_ids.All(e => e != result.Id))
+                {
+                    var req = new Requirement();
+                    req.SetRequirement(pattern, result);
+                    req.SetClasses(requirementResults.Where(e => e.Id == result.Id));
+                    this.RequirementList.Children.Add(req);
+                    _ids.Add(result.Id);
+                }
+
 
             }
         }

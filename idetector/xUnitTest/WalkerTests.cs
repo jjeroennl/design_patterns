@@ -75,8 +75,8 @@ namespace xUnitTest
             var cls = collection.GetClass("User");
 
             Assert.Equal("User", cls.Identifier);
-            Assert.Single(cls.getProperties());
-            Assert.Equal(2, cls.getMethods().Count);
+            Assert.Single(cls.GetProperties());
+            Assert.Equal(2, cls.GetMethods().Count);
             Assert.False(cls.IsInterface);
         }
         [Fact]
@@ -86,7 +86,7 @@ namespace xUnitTest
 
             var intface = collection.GetClass("Controller");
             Assert.Equal("Controller", intface.Identifier);
-            Assert.Single(intface.getProperties());
+            Assert.Single(intface.GetProperties());
             Assert.True(intface.IsInterface);
         }
     }

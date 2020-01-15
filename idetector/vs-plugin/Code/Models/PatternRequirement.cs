@@ -11,14 +11,16 @@ namespace idetector.Models
         public string Title;
         public string Description;
         public string ErrorMessage;
+        public string WikipediaURL;
 
-        public PatternRequirement(string id, string title, string description, string errormessage, float weight = 1)
+        public PatternRequirement(string id, string title, string description, string errorMessage, string wikiLink = "", float weight = 1)
         {
             Weight = weight;
-            ErrorMessage = errormessage;
+            ErrorMessage = errorMessage;
             Id = id;
             Title = title;
             Description = description;
+            WikipediaURL = wikiLink;
         }
     }
 }
