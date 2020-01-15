@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -153,11 +154,11 @@ namespace vs_plugin
             var c = new idetector.Patterns.Command(collection);
             c.Scan();
 
-            //var fm = new AbstractFactoryMethod(collection, false);
-            //fm.Scan();
+            var fm = new AbstractFactoryMethod(collection, true);
+            fm.Scan();
 
-            //var am = new AbstractFactoryMethod(collection, true);
-            //am.Scan();
+            var am = new AbstractFactoryMethod(collection, false);
+            am.Scan();
 
             var d = new Decorator(collection);
             d.Scan();
@@ -174,8 +175,8 @@ namespace vs_plugin
             decoratorList = this.HandleResults("DECORATOR", decoratorList, d.GetResults());
             facadeList = this.HandleResults("FACADE", facadeList, f.GetResults());
             commandList = this.HandleResults("COMMAND", commandList, c.GetResults());
-            //abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
-            //factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
+            abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
+            factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
 
 
             PatternList.Children.Clear();

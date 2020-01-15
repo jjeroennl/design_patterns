@@ -35,31 +35,62 @@ namespace idetector.Data
             //DECORATOR-CONSTRUCTOR-SETS-COMPONENT
             //DECORATOR-CONCRETE-CALLS-BASE
             List<PatternRequirement> decoratorreqs = new List<PatternRequirement>();
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-HAS-CHILDREN", "Base classes", "A decorator pattern should contain an interface or abstract class with atleast 2 children: 1 base class and an abstract decorato.r", "The base interface/abstract did not have any children"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-CHILDREN", "Abstract decorator implemented", "The abstract decorator class should have atleast 1 child which should be the concrete decorator.", "The abstract decorator did not have any children"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", "Abstract decorator contains parent property", "The abstract decorator class should contain a property of it's parent type to use as a base item.", "The abstract decorator did not contain a field of the parent type"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONSTRUCTOR-SETS-COMPONENT", "Abstract decorator sets parent property", "The abstract decorator's constructor should set the parent property. This is to pass the base product to the decorator so that the concrete decorators can add to it.", "The abstract decorator' constructor does not set component field"));
-            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-CALLS-BASE", "Concrete decorator calls base", "The concrete decorator should always call the base constructor so that the base product is set.", "The concrete decorators do not call the abstract decorator's constructor"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-BASE-HAS-CHILDREN", 
+                "Interface is implemented",
+                "A decorator pattern should contain an interface with atleast 2 children: 1 base class and an abstract decorator", 
+                "A decorator pattern should contain an interface with atleast 2 children: 1 base class and an abstract decorator, please make sure both the base class and the abstract decorator implement the interface"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-CHILDREN", 
+                "Abstract decorator implemented", 
+                "An abstract decorator should be implemented by one or more concrete decorator(s) so that data or logic can be added to the base item by casting the base item to the concrete decorator type",
+                "Please make sure the abstract decorator is implemented by atleast one or more concrete decorators. A class cannot be cast to the abstract decorator type."));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-HAS-BASE-PROPERTY", 
+                "Abstract decorator contains parent property", 
+                "The abstract decorator class should contain a property of it's parent type to use as a base item.", 
+                "The abstract decorator did not contain a field of the parent type"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-METHOD-SETS-COMPONENT", 
+                "Abstract decorator sets parent property", 
+                "The abstract decorator's constructor should set the parent property. This is to pass the base product to the decorator so that the concrete decorators can add to it.", 
+                "The abstract decorator' constructor does not set component field"));
+            decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-METHOD-SETS-PROPERTY", 
+                "Concrete decorator calls base", 
+                "The concrete decorator has a method that sets the class' property of the interface type. This is in order to add data or logic to the saved base object in the concrete decorator", 
+                "The concrete decorator should have a method that saves a base object in order for it to add data or logic to it"));
             PatternRequirements.Add("DECORATOR", decoratorreqs);
 
             //ABSTRACT FACTORY METHOD
             /*ID's:
              *FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS
-             *FACTORY-CONTAINS-PRODUCT-INTERFACE
              *FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD
-             *FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS
              *FACTORY-INHERITING-PRODUCT-INTERFACE
-             *FACTORY-RETURNS-PRODUCT         
+             *FACTORY-INHERITING-FACTORY-CLASS
+             *FACTORY-RETURNS-PRODUCT
              *FACTORY-MULTIPLE-METHODS
              */
             List<PatternRequirement> factoryreqs = new List<PatternRequirement>();
-            factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", "", "", ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-PRODUCT-INTERFACE", "", "", ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", "", "", ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-PRODUCT-INTERFACE", "", "", ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-RETURNS-PRODUCT", "", "", ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS", "", "", ""));
-            factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", "", "", ""));
+            factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS",
+                "Factory Class",
+                "There should be an abstract class present that can function as an abstract factory.",
+                "There was no abstract class found that can function as an abstract factory."));
+            factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD",
+                "Factory with Product Method",
+                "There should be an abstract method with its type being the product interface.",
+                "There was no abstract method found with its type being the product interface. This should be placed in the factory class so instances can create products."));
+            factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-PRODUCT-INTERFACE",
+                "Concrete Product",
+                "There should be a class that inherits the product interface.",
+                "There was not a class found that inherits the product interface."));
+            factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-FACTORY-CLASS",
+                "Concrete Factory",
+                "There should be a class that inherits the abstract factory class.",
+                "There was not a class found that inherits the abstract factory class."));
+            factoryreqs.Add(new PatternRequirement("FACTORY-RETURNS-PRODUCT",
+                "Factory Product",
+                "The factory class should return a concrete product.",
+                "The factory class did not return a concrete product."));
+            factoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS",
+                "Single Factory Method",
+                "Factory class should not have zero or more than one methods.",
+                "The factory class has got either zero or more than one methods. It should only have a method that should return a concrete product."));
             PatternRequirements.Add("FACTORY", factoryreqs);
 
             //ABSTRACT-FACTORY
@@ -69,17 +100,18 @@ namespace idetector.Data
              *FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD
              *FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS
              *FACTORY-INHERITING-PRODUCT-INTERFACE
-             *FACTORY-RETURNS-PRODUCT         
+             *FACTORY-RETURNS-PRODUCT
              *FACTORY-MULTIPLE-METHODS
              */
             List<PatternRequirement> absfactoryreqs = new List<PatternRequirement>();
+
             absfactoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", "", "", ""));
-            absfactoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-PRODUCT-INTERFACE", "", "", ""));
             absfactoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", "", "", ""));
             absfactoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-PRODUCT-INTERFACE", "", "", ""));
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-FACTORY-CLASS", "", "", ""));
             absfactoryreqs.Add(new PatternRequirement("FACTORY-RETURNS-PRODUCT", "", "", ""));
             absfactoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS", "", "", ""));
-            absfactoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS", "", "", ""));
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-ONE-PRODUCT-INTERFACE", "", "", ""));
             PatternRequirements.Add("ABSTRACT-FACTORY", absfactoryreqs);
 
             //STATESTRATEGY

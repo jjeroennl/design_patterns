@@ -52,6 +52,10 @@ namespace idetector
 
             var x = _scores[pattern];
             score = (score / _scores[pattern]) * 100;
+            if (pattern == "FACADE")
+            {
+                score /= results.Count;
+            }
             val = (int)score;
             return val;
         }
@@ -69,11 +73,6 @@ namespace idetector
                     if (r.Passed)
                     {
                         score += _priorities[pattern][r.Id].Weight;
-                    }
-
-                    if (r.Class != null)
-                    {
-                        classes.Add(r.Class.Identifier);
                     }
                 }
                 score = (((int)((score / _scores[pattern]) * 100) / classes.Count));

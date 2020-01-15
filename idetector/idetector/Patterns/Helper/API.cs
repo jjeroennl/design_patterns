@@ -32,7 +32,7 @@ namespace idetector.Patterns.Helper
         ///     Check if the given class has a property of the given type and if it has a setter.
         /// </summary>
         /// <param name="cls">ClassModel Object</param>
-        /// <param name="hasSetter">Wheter is should have an setter</param>
+        /// <param name="etter">Wheter is should have an setter</param>
         /// <param name="type">(optional) Returntype of property</param>
         /// <returns></returns>
         public static bool ClassHasPropertySyntaxSetter(ClassModel cls, string type = null)
@@ -48,6 +48,11 @@ namespace idetector.Patterns.Helper
                 }
             }
             return false;
+        }
+
+        internal static MethodModel ClassGetMethodWithName(ClassModel cls, string name)
+        {
+            return cls.getMethods().Where(e => e.Identifier.Equals(name))?.First();
         }
 
         /// <summary>
@@ -243,7 +248,26 @@ namespace idetector.Patterns.Helper
 
             return classes;
         }
-
+        /// <summary>
+        ///     Check if a given class has a method with a certain parameter type
+        /// </summary>
+        /// <param name="cls">ClassModel Object</param>
+        /// <param name="type">parameter type to search for</param>
+        /// <returns>True or False</returns>
+        public static bool ClassHasMethodWithParam(ClassModel cls, string type)
+        {
+            return cls.getMethods().Any(e => e.Parameters.Contains(type));
+        }
+        /// <summary>
+        ///  Returns all methods from a certain class that have a specified parameter
+        /// </summary>
+        /// <param name="cls">ClassModel Object</param>
+        /// <param name="type">parameter type to search for</param>
+        /// <returns>List<MethodModel></returns>
+        public static List<MethodModel> ClassGetMethodsWithParam(ClassModel cls, string type)
+        {
+            return cls.getMethods().Where(e => e.Parameters.Contains(type)).ToList();
+        }
 
         public static List<ClassModel> ListInterfaces(ClassCollection collection)
         {
