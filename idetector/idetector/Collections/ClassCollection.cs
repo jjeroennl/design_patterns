@@ -9,17 +9,17 @@ namespace idetector.Collections
 {
     public class ClassCollection
     { 
-        private  Dictionary<string, ClassModel> cache = new Dictionary<string, ClassModel>();
+        private Dictionary<string, ClassModel> classList = new Dictionary<string, ClassModel>();
 
         public void AddClass(ClassModel classModel)
         {
-            if (cache.ContainsKey(classModel.Identifier.ToString()))
+            if (classList.ContainsKey(classModel.Identifier.ToString()))
             {
-                cache[classModel.Identifier] = classModel;
+                classList[classModel.Identifier] = classModel;
             }
             else
             {
-                cache.Add(classModel.Identifier, classModel);
+                classList.Add(classModel.Identifier, classModel);
             }
         }
 
@@ -27,7 +27,7 @@ namespace idetector.Collections
         {
             try
             {
-                return cache[identifier];
+                return classList[identifier];
             }
             catch (Exception ex)
             {
@@ -35,18 +35,18 @@ namespace idetector.Collections
             }
         }
 
-        public void Clear()
-        {
-            cache = new Dictionary<string, ClassModel>();
-        }
-        
         public Dictionary<string, ClassModel> GetClasses()
         {
-            return cache;
+            return classList;
         }
 
 
-        public List<ClassModel> GetClassListExcept(List<ClassModel> classes)
+        /// <summary>
+        /// This function returns a list of classes, except for the classes that are given in the argument
+        /// </summary>
+        /// <param name="classesToExclude">Classes to skip</param>
+        /// <returns></returns>
+        public List<ClassModel> GetClassListExcept(List<ClassModel> classesToExclude)
         {
             List<ClassModel> allClasses = new List<ClassModel>();
             foreach (var cls in GetClasses())
@@ -54,11 +54,21 @@ namespace idetector.Collections
                 allClasses.Add(cls.Value);
             }
 
-            var result = allClasses.Except(classes).ToList();
+            var result = allClasses.Except(classesToExclude).ToList();
             return result;
         }
 
+        public ClassCollection GetNamespace(string @namespace)
+        {
+            ClassCollection n = new ClassCollection();
+            var col = this.GetClasses().Where(e => e.Value.Namespace == @namespace);
+            foreach (var model in col)
+            {
+                n.AddClass(model.Value);
+            }
 
+            return n;
+        }
 
     }
 }

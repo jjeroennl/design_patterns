@@ -1,6 +1,10 @@
 ﻿using System.Windows.Media;
+using EnvDTE;
 using idetector.Collections;
 using idetector.Patterns;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Command = idetector.Patterns.Command;
 
 namespace vs_plugin.Guide
 {
@@ -20,6 +24,8 @@ namespace vs_plugin.Guide
         private string _typename;
         private Dictionary<string, List<PatternRequirement>> _results;
         private ScoreCalculator _calculator;
+        private Events events;
+        private DocumentEvents documentEvents;
 
         private Dictionary<string, string> patterns = new Dictionary<string, string>()
         {
@@ -56,6 +62,11 @@ namespace vs_plugin.Guide
                 this._calculator = ToolWindow1Control.Calc;
                 this.NoGuidance.Visibility = Visibility.Collapsed;
                 this.ResultsGrid.Visibility = Visibility.Visible;
+                var dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
+
+                events = dte.Events;
+                documentEvents = events.DocumentEvents;
+                documentEvents.DocumentSaved += SaveAction;
 
                 this.Scan();
             }
@@ -65,6 +76,12 @@ namespace vs_plugin.Guide
                 this.NoGuidance.Visibility = Visibility.Visible;
                 this.ResultsGrid.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private void SaveAction(Document Document)
+        {
+            this.Results.Children.Clear();
+            this.Scan();
         }
 
         private void Scan()
@@ -93,36 +110,36 @@ namespace vs_plugin.Guide
                     //pattern = new Iterator(cls);
                     break;
                 case "dec":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     pattern = new idetector.Patterns.Decorator(nameSpaceClassCollection);
                     break;
                 case "fac":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     pattern = new idetector.Patterns.Decorator(nameSpaceClassCollection);
                     break;
                 case "abs":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     pattern = new AbstractFactoryMethod(nameSpaceClassCollection, false);
                     break;
                 case "fcy":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     pattern = new AbstractFactoryMethod(nameSpaceClassCollection, true);
                     break;
                 case "sta":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     pattern = new StateStrategy(nameSpaceClassCollection, true);
                     break;
                 case "str":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     pattern = new StateStrategy(nameSpaceClassCollection, false);
                     break;
                 case "obs":
-                    if (cls == null) { return; }
+                    if (nameSpaceClassCollection == null) { return; }
                     //pattern = new Observer(nameSpaceClassCollection, false);
                     break;
                 case "cmd":
-                    if (cls == null) { return; }
-                    //pattern = new Command(nameSpaceClassCollection, false);
+                    if (nameSpaceClassCollection == null) { return; }
+                    pattern = new Command(nameSpaceClassCollection);
                     break;
             }
 

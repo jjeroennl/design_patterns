@@ -248,7 +248,26 @@ namespace idetector.Patterns.Helper
 
             return classes;
         }
-
+        /// <summary>
+        ///     Check if a given class has a method with a certain parameter type
+        /// </summary>
+        /// <param name="cls">ClassModel Object</param>
+        /// <param name="type">parameter type to search for</param>
+        /// <returns>True or False</returns>
+        public static bool ClassHasMethodWithParam(ClassModel cls, string type)
+        {
+            return cls.getMethods().Any(e => e.Parameters.Contains(type));
+        }
+        /// <summary>
+        ///  Returns all methods from a certain class that have a specified parameter
+        /// </summary>
+        /// <param name="cls">ClassModel Object</param>
+        /// <param name="type">parameter type to search for</param>
+        /// <returns>List<MethodModel></returns>
+        public static List<MethodModel> ClassGetMethodsWithParam(ClassModel cls, string type)
+        {
+            return cls.getMethods().Where(e => e.Parameters.Contains(type)).ToList();
+        }
 
         public static List<ClassModel> ListInterfaces(ClassCollection collection)
         {

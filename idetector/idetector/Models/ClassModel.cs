@@ -24,13 +24,15 @@ namespace idetector.Models
         public HashSet<ClassModel> Parents = new HashSet<ClassModel>();
         public HashSet<ClassModel> ObjectCreations = new HashSet<ClassModel>();
         public HashSet<string> UnknownParent = new HashSet<string>();
+        public string Namespace;
 
         public ClassModel(ClassDeclarationSyntax node)
         {
             _node = node;
             Keyword = node.Keyword.ToString();
             Identifier = node.Identifier.ToString();
-            
+
+            _setNamespace(node);
             _setMembers();
             _setAttributes();
             _setModifiers();
@@ -46,7 +48,21 @@ namespace idetector.Models
             _setAttributes();
             _setModifiers();
         }
-        
+
+        private void _setNamespace(TypeDeclarationSyntax node)
+        {
+            SyntaxNode parent = node;
+            while (!parent.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax") && parent.Parent != null)
+            {
+                parent = node.Parent;
+            }
+
+            if (parent.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax"))
+            {
+                var @namespace = (NamespaceDeclarationSyntax)parent;
+                this.Namespace = @namespace.Name.ToString();
+            }
+        }
 
         private void _setModifiers()
         {

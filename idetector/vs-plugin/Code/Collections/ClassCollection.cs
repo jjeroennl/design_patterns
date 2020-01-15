@@ -61,7 +61,8 @@ namespace idetector.Collections
         public ClassCollection GetNamespace(string @namespace)
         {
             ClassCollection n = new ClassCollection();
-            foreach (var model in this.GetClasses().Where(e => e.Value.Namespace == @namespace))
+            var col = this.GetClasses().Where(e => e.Value.Namespace == @namespace);
+            foreach (var model in col)
             {
                 n.AddClass(model.Value);
             }

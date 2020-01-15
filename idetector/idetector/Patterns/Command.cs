@@ -106,6 +106,10 @@ namespace idetector.Patterns
         {
             foreach (var cls in cc.GetClasses())
             {
+                if (commandInterface == null)
+                {
+                    return;
+                }
                 if (cls.Value.HasParent(commandInterface.Identifier))
                 {
                     foreach (var result in _results[commandInterface.Identifier].ToArray())
