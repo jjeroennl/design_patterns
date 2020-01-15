@@ -123,13 +123,13 @@ namespace idetector.Data
                 "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
             absfactoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS",
                 "Multiple factory method",
-                "abstract factory class should not have zero or more than one methods.",
-                "The factory class has got either zero or more than one methods. It should only have a method that should return a concrete product.",
+                "An abstract factory can have more then one creator method because it can return different products",
+                "The abstract factory did not have a method that returned a concrete product",
                 "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
             absfactoryreqs.Add(new PatternRequirement("FACTORY-ONE-PRODUCT-INTERFACE", 
                 "Product Interface",
-                "All concrete products should follow one and the same product interface. This interface should declare methods that make sense in every product.", 
-                "The concrete products don't follow one and the same product interface. Make sure all concrete products follow the same interface.",
+                "Product interfaces are used to define a product for a factory to build. An abstract factory can have more then one. These interfaces should declare methods that make sense in every product.", 
+                "The concrete products don't implement a product interface. A concrete product should always follow an interface that defines what methods and data the product should have",
                 "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
             PatternRequirements.Add("ABSTRACT-FACTORY", absfactoryreqs);
 
