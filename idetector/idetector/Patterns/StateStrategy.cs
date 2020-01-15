@@ -240,14 +240,14 @@ namespace idetector.Patterns
                 }
                 else
                 {
-                    foreach (var property in cls.getProperties())
+                    foreach (var property in cls.GetProperties())
                     {
                         foreach (ClassModel @interface in interfaces)
                         {
                             bool add = true;
                             if (property.ValueType.ToString() == @interface.Identifier)
                             {
-                                foreach (var method in cls.getMethods())
+                                foreach (var method in cls.GetMethods())
                                 {
                                     if (method.Parameters.Contains(property.ValueType.ToString()) &&
                                         method.Body.Contains(property.Identifier))
@@ -284,11 +284,11 @@ namespace idetector.Patterns
         {
             if (cls != null)
             {
-                foreach (var method in cls.getMethods())
+                foreach (var method in cls.GetMethods())
                 {
                     if (!method.isConstructor)
                     {
-                        foreach (var property in cls.getProperties())
+                        foreach (var property in cls.GetProperties())
                         {
                             foreach(ClassModel @interface in interfaces)
                             {
@@ -363,7 +363,7 @@ namespace idetector.Patterns
         {
             foreach (var cls in Concretes.GetClasses().Values)
             {
-                foreach (var method in cls.getMethods())
+                foreach (var method in cls.GetMethods())
                 {
                     if (!method.isConstructor)
                     {

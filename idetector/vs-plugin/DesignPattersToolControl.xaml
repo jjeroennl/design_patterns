@@ -68,7 +68,7 @@
                     <StackPanel x:Name="PatternList"  ScrollViewer.CanContentScroll="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                 </ScrollViewer>
                 <StackPanel Grid.Column="1">
-                    <StackPanel x:Name="Summary" Visibility="Collapsed" HorizontalAlignment="Stretch"
+                    <StackPanel x:Name="Summary" Visibility="Visible" HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch" Orientation="Vertical">
                         <Label x:Name="PatternName" Content="Summary" HorizontalAlignment="Stretch"
                                VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Grid.ColumnSpan="2" />
@@ -85,10 +85,17 @@
                                        Width="{Binding ElementName=Canvas, Path=ActualWidth}"
                                        TextWrapping="WrapWithOverflow" />
                         </Canvas>
-                        <StackPanel x:Name="MoreInfo" Margin="0,10,0,0" Grid.Column="2" HorizontalAlignment="Right"
+                        <Grid x:Name="MoreInfo" Margin="0,10,0,0" Grid.Column="2" 
                                     VerticalAlignment="Bottom">
-                            <Label Content="More info..." FontStyle="Italic" />
-                        </StackPanel>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="60" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Name="ClassList"></StackPanel>
+                            <Label VerticalAlignment="Bottom" FontStyle="Italic" Grid.Column="1" HorizontalAlignment="Right" MouseDown="MoreInfoClick">
+                                <Hyperlink>More info...</Hyperlink>
+                            </Label>
+                        </Grid>
                     </StackPanel>
                 </StackPanel>
             </Grid>
