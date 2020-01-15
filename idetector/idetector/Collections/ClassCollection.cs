@@ -9,17 +9,17 @@ namespace idetector.Collections
 {
     public class ClassCollection
     { 
-        private  Dictionary<string, ClassModel> cache = new Dictionary<string, ClassModel>();
+        private Dictionary<string, ClassModel> classList = new Dictionary<string, ClassModel>();
 
         public void AddClass(ClassModel classModel)
         {
-            if (cache.ContainsKey(classModel.Identifier.ToString()))
+            if (classList.ContainsKey(classModel.Identifier.ToString()))
             {
-                cache[classModel.Identifier] = classModel;
+                classList[classModel.Identifier] = classModel;
             }
             else
             {
-                cache.Add(classModel.Identifier, classModel);
+                classList.Add(classModel.Identifier, classModel);
             }
         }
 
@@ -27,7 +27,7 @@ namespace idetector.Collections
         {
             try
             {
-                return cache[identifier];
+                return classList[identifier];
             }
             catch (Exception ex)
             {
@@ -37,12 +37,12 @@ namespace idetector.Collections
 
         public void Clear()
         {
-            cache = new Dictionary<string, ClassModel>();
+            classList = new Dictionary<string, ClassModel>();
         }
         
         public Dictionary<string, ClassModel> GetClasses()
         {
-            return cache;
+            return classList;
         }
 
 
