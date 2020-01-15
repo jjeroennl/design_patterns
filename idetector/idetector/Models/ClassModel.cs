@@ -52,7 +52,7 @@ namespace idetector.Models
         private void _setNamespace(TypeDeclarationSyntax node)
         {
             SyntaxNode parent = node;
-            while (!parent.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax") && node.Parent != null)
+            while (!parent.GetType().ToString().Equals("Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax") && parent.Parent != null)
             {
                 parent = node.Parent;
             }
