@@ -12,6 +12,6 @@
             <ColumnDefinition  />
         </Grid.ColumnDefinitions>
         <Label Name="RequirementName" Grid.Column="0"/>
-        <Slider Name="RangeSlider" Grid.Column="1" Minimum="0" Maximum="200" Value="100" LargeChange="25" SmallChange="10" AutoToolTipPlacement="BottomRight" />
+        <Slider Name="RangeSlider" Grid.Column="1" Minimum="0" Maximum="100" Value="100" IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="5" LargeChange="25" SmallChange="10" AutoToolTipPlacement="BottomRight" />
     </Grid>
 </UserControl>

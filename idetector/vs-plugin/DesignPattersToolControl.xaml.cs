@@ -15,6 +15,7 @@ using idetector.Patterns.Facade;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using vs_plugin.Code;
+using vs_plugin.Guide;
 using Decorator = idetector.Patterns.Decorator;
 
 namespace vs_plugin
@@ -25,7 +26,7 @@ namespace vs_plugin
     public partial class ToolWindow1Control : UserControl
     {
         public static Dictionary<string, List<PatternRequirement>> Patterns;
-        private ScoreCalculator calc;
+        public static ScoreCalculator Calc;
         private int cutoff = 50;
         private ClassCollection collection;
 
@@ -35,8 +36,10 @@ namespace vs_plugin
         public ToolWindow1Control()
         {
             InitializeComponent();
+
             var req = new Requirements();
             Patterns = req.GetRequirements();
+            Calc = new ScoreCalculator(Patterns);
             UIHandler.ToolWindow1Control = this;
 
             this.CreateSettings();
@@ -53,16 +56,20 @@ namespace vs_plugin
                     var weight = patternWeight.AddWeight(pattern.Key, requirement.Id, requirement.Title, requirement.Weight);
 
                     var rangeEventHandler = new RangeChangeEventHandler(pattern.Key, requirement.Id, weight);
-                    //weight.RangeSlider.ValueChanged += this.UpdateValue;
+                    weight.RangeSlider.ValueChanged += rangeEventHandler.UpdateValue;
                 }
 
                 this.Ranges.Children.Add(patternWeight);
             }
+            this.updateScoreCalculator();
         }
-
+        private void updateScoreCalculator()
+        {
+            Calc = new ScoreCalculator(Patterns);
+        }
         public ClassCollection GetOpenWindowText()
         {
-            var dte = (DTE) ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
+            var dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
             if (dte.ActiveDocument == null)
             {
                 MessageBox.Show("Please open a file before scanning it.");
@@ -74,9 +81,9 @@ namespace vs_plugin
             return FileReader.ReadSingleFile(filename);
         }
 
-        public ClassCollection ReadProjectCode()
+        public static ClassCollection ReadProjectCode()
         {
-            var dte = (DTE) ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
+            var dte = (DTE)ServiceProvider.GlobalProvider.GetService(typeof(SDTE));
             if (dte.Solution.Projects == null)
             {
                 MessageBox.Show("Please open a project before scanning it.");
@@ -85,7 +92,7 @@ namespace vs_plugin
 
             foreach (var project in dte.Solution.Projects)
             {
-                var p = (Project) project;
+                var p = (Project)project;
 
                 var fileName = p.FullName;
                 var arrpath = fileName.Split('\\');
@@ -109,16 +116,29 @@ namespace vs_plugin
             AddClasses();
         }
 
+        private void Scan_Current_project(object sender, RoutedEventArgs e)
+        {
+            PatternList.Children.Clear();
+
+            //Scan file
+            collection = ReadProjectCode();
+            if (collection == null) return;
+
+            AddClasses();
+        }
+
         private void AddClasses()
         {
-            calc = new ScoreCalculator(Patterns);
+            Calc = new ScoreCalculator(Patterns);
 
             var stateList = new List<Pattern>();
             var strategyList = new List<Pattern>();
             var facadeList = new List<Pattern>();
             var factoryList = new List<Pattern>();
+            var abstractFactoryList = new List<Pattern>();
             var singletonList = new List<Pattern>();
             var decoratorList = new List<Pattern>();
+            var commandList = new List<Pattern>();
 
             var f = new Facade(collection);
             f.Scan();
@@ -130,8 +150,14 @@ namespace vs_plugin
             var strat = new StateStrategy(collection, false);
             strat.Scan();
 
-            var fm = new FactoryMethod(collection);
-            fm.Scan();
+            var c = new idetector.Patterns.Command(collection);
+            c.Scan();
+
+            //var fm = new AbstractFactoryMethod(collection, false);
+            //fm.Scan();
+
+            //var am = new AbstractFactoryMethod(collection, true);
+            //am.Scan();
 
             var d = new Decorator(collection);
             d.Scan();
@@ -142,28 +168,38 @@ namespace vs_plugin
                 var s = new Singleton(item.Value);
                 s.Scan();
 
-                singletonList = this.HandleResults(singletonList, s.GetResults());
-                decoratorList = this.HandleResults(decoratorList, d.GetResults());
-                facadeList = this.HandleResults(facadeList, f.GetResults());
+                singletonList = this.HandleResults("SINGLETON", singletonList, s.GetResults());
+
             }
+            decoratorList = this.HandleResults("DECORATOR", decoratorList, d.GetResults());
+            facadeList = this.HandleResults("FACADE", facadeList, f.GetResults());
+            commandList = this.HandleResults("COMMAND", commandList, c.GetResults());
+            //abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
+            //factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
+
 
             PatternList.Children.Clear();
 
 
-            PopulatePattern("singleton", singletonList);
-            PopulatePattern("decorator", decoratorList);
-            PopulatePattern("facade", facadeList);
+            PopulatePattern("Singleton", singletonList);
+            PopulatePattern("Decorator", decoratorList);
+            PopulatePattern("Facade", facadeList);
+            PopulatePattern("Factory", factoryList);
+            PopulatePattern("Abstract Factory", abstractFactoryList);
+            PopulatePattern("State", stateList);
+            PopulatePattern("Strategy", strategyList);
+            PopulatePattern("Command", commandList);
             // this.PopulatePattern("factory", factoryList);
             // this.PopulatePattern("singleton", singletonList);
             // this.PopulatePattern("state", stateList);
-            // this.PopulatePattern("strategory", strategyList);    
+            // this.PopulatePattern("strategory", strategyList);
         }
 
-        private List<Pattern> HandleResults(List<Pattern> patternList, Dictionary<string, List<RequirementResult>> results)
+        private List<Pattern> HandleResults(string pattern, List<Pattern> patternList, Dictionary<string, List<RequirementResult>> results)
         {
             foreach (var patternResult in results)
             {
-                var patternScore = calc.GetScore("SINGLETON", patternResult.Value);
+                var patternScore = Calc.GetScore(pattern, patternResult.Value);
                 if (patternScore >= cutoff)
                     patternList.Add(new Pattern(collection.GetClass(patternResult.Key), patternScore,
                         patternResult.Value));
@@ -174,25 +210,19 @@ namespace vs_plugin
 
         private void PopulatePattern(string patternName, List<Pattern> patternList)
         {
-            var p = new SinglePattern();
-            p.SetHandle(patternName?.First().ToString().ToUpper() + patternName?.Substring(1).ToLower());
+            if (patternList.Any(e => e.Score > 50))
+            {
+                var p = new SinglePattern();
+                p.SetHandle(patternName?.First().ToString().ToUpper() + patternName?.Substring(1).ToLower());
+                foreach (var pattern in patternList)
+                    if (pattern.Score >= 50)
+                        p.AddPattern(patternName, pattern);
+                PatternList.Children.Add(p);
+            }
 
-            foreach (var pattern in patternList)
-                if (pattern.Score >= 50)
-                    p.AddPattern(patternName, pattern);
-            PatternList.Children.Add(p);
         }
 
-        private void Scan_Current_project(object sender, RoutedEventArgs e)
-        {
-            PatternList.Children.Clear();
-
-            //Scan file
-            collection = ReadProjectCode();
-            if (collection == null) return;
-
-            AddClasses();
-        }
+       
 
         /// <summary>
         ///     Method to replace summary's information and reset the text wrapping.
@@ -205,7 +235,6 @@ namespace vs_plugin
             {
                 this.ConditionIcon.Content = "✔️";
                 this.ConditionIcon.Foreground = new SolidColorBrush(Color.FromRgb(0, 128, 0));
-                ;
             }
             else
             {
@@ -251,6 +280,11 @@ namespace vs_plugin
         {
             this.SettingsGrid.Visibility = Visibility.Collapsed;
             this.Default.Visibility = Visibility.Visible;
+        }
+
+        private void Pattern_Guide_Click(object sender, RoutedEventArgs e)
+        {
+            new NewGuidance();
         }
     }
 }
