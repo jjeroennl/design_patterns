@@ -68,7 +68,7 @@
                     <StackPanel x:Name="PatternList"  ScrollViewer.CanContentScroll="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                 </ScrollViewer>
                 <StackPanel Grid.Column="1">
-                    <StackPanel x:Name="Summary" Visibility="Visible" HorizontalAlignment="Stretch"
+                    <StackPanel x:Name="Summary" Visibility="Collapsed" HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch" Orientation="Vertical">
                         <Label x:Name="PatternName" Content="Summary" HorizontalAlignment="Stretch"
                                VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Grid.ColumnSpan="2" />
