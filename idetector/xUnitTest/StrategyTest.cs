@@ -43,9 +43,12 @@ namespace xUnitTest
         [Fact]
         public void Test_State()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = StateSetup();
             var collection = Walker.GenerateModels(tree);
-            bool passed = true;
+            int score = 0;
+            bool passed = false;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
@@ -60,14 +63,26 @@ namespace xUnitTest
                             if(!passed) passed = result.Passed;
                     }
             }
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STRATEGY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
             Assert.False(passed);
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Strategy_NoInterfaceOrAbstract()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = NoInterface();
             var collection = Walker.GenerateModels(tree);
-            bool passed = true;
+            int score = 0;
+            bool passed = false;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
@@ -82,14 +97,26 @@ namespace xUnitTest
                             if (!passed) passed = result.Passed;
                     }
             }
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STRATEGY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
             Assert.False(passed);
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Strategy_NoContext()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = NoContext();
             var collection = Walker.GenerateModels(tree);
-            bool passed = true;
+            int score = 0;
+            bool passed = false;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
@@ -104,14 +131,26 @@ namespace xUnitTest
                             if (!passed) passed = result.Passed;
                     }
             }
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STRATEGY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
             Assert.False(passed);
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Strategy_NoConcreteStrategy()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = NoConcreteStrategy();
             var collection = Walker.GenerateModels(tree);
-            bool passed = true;
+            int score = 0;
+            bool passed = false;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
@@ -126,14 +165,26 @@ namespace xUnitTest
                             if (!passed) passed = result.Passed;
                     }
             }
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STRATEGY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
             Assert.False(passed);
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Strategy_NoPublicConstructor()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = NoPublicConstructor();
             var collection = Walker.GenerateModels(tree);
-            bool passed = true;
+            int score = 0;
+            bool passed = false;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
@@ -148,14 +199,26 @@ namespace xUnitTest
                             if (!passed) passed = result.Passed;
                     }
             }
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STRATEGY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
             Assert.False(passed);
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Strategy_NoStrategySetter()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = NoStrategySetter();
             var collection = Walker.GenerateModels(tree);
-            bool passed = true;
+            int score = 0;
+            bool passed = false;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
@@ -170,14 +233,26 @@ namespace xUnitTest
                             if (!passed) passed = result.Passed;
                     }
             }
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STRATEGY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
             Assert.False(passed);
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Strategy_NoPrivateStrategy()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = NoPrivateStrategy();
             var collection = Walker.GenerateModels(tree);
-            bool passed = true;
+            int score = 0;
+            bool passed = false;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
@@ -192,14 +267,26 @@ namespace xUnitTest
                             if (!passed) passed = result.Passed;
                     }
             }
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STRATEGY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
             Assert.False(passed);
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Strategy_NoMethodContext()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = NoMethodContext();
             var collection = Walker.GenerateModels(tree);
-            bool passed = true;
+            int score = 0;
+            bool passed = false;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
@@ -214,14 +301,26 @@ namespace xUnitTest
                             if (!passed) passed = result.Passed;
                     }
             }
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STRATEGY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
             Assert.False(passed);
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Strategy_RelationsBetweenStrategies()
         {
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
             var tree = RelationsBetweenStrategies();
             var collection = Walker.GenerateModels(tree);
-            bool passed = true;
+            int score = 0;
+            bool passed = false;
 
             StateStrategy strategy = new StateStrategy(collection, false);
             strategy.Scan();
@@ -236,7 +335,16 @@ namespace xUnitTest
                             if (!passed) passed = result.Passed;
                     }
             }
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    int val = calculator.GetScore("STRATEGY", results[cls.Key]);
+                    if (val > score) score = val;
+                }
+            }
             Assert.False(passed);
+            Assert.NotEqual(100, score);
         }
         [Fact]
         public void Test_Nothing()
@@ -281,7 +389,7 @@ namespace xUnitTest
                     if (val > score) score = val;
                 }
             }
-            Assert.InRange(score, 40, 80);
+            Assert.InRange(score, 75, 95);
         }
 
         SyntaxTree SuccessSetup()
