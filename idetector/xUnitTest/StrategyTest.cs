@@ -57,7 +57,7 @@ namespace xUnitTest
                     foreach (var result in results[cls.Value.Identifier].ToArray())
                     {
                         if (result.Id.Equals("STRATEGY-CONCRETE-CLASS-RELATIONS"))
-                            passed = result.Passed;
+                            if(!passed) passed = result.Passed;
                     }
             }
             Assert.False(passed);
@@ -79,7 +79,7 @@ namespace xUnitTest
                     foreach (var result in results[cls.Value.Identifier].ToArray())
                     {
                         if (result.Id.Equals("STATE-STRATEGY-INTERFACE-ABSTRACT"))
-                            passed = result.Passed;
+                            if (!passed) passed = result.Passed;
                     }
             }
             Assert.False(passed);
@@ -101,7 +101,7 @@ namespace xUnitTest
                     foreach (var result in results[cls.Value.Identifier].ToArray())
                     {
                         if (result.Id.Equals("STATE-STRATEGY-HAS-CONTEXT"))
-                            passed = result.Passed;
+                            if (!passed) passed = result.Passed;
                     }
             }
             Assert.False(passed);
@@ -123,7 +123,7 @@ namespace xUnitTest
                     foreach (var result in results[cls.Value.Identifier].ToArray())
                     {
                         if (result.Id.Equals("STATE-STRATEGY-CONCRETE-CLASS"))
-                            passed = result.Passed;
+                            if (!passed) passed = result.Passed;
                     }
             }
             Assert.False(passed);
@@ -145,7 +145,7 @@ namespace xUnitTest
                     foreach (var result in results[cls.Value.Identifier].ToArray())
                     {
                         if (result.Id.Equals("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR"))
-                            passed = result.Passed;
+                            if (!passed) passed = result.Passed;
                     }
             }
             Assert.False(passed);
@@ -167,7 +167,7 @@ namespace xUnitTest
                     foreach (var result in results[cls.Value.Identifier].ToArray())
                     {
                         if (result.Id.Equals("STATE-STRATEGY-CONTEXT-STRATEGY-SETTER"))
-                            passed = result.Passed;
+                            if (!passed) passed = result.Passed;
                     }
             }
             Assert.False(passed);
@@ -189,7 +189,7 @@ namespace xUnitTest
                     foreach (var result in results[cls.Value.Identifier].ToArray())
                     {
                         if (result.Id.Equals("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY"))
-                            passed = result.Passed;
+                            if (!passed) passed = result.Passed;
                     }
             }
             Assert.False(passed);
@@ -211,7 +211,7 @@ namespace xUnitTest
                     foreach (var result in results[cls.Value.Identifier].ToArray())
                     {
                         if (result.Id.Equals("STATE-STRATEGY-CONTEXT-LOGIC"))
-                            passed = result.Passed;
+                            if (!passed) passed = result.Passed;
                     }
             }
             Assert.False(passed);
@@ -233,7 +233,7 @@ namespace xUnitTest
                     foreach (var result in results[cls.Value.Identifier].ToArray())
                     {
                         if (result.Id.Equals("STRATEGY-CONCRETE-CLASS-RELATIONS"))
-                            passed = result.Passed;
+                            if (!passed) passed = result.Passed;
                     }
             }
             Assert.False(passed);
