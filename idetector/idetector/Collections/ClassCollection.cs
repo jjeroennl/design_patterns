@@ -35,18 +35,18 @@ namespace idetector.Collections
             }
         }
 
-        public void Clear()
-        {
-            classList = new Dictionary<string, ClassModel>();
-        }
-        
         public Dictionary<string, ClassModel> GetClasses()
         {
             return classList;
         }
 
 
-        public List<ClassModel> GetClassListExcept(List<ClassModel> classes)
+        /// <summary>
+        /// This function returns a list of classes, except for the classes that are given in the argument
+        /// </summary>
+        /// <param name="classesToExclude">Classes to skip</param>
+        /// <returns></returns>
+        public List<ClassModel> GetClassListExcept(List<ClassModel> classesToExclude)
         {
             List<ClassModel> allClasses = new List<ClassModel>();
             foreach (var cls in GetClasses())
@@ -54,11 +54,21 @@ namespace idetector.Collections
                 allClasses.Add(cls.Value);
             }
 
-            var result = allClasses.Except(classes).ToList();
+            var result = allClasses.Except(classesToExclude).ToList();
             return result;
         }
 
+        public ClassCollection GetNamespace(string @namespace)
+        {
+            ClassCollection n = new ClassCollection();
+            var col = this.GetClasses().Where(e => e.Value.Namespace == @namespace);
+            foreach (var model in col)
+            {
+                n.AddClass(model.Value);
+            }
 
+            return n;
+        }
 
     }
 }
