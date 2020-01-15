@@ -60,10 +60,11 @@ namespace idetector.Patterns
                 _results.Add(IsInheritingProductInterface());
                 _results.Add(IsInheritingFactoryClass());
                 _results.Add(ConcreteFactoryIsReturningConcreteProduct());
-                _results.Add(HasMultipleMethods());
+                _results.Add(ConcreteProductsFollowOneProductInterface());
                 if (!isMethod)
                 {
-                    _results.Add(ConcreteProductsFollowOneProductInterface());
+                    _results.Add(HasMultipleMethods());
+                    
                 }
                 _reqs.Add(ifac.Identifier, _results);
             }
@@ -262,17 +263,15 @@ namespace idetector.Patterns
                 ClassModel temp = null;
                 foreach (var @interface in productInterfaces)
                 {
-                    if (@interface != null)
-                    {
                         foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
                         {
                             if (cls.Value.HasParent(@interface.Identifier))
                             {
                                 if (temp != null && temp != @interface)
                                 {
-                                    if (!isMethod)
+                                    if (isMethod)
                                     {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true, ifactory);
+                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",false, ifactory);
                                     }
                                 }
                                 else
@@ -281,10 +280,9 @@ namespace idetector.Patterns
                                 }
                             }
                         }
-                    }
                 }
             }
-            else if (!isMethod)
+            else if (productInterfaces.Count < 1)
             {
                 return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", false, ifactory);
             }
