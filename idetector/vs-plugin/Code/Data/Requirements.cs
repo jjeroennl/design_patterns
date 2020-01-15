@@ -126,7 +126,7 @@ namespace idetector.Data
                 "Factory class should not have zero or more than one methods.",
                 "The factory class has got either zero or more than one methods. It should only have a method that should return a concrete product.",
                 "https://en.wikipedia.org/wiki/Factory_method_pattern"));
-            absfactoryreqs.Add(new PatternRequirement("FACTORY-ONE-PRODUCT-INTERFACE", "", "", "", "https://en.wikipedia.org/wiki/Factory_method_pattern"));
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-ONE-PRODUCT-INTERFACE", "Product Interface", "All concrete products should follow one and the same product interface. This interface should declare methods that make sense in every product.", "The concrete products don't follow one and the same product interface. Make sure all concrete products follow the same interface.", "https://en.wikipedia.org/wiki/Factory_method_pattern"));
             PatternRequirements.Add("ABSTRACT-FACTORY", absfactoryreqs);
 
             //STATESTRATEGY
