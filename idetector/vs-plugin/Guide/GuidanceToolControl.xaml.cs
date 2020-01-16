@@ -3,6 +3,7 @@ using System.Windows.Media;
 using EnvDTE;
 using idetector.Collections;
 using idetector.Patterns;
+using idetector.Patterns.Facade;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Command = idetector.Patterns.Command;
@@ -119,7 +120,7 @@ namespace vs_plugin.Guide
                     break;
                 case "fac":
                     if (nameSpaceClassCollection == null) { this.NoClassFound(); return; }
-                    pattern = new idetector.Patterns.Decorator(nameSpaceClassCollection);
+                    pattern = new Facade(nameSpaceClassCollection);
                     break;
                 case "abs":
                     if (nameSpaceClassCollection == null) { this.NoClassFound(); return; }
