@@ -59,10 +59,20 @@ namespace idetector.Patterns.Facade
                 if (group.Count > 2)
                 {
                     bool isFacade = true;
+                    List<string> classlist = new List<string>();
 
                     foreach (var modelName in group)
                     {
-                        isFacade = RecursiveCheckGroup(parents, facade, collection.GetClass(modelName), isFacade);
+                        try
+                        {
+                            isFacade = RecursiveCheckGroup(parents, facade, collection.GetClass(modelName), isFacade, classlist);
+                        }
+                        catch (StackOverflowException exception)
+                        {
+                            //If a class from outside triggers the facade, and the facade triggers the class
+                            //it creates a infinite loop
+                            isFacade = false;
+                        }
                     }
 
                     SaveScores(relation.Key.ToString(), facade, isFacade);
@@ -89,36 +99,42 @@ namespace idetector.Patterns.Facade
             }
         }
 
-        private bool RecursiveCheckGroup(RelationTable parents, List<string> group, ClassModel model, bool found)
+        private bool RecursiveCheckGroup(RelationTable parents, List<string> group, ClassModel model, bool found, List<string> classlist)
         {
-            foreach (var objectCreation in model.ObjectCreations)
-            {
-                var result = parents.GetRelationTo(objectCreation.Identifier);
-                if (result != null)
+
+                foreach (var objectCreation in model.ObjectCreations)
                 {
-                    foreach (var p in result.ListParents())
+                    if (classlist.Contains(objectCreation.Identifier))
                     {
-                        if (!group.Contains(p))
+                        return found;
+                    }
+                    classlist.Add(objectCreation.Identifier);
+
+                    var result = parents.GetRelationTo(objectCreation.Identifier);
+                    if (result != null)
+                    {
+                        foreach (var p in result.ListParents())
                         {
-                            return false;
-                        }
-                        else
-                        {
-                            if (!group.Contains(objectCreation.Identifier))
+                            if (!group.Contains(p))
                             {
-                                group.Add(objectCreation.Identifier);
+                                return false;
+                            }
+                            else
+                            {
+                                if (!group.Contains(objectCreation.Identifier))
+                                {
+                                    group.Add(objectCreation.Identifier);
+                                }
                             }
                         }
+
+                        found = RecursiveCheckGroup(parents, group, objectCreation, found, classlist);
                     }
-
-                    found = RecursiveCheckGroup(parents, group, objectCreation, found);
+                    else
+                    {
+                        return false;
+                    }
                 }
-                else
-                {
-                    return false;
-                }
-            }
-
 
             return found;
         }

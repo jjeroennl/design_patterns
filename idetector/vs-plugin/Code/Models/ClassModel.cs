@@ -44,6 +44,7 @@ namespace idetector.Models
             Identifier = node.Identifier.ToString();
             IsInterface = true;
 
+            _setNamespace(node);
             _setMembers();
             _setAttributes();
             _setModifiers();

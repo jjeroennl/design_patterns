@@ -24,8 +24,7 @@
                 <ComboBoxItem Name="sin">Singleton</ComboBoxItem>
                 <ComboBoxItem Name="sta">State</ComboBoxItem>
                 <ComboBoxItem Name="str">Strategy</ComboBoxItem>
-                <ComboBoxItem Name="ite">Iterator</ComboBoxItem>
-                <ComboBoxItem Name="obs">Observer</ComboBoxItem>
+                <!-- <ComboBoxItem Name="obs">Observer</ComboBoxItem> -->
                 <ComboBoxItem Name="cmd">Command</ComboBoxItem>
             </ComboBox>
             <StackPanel Orientation="Horizontal" Visibility="Collapsed" Name="typePanel">
