@@ -77,9 +77,9 @@
                         <StackPanel x:Name="SummaryCondition" Orientation="Horizontal">
                             <Label x:Name="ConditionIcon" Content="" Visibility="Visible" HorizontalAlignment="Left"
                                    VerticalAlignment="Top" FontWeight="Bold" FontSize="15"/>
-                            <Label x:Name="ConditionTitle" Content="Condition" Margin="-7,0"
+                            <TextBlock x:Name="ConditionTitle" Text="Condition" Margin="-7,0"
                                    HorizontalAlignment="Stretch" VerticalAlignment="Top" FontWeight="Bold"
-                                   FontSize="15" />
+                                   FontSize="15" TextWrapping="WrapWithOverflow"/>
                         </StackPanel>
                         <Canvas x:Name="Canvas" Height="{Binding ElementName=ConditionText, Path=ActualHeight}"
                                 VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -112,7 +112,7 @@
                 <TextBlock Text="Settings" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                 <Button Content="Back" HorizontalAlignment="Right" Click="Button_Click" Background="{x:Null}" />
             </Grid>
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Height="900"  HorizontalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Height="900"  HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Stretch">
                 <StackPanel Name="Ranges"  ScrollViewer.CanContentScroll="True" CanVerticallyScroll="True" Orientation="Vertical" Visibility="Visible">
                 </StackPanel>
             </ScrollViewer>

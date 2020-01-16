@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Linq;
+using System.Windows.Media;
 using EnvDTE;
 using idetector.Collections;
 using idetector.Patterns;
@@ -86,11 +87,14 @@ namespace vs_plugin.Guide
 
         private void Scan()
         {
+            this.Results.Children.Clear();
+
             var collection = ToolWindow1Control.ReadProjectCode();
 
             if (collection == null)
             {
                 // No code to scan!
+                this.NoProject();
                 return;
             }
 
@@ -102,43 +106,43 @@ namespace vs_plugin.Guide
             switch (this._pattern)
             {
                 case "sin":
-                    if(cls == null) { return; }
+                    if (cls == null) { this.NoClassFound(); return; }
                     pattern = new Singleton(cls);
                     break;
                 case "ite":
-                    if (cls == null) { return; }
+                    if (cls == null) { this.NoClassFound(); return; }
                     //pattern = new Iterator(cls);
                     break;
                 case "dec":
-                    if (nameSpaceClassCollection == null) { return; }
+                    if (nameSpaceClassCollection == null) { this.NoClassFound(); return; }
                     pattern = new idetector.Patterns.Decorator(nameSpaceClassCollection);
                     break;
                 case "fac":
-                    if (nameSpaceClassCollection == null) { return; }
+                    if (nameSpaceClassCollection == null) { this.NoClassFound(); return; }
                     pattern = new idetector.Patterns.Decorator(nameSpaceClassCollection);
                     break;
                 case "abs":
-                    if (nameSpaceClassCollection == null) { return; }
+                    if (nameSpaceClassCollection == null) { this.NoClassFound(); return; }
                     pattern = new AbstractFactoryMethod(nameSpaceClassCollection, false);
                     break;
                 case "fcy":
-                    if (nameSpaceClassCollection == null) { return; }
+                    if (nameSpaceClassCollection == null) { this.NoClassFound(); return; }
                     pattern = new AbstractFactoryMethod(nameSpaceClassCollection, true);
                     break;
                 case "sta":
-                    if (nameSpaceClassCollection == null) { return; }
+                    if (nameSpaceClassCollection == null) { this.NoClassFound(); return; }
                     pattern = new StateStrategy(nameSpaceClassCollection, true);
                     break;
                 case "str":
-                    if (nameSpaceClassCollection == null) { return; }
+                    if (nameSpaceClassCollection == null) { this.NoClassFound(); return; }
                     pattern = new StateStrategy(nameSpaceClassCollection, false);
                     break;
                 case "obs":
-                    if (nameSpaceClassCollection == null) { return; }
+                    if (nameSpaceClassCollection == null) { this.NoClassFound(); return; }
                     //pattern = new Observer(nameSpaceClassCollection, false);
                     break;
                 case "cmd":
-                    if (nameSpaceClassCollection == null) { return; }
+                    if (nameSpaceClassCollection == null) { this.NoClassFound(); return; }
                     pattern = new Command(nameSpaceClassCollection);
                     break;
             }
@@ -150,20 +154,33 @@ namespace vs_plugin.Guide
 
             pattern.Scan();
 
-            var results = pattern.GetResults();
+            var results = pattern.GetResults().Values;
+            var requirements = ToolWindow1Control.Patterns[this.patterns[this._pattern]];
 
-            foreach (var result in results)
-            { 
+            foreach (var classResultPair in results)
+            {
                 TextBlock t = new TextBlock();
                 t.FontWeight = FontWeights.Bold;
                 t.FontSize = 15.0;
                 t.Text = this._typename;
                 this.Results.Children.Add(t);
 
-                foreach (var requirement in result.Value)
+                foreach (var requirement in requirements)
                 {
-                    this.SetRequirements(requirement);
-                    this.ShowInfo(requirement);
+                    var hasResult = classResultPair.Any(rr => rr.Id == requirement.Id);
+                    RequirementResult result = null;
+                    if (hasResult)
+                    {
+                        result = classResultPair.First(rr => rr.Id == requirement.Id);
+                    
+                    }
+                    else
+                    {
+                        result = new RequirementResult(requirement.Id, false, collection.GetClass(this._typename));
+                    }
+
+                    this.SetRequirements(result);
+                    this.ShowInfo(result);
                     this.DrawBorder();
                 }
             }
@@ -171,12 +188,28 @@ namespace vs_plugin.Guide
 
         }
 
+        private void NoProject()
+        {
+            var message = new TextBlock();
+            message.Margin = new Thickness(10);
+            message.Text = "Please open a project before running the guidance tool";
+            this.Results.Children.Add(message);
+        }
+
+        private void NoClassFound()
+        {
+            var message = new TextBlock();
+            message.Margin = new Thickness(10);
+            message.Text = "Class " + this._typename + " not found yet, have you created it?";
+            this.Results.Children.Add(message);
+        }
+
         private void DrawBorder()
         {
             var border = new Border();
             border.Height = 1;
-            border.BorderBrush = new SolidColorBrush(Color.FromRgb(220,220,220));
-            border.Margin = new Thickness(0,10,0,10);
+            border.BorderBrush = new SolidColorBrush(Color.FromRgb(220, 220, 220));
+            border.Margin = new Thickness(0, 10, 0, 10);
             this.Results.Children.Add(border);
         }
 
@@ -192,6 +225,7 @@ namespace vs_plugin.Guide
                 message = patternRequirement.ErrorMessage;
 
             TextBlock t = new TextBlock();
+            t.TextWrapping = TextWrapping.WrapWithOverflow;
             t.Text = message;
             this.Results.Children.Add(t);
         }
@@ -207,7 +241,6 @@ namespace vs_plugin.Guide
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Results.Children.Clear();
             this.Scan();
         }
     }

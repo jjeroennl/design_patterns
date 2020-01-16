@@ -255,6 +255,138 @@ namespace xUnitTest
                 }");
 
         }
+        SyntaxTree MultipleInterfaceProducts()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+                abstract class Creator
+                {
+                    public abstract IProduct FactoryMethod();
+
+                    public string SomeOperation()
+                    {
+                        var product = FactoryMethod();
+                        var result = 'Creator: The same creator's code has just worked with '
+                            + product.Operation();
+
+                        return result;
+                    }
+                }
+
+                class ConcreteCreator1 : Creator
+                {
+                    public override IProduct2 FactoryMethod()
+                    {
+                        return new ConcreteProduct1();
+                    }
+                }
+
+                class ConcreteCreator2 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct2();
+                    }
+                }
+            
+                public interface IProduct
+                {
+                    string Operation();
+                }
+                public interface IProduct2
+                {
+                    string Operation();
+                }
+
+                class ConcreteProduct1 : IProduct2
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct1}
+                        ';
+                    }
+                }
+
+                class ConcreteProduct2 : IProduct
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct2}
+                        ';
+                    }
+                }
+        ");
+        }
+        SyntaxTree MultipleMethods()
+        {
+            return CSharpSyntaxTree.ParseText(@"
+                abstract class Creator
+                {
+                    public abstract IProduct FactoryMethod();
+
+                    public string SomeOperation()
+                    {
+                        var product = FactoryMethod();
+                        var result = 'Creator: The same creator's code has just worked with '
+                            + product.Operation();
+
+                        return result;
+                    }
+                }
+
+                class ConcreteCreator1 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct1();
+                    }
+                    public IProduct2 FactoryMethod2(){
+                        return new ConcreteProduct3();
+                    }
+                }
+
+                class ConcreteCreator2 : Creator
+                {
+                    public override IProduct FactoryMethod()
+                    {
+                        return new ConcreteProduct2();
+                    }
+                }
+            
+                public interface IProduct
+                {
+                    string Operation();
+                }
+                public interface IProduct2
+                {
+                    string Operation();
+                }
+                class ConcreteProduct3 : IProduct2(){
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct3}
+                        ';
+                    }
+                 }
+
+                class ConcreteProduct1 : IProduct
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct1}
+                        ';
+                    }
+                }
+
+                class ConcreteProduct2 : IProduct
+                {
+                    public string Operation()
+                    {
+                        return '{ Result of ConcreteProduct2}
+                        ';
+                    }
+                }
+        ");
+        }
         #endregion
 
         [Fact]
@@ -280,21 +412,36 @@ namespace xUnitTest
             }
             Assert.Equal(100, score);
         }
-
-        #region Tests for individual failing checks.
-
         [Fact]
-        public void Test_AbstractFactory_ContainsOneMethod()
+        public void Test_FactoryMethod_MultipleProductInterfaces()
         {
-            var tree = ContainsOneMethod();
+            var tree = MultipleInterfaceProducts();
             var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
 
-            AbstractFactoryMethod abstractFactory = new AbstractFactoryMethod(collection, false);
-            abstractFactory.Scan();
+            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, false);
+            factoryMethod.Scan();
 
-            Assert.False(abstractFactory.HasMultipleMethods().Passed);
+            var score = calculator.GetScore("ABSTRACT-FACTORY", factoryMethod.GetResults()["Creator"]);
+            //should fail both multiple products and multiple methods (since concrete factories return more then one type of interface)
+            Assert.Equal(100, score);
         }
+        [Fact]
+        public void Test_FactoryMethod_MultipleMethods()
+        {
+            var tree = MultipleInterfaceProducts();
+            var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
 
-        #endregion
+            AbstractFactoryMethod factoryMethod = new AbstractFactoryMethod(collection, false);
+            factoryMethod.Scan();
+
+            var score = calculator.GetScore("ABSTRACT-FACTORY", factoryMethod.GetResults()["Creator"]);
+            //should fail both multiple products and multiple methods (since concrete factories return more then one type of interface)
+            Assert.Equal(100, score);
+        }
     }
-    }
+
+}

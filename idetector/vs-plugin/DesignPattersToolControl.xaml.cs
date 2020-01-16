@@ -250,7 +250,7 @@ namespace vs_plugin
             }
             Summary.Visibility = Visibility.Visible;
             PatternName.Content = pattern;
-            ConditionTitle.Content = req.Title;
+            ConditionTitle.Text = req.Title;
             if (passed)
             {
                 ConditionText.Text = req.Description;
@@ -282,20 +282,6 @@ namespace vs_plugin
 
                 this.ClassList.Children.Add(t);
             }
-        }
-
-        private Dictionary<ClassModel, List<RequirementResult>> GroupResults(List<RequirementResult> unGroupedList)
-        {
-            var returnVal = new Dictionary<ClassModel, List<RequirementResult>>();
-            foreach (var reqResults in unGroupedList)
-            {
-                if (!returnVal.ContainsKey(reqResults.Class))
-                    returnVal.Add(reqResults.Class, new List<RequirementResult>());
-
-                returnVal[reqResults.Class].Add(reqResults);
-            }
-
-            return returnVal;
         }
 
         private void OpenSettingsPanel(object sender, RoutedEventArgs e)

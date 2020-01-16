@@ -42,95 +42,95 @@ namespace idetector.Data
             decoratorreqs.Add(new PatternRequirement("DECORATOR-CONCRETE-METHOD-SETS-PROPERTY", "Concrete decorator calls base", "The concrete decorator should always call the base constructor so that the base product is set.", "The concrete decorators do not call the abstract decorator's constructor", "https://en.wikipedia.org/wiki/Decorator_pattern"));
             PatternRequirements.Add("DECORATOR", decoratorreqs);
 
-            //ABSTRACT FACTORY METHOD
+            //FACTORY METHOD
             /*ID's:
-             *FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS
-             *FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD
-             *FACTORY-INHERITING-PRODUCT-INTERFACE
-             *FACTORY-INHERITING-FACTORY-CLASS
-             *FACTORY-RETURNS-PRODUCT
-             *FACTORY-MULTIPLE-METHODS
+            FACTORY-CONCRETE-FACTORY
+            FACTORY-CONCRETE-PRODUCTS
+            FACTORY-RETURNS-PRODUCT
+            FACTORY-ONE-PRODUCT-INTERFACE
+            FACTORY-MULTIPLE-METHODS
              */
             List<PatternRequirement> factoryreqs = new List<PatternRequirement>();
-            factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS",
-                "Factory Class",
-                "There should be an abstract class present that can function as an abstract factory.",
-                "There was no abstract class found that can function as an abstract factory.",
-                "https://en.wikipedia.org/wiki/Factory_method_pattern"));
-            factoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD",
-                "Factory with Product Method",
-                "There should be an abstract method with its type being the product interface.",
-                "There was no abstract method found with its type being the product interface. This should be placed in the factory class so instances can create products.",
-                "https://en.wikipedia.org/wiki/Factory_method_pattern"));
-            factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-PRODUCT-INTERFACE",
-                "Concrete Product",
-                "There should be a class that inherits the product interface.",
-                "There was not a class found that inherits the product interface.",
-                "https://en.wikipedia.org/wiki/Factory_method_pattern"));
-            factoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-FACTORY-CLASS",
-                "Concrete Factory",
-                "There should be a class that inherits the abstract factory class.",
-                "There was not a class found that inherits the abstract factory class.",
-                "https://en.wikipedia.org/wiki/Factory_method_pattern"));
+            factoryreqs.Add(new PatternRequirement("FACTORY-CONCRETE-FACTORY",
+                "Factory Classes",
+                "A factory method should have an interface or abstract class for concrete factories to implement. " +
+                "This way the interface/abstract can be used as a guideline for creating a concrete product through different factories",
+                "The factory pattern did not contain any concrete factory classes that implemented the factory interface or abstract class",
+                                                  "https://en.wikipedia.org/wiki/Factory_method_pattern"));
+            factoryreqs.Add(new PatternRequirement("FACTORY-CONCRETE-PRODUCTS",
+                "Concrete Products",
+                "A factory method should have concrete products that implement a certain product interface." +
+                " The product interface is needed for the factory classes to be able to return a generic product",
+                "The factory method did not have a product interface, " +
+                "or the product interface was not implemented into a concrete product class",
+                                                  "https://en.wikipedia.org/wiki/Factory_method_pattern"));
             factoryreqs.Add(new PatternRequirement("FACTORY-RETURNS-PRODUCT",
-                "Factory Product",
-                "The factory class should return a concrete product.",
-                "The factory class did not return a concrete product.",
-                "https://en.wikipedia.org/wiki/Factory_method_pattern"));
+                "Creates Products",
+                "A concrete factory should return a concrete product. " +
+                "The purpose of a factory method is to create multiple types of one product by using different concrete factories that return different concrete products",
+                "Not all concrete factories return a concrete product, or there are no concrete factories/products. " +
+                "The purpose of a factory method is to create multiple types of one product by using different concrete factories that return different concrete products",
+                                                  "https://en.wikipedia.org/wiki/Factory_method_pattern"));
             factoryreqs.Add(new PatternRequirement("FACTORY-ONE-PRODUCT-INTERFACE",
-                "Product Interface",
-                "All concrete products should follow one and the same product interface. This interface should declare methods that make sense in every product.",
-                "The concrete products don't follow one and the same product interface. Make sure all concrete products follow the same interface.",
-                "https://en.wikipedia.org/wiki/Factory_method_pattern"));
+                "Singular Product",
+                "A factory method can only have a singular product. While it can have multiple types of this product, it cannot have multiple products." +
+                " If multiple products are necessary, consider using an abstract factory",
+                "Having multiple products in a factory is not allowed. A factory can have multiple types of a product, but not multiple products. Consider using " +
+                "abstract factory if multiple products are required",
+                                                  "https://en.wikipedia.org/wiki/Factory_method_pattern"));
+            factoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS",
+                "One Method",
+                "A concrete factory is only allowed to have one method that returns a concrete product." +
+                "Concrete factories are as the name implies concrete, and should always return only one concrete product. " +
+                "If a factory is required to return more then one concrete product, consider using abstract factory",
+                "One or more concrete factories return no or more then one concrete product. If " +
+                "a factory is required to return more then one concrete product, consider using abstract factory",
+                                                  "https://en.wikipedia.org/wiki/Factory_method_pattern"));
             PatternRequirements.Add("FACTORY", factoryreqs);
 
             //ABSTRACT-FACTORY
             /*ID's:
-             *FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS
-             *FACTORY-CONTAINS-PRODUCT-INTERFACE
-             *FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD
-             *FACTORY-INHERITING-ABSTRACT-FACTORY-CLASS
-             *FACTORY-INHERITING-PRODUCT-INTERFACE
-             *FACTORY-RETURNS-PRODUCT
-             *FACTORY-MULTIPLE-METHODS
+            FACTORY-CONCRETE-FACTORY
+            FACTORY-CONCRETE-PRODUCTS
+            FACTORY-RETURNS-PRODUCT
+            FACTORY-ONE-PRODUCT-INTERFACE
+            FACTORY-MULTIPLE-METHODS
              */
             List<PatternRequirement> absfactoryreqs = new List<PatternRequirement>();
-
-            absfactoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS",
-                 "abstract factory Class",
-                 "There should be an abstract class present that can function as an abstract factory.",
-                 "There was no abstract class found that can function as an abstract factory.",
-                 "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
-            absfactoryreqs.Add(new PatternRequirement("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD",
-                "abstract factory with Product Method",
-                "There should be an abstract method with its type being the product interface.",
-                "There was no abstract method found with its type being the product interface. This should be placed in the factory class so instances can create products.",
-                "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
-            absfactoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-PRODUCT-INTERFACE",
-                "Concrete Product",
-                "There should be a class that inherits the product interface.",
-                "There was not a class found that inherits the product interface.",
-                "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
-            absfactoryreqs.Add(new PatternRequirement("FACTORY-INHERITING-FACTORY-CLASS",
-                "Concrete Factory",
-                "There should be a class that inherits the abstract factory class.",
-                "There was not a class found that inherits the abstract factory class.",
-                "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-CONCRETE-FACTORY",
+                "Factory Classes",
+                "An abstract factory should have an interface or abstract class for concrete factories to implement. " +
+                "This way the interface/abstract can be used as a guideline for creating a concrete product through different factories",
+                "The abstract factory did not contain any concrete factory classes that implemented the factory interface or abstract class",
+                                                     "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-CONCRETE-PRODUCTS",
+                "Concrete Products",
+                "An abstract factory should have concrete products that implement a certain product interface." +
+                " The product interface is needed for the factory classes to be able to return a generic product",
+                "The abstract factory did not have a product interface, " +
+                "or the product interface was not implemented into a concrete product class",
+                                                     "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
             absfactoryreqs.Add(new PatternRequirement("FACTORY-RETURNS-PRODUCT",
-                "Factory Product",
-                "The factory class should return a concrete product.",
-                "The factory class did not return a concrete product.",
-                "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
+                "Creates Products",
+                "A concrete factory should return a concrete product. " +
+                "The purpose of an abstract factory method is to create multiple types of certain products by using different concrete factories that return different concrete products",
+                "Not all concrete factories return a concrete product, or there are no concrete factories/products. " +
+                "The purpose of a factory method is to create multiple types of one product by using different concrete factories that return different concrete products",
+                                                     "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
+            absfactoryreqs.Add(new PatternRequirement("FACTORY-ONE-PRODUCT-INTERFACE",
+                "Singular Product",
+                "An abstract factory can implement multiple products in the same factory as opposed to factory that can only implement one" +
+                " If factories should only return one type of product, consider using regular factory",
+                "One or more concrete factories returned one or less products. If only one product is required, consider using a regular factory method",
+                                                     "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
             absfactoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS",
-                "Multiple factory method",
-                "An abstract factory can have more then one creator method because it can return different products",
-                "The abstract factory did not have a method that returned a concrete product",
-                "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
-            absfactoryreqs.Add(new PatternRequirement("FACTORY-ONE-PRODUCT-INTERFACE", 
-                "Product Interface",
-                "Product interfaces are used to define a product for a factory to build. An abstract factory can have more then one. These interfaces should declare methods that make sense in every product.", 
-                "The concrete products don't implement a product interface. A concrete product should always follow an interface that defines what methods and data the product should have",
-                "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
+                "One Method",
+                "A concrete factory is only allowed to have one method that returns a concrete product." +
+                "Concrete factories are as the name implies concrete, and should always return only one concrete product. " +
+                "If a factory is required to return more then one concrete product, consider using abstract factory",
+                "One or more concrete factories return no or more then one concrete product. If " +
+                "a factory is required to return more then one concrete product, consider using abstract factory",
+                                                     "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
             PatternRequirements.Add("ABSTRACT-FACTORY", absfactoryreqs);
 
             //STATESTRATEGY
