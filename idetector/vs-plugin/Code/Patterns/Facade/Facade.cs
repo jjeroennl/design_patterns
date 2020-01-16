@@ -59,12 +59,13 @@ namespace idetector.Patterns.Facade
                 if (group.Count > 2)
                 {
                     bool isFacade = true;
+                    List<string> classlist = new List<string>();
 
                     foreach (var modelName in group)
                     {
                         try
                         {
-                            isFacade = RecursiveCheckGroup(parents, facade, collection.GetClass(modelName), isFacade);
+                            isFacade = RecursiveCheckGroup(parents, facade, collection.GetClass(modelName), isFacade, classlist);
                         }
                         catch (StackOverflowException exception)
                         {
@@ -98,11 +99,17 @@ namespace idetector.Patterns.Facade
             }
         }
 
-        private bool RecursiveCheckGroup(RelationTable parents, List<string> group, ClassModel model, bool found)
+        private bool RecursiveCheckGroup(RelationTable parents, List<string> group, ClassModel model, bool found, List<string> classlist)
         {
 
                 foreach (var objectCreation in model.ObjectCreations)
                 {
+                    if (classlist.Contains(objectCreation.Identifier))
+                    {
+                        return found;
+                    }
+                    classlist.Add(objectCreation.Identifier);
+
                     var result = parents.GetRelationTo(objectCreation.Identifier);
                     if (result != null)
                     {
@@ -121,7 +128,7 @@ namespace idetector.Patterns.Facade
                             }
                         }
 
-                        found = RecursiveCheckGroup(parents, group, objectCreation, found);
+                        found = RecursiveCheckGroup(parents, group, objectCreation, found, classlist);
                     }
                     else
                     {
