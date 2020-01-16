@@ -16,25 +16,33 @@ namespace xUnitTest
     {
 
         [Fact]
-        public void Test_Command_Succeed()
+        public void Test_Command_Has_Interface()
         {
             var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
             Requirements r = new Requirements();
             ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
-            int score = 0;
+            bool passed = false;
 
             Command command = new Command(collection);
             command.Scan();
 
             var results = command.GetResults();
 
-            foreach (var patternResult in command.GetResults())
+            foreach (var cls in collection.GetClasses())
             {
-                score = calculator.GetScore("COMMAND", patternResult.Value);
+                if (results.ContainsKey(cls.Key))
+                {
+                    foreach (var result in results[cls.Value.Identifier].ToArray())
+                    {
+                        if (result.Id.Equals("COMMAND-HAS-INTERFACE"))
+                        {
+                            if (!passed) passed = result.Passed;
+                        }
+                    }
+                }
             }
-
-            Assert.Equal(100, score);
+            Assert.True(passed);
 
         }
 

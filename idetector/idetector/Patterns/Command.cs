@@ -23,6 +23,7 @@ namespace idetector.Patterns
         private ClassModel _cls;
 
         private ClassModel commandInterface;
+        private List<ClassModel> publicCommandConstructors;
         private ClassCollection commands;
         private ClassModel invoker;
         private ClassCollection receivers;
@@ -39,6 +40,7 @@ namespace idetector.Patterns
             commands = new ClassCollection();
             receivers = new ClassCollection();
             _results = new Dictionary<string, List<RequirementResult>>();
+            publicCommandConstructors = new List<ClassModel>();
         }
 
         public void Scan()
@@ -52,7 +54,6 @@ namespace idetector.Patterns
 
             if (commandInterface != null)
             {
-                HasInvokerClass();
                 HasCommandClasses();
                 HasReceiverClasses();
 
@@ -61,6 +62,8 @@ namespace idetector.Patterns
                     CommandsHavePublicConstructor();
                     CommandsUseReceiver();
                 }
+                HasInvokerClass();
+
             }
         }
 
@@ -76,6 +79,7 @@ namespace idetector.Patterns
 
         /// <summary>
         /// Checks if command pattern has an interface or an abstract class.
+        /// If this is true, adds the interface as a Classmodel to defined "commandInterface"
         /// </summary>
         public void HasCommandInterface()
         {
@@ -85,15 +89,8 @@ namespace idetector.Patterns
                 {
                     if (cls.IsInterface || cls.IsAbstract)
                     {
-                        foreach (var method in cls.GetMethods())
-                        {
-                            if (method.ReturnType == "void" && cls.GetMethods().Count == 1)
-                            {
-                                commandInterface = cls;
-                                Debug.WriteLine("Interface added: " + cls.Identifier + " true");
-                                _results[cls.Identifier].Add(new RequirementResult("COMMAND-HAS-INTERFACE", true, cls));
-                            }
-                        }
+                        commandInterface = cls;
+                        _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-INTERFACE", true, cls));
                     }
                 }
             }
@@ -102,24 +99,24 @@ namespace idetector.Patterns
 
         /// <summary>
         /// Checks if command pattern has at least one or more command classes.
+        /// If a command is found, the command is added to the defined "commands" ClassCollection. If there is 1 or more commands, the check returns true.
         /// </summary>
         public void HasCommandClasses()
         {
-            if (commandInterface != null)
+            foreach (var cls in cc.GetClasses())
             {
-                foreach (var cls in cc.GetClasses())
+                if (cls.Value.HasParent(commandInterface.Identifier))
                 {
-                    if (cls.Value.HasParent(commandInterface.Identifier))
-                    {
-                        commands.AddClass(cls.Value);
-                        Debug.WriteLine("Command added: " + cls.Value.Identifier + " true");
-                    }
+                    commands.AddClass(cls.Value);
                 }
             }
-            if (commands != null)
+
+            if (commands.GetClasses().Count > 0)
             {
-                    _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-COMMAND-CLASS", true, commandInterface));
-            } else
+                _results[commandInterface.Identifier]
+                    .Add(new RequirementResult("COMMAND-HAS-COMMAND-CLASS", true, commandInterface));
+            }
+            else
             {
                 _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-COMMAND-CLASS", false, commandInterface));
             }
@@ -127,15 +124,14 @@ namespace idetector.Patterns
 
         /// <summary>
         /// Checks if a command has a public constructor.
+        /// Only returns true if the count of command classes is the same as the amount of those checked for having a public constructor.
         /// </summary>
         public void CommandsHavePublicConstructor()
         {
             if (commands != null)
             {
-                int count = 0;
                 foreach (var command in commands.GetClasses())
                 {
-                    bool hasPublicConstructor = false;
                     foreach (var method in command.Value.GetMethods())
                     {
                         if (method.isConstructor)
@@ -144,41 +140,38 @@ namespace idetector.Patterns
                             {
                                 if (method.Modifiers[0].ToLower().Equals("public"))
                                 {
-                                    Debug.WriteLine("Command has public constructor: " + command.Value.Identifier + " true");
-                                    hasPublicConstructor = true;
+                                    publicCommandConstructors.Add(command.Value);
                                 }
                             }
                         }
                     }
-
-                    if (hasPublicConstructor)
-                    {
-                        count += 1;
-                    }
                 }
 
-                if (commands.GetClasses().Count == count)
+                if (commands.GetClasses().Count == publicCommandConstructors.Count)
                 {
-                    _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-PUBLIC-CONSTRUCTOR", true, commandInterface));
-                } else
+                    _results[commandInterface.Identifier]
+                        .Add(new RequirementResult("COMMAND-HAS-PUBLIC-CONSTRUCTOR", true, commandInterface));
+
+                }
+                else
                 {
-                    _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-PUBLIC-CONSTRUCTOR", false, commandInterface));
+                    _results[commandInterface.Identifier]
+                        .Add(new RequirementResult("COMMAND-HAS-PUBLIC-CONSTRUCTOR", false, commandInterface));
                 }
             }
         }
 
 
-
-
         /// <summary>
         /// Checks if command pattern has a receiver class.
+        /// If the amount of methods with private modifiers is the same as the amount of methods within a class, the class is added to the defined receivers ClassCollection.
+        /// If there is at least one receiver class, returns true.
         /// </summary>
         public void HasReceiverClasses()
         {
             foreach (var cls in cc.GetClasses())
             {
-                int count = 0;
-                bool isReceiver = false;
+                int privateMethods = 0;
                 foreach (var method in cls.Value.GetMethods())
                 {
                     if (method.Modifiers.Length > 0)
@@ -187,68 +180,74 @@ namespace idetector.Patterns
                         {
                             if (method.Modifiers[0].ToLower().Equals("public"))
                             {
-                                count += 1;
+                                privateMethods += 1;
+
                             }
                         }
+
                     }
                 }
 
-                if (count == cls.Value.GetMethods().Count)
-                {
-                    isReceiver = true;
-                }
-
-                if (isReceiver)
+                if (privateMethods == cls.Value.GetMethods().Count)
                 {
                     receivers.AddClass(cls.Value);
-                    Debug.WriteLine("Receiver added: " + cls.Value.Identifier + " true");
                 }
             }
-            
+
             if (receivers.GetClasses().Count > 0)
             {
-                _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", true, commandInterface));
+                _results[commandInterface.Identifier]
+                    .Add(new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", true, commandInterface));
+
             }
+
+            else
+            {
+                _results[commandInterface.Identifier]
+                    .Add(new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", false, commandInterface));
+            }
+
         }
+
 
 
         /// <summary>
         /// Checks if command patterns use the receiver class.
+        /// If at least one of the commands use the receiver class, returns true.
         /// </summary>
         public void CommandsUseReceiver()
         {
+            bool itdoes = false;
             if (commands != null)
             {
-                int receiverCommandCount = 0;
-                foreach (var command in commands.GetClasses())
+                if (receivers != null)
                 {
-                    foreach (var property in command.Value.GetProperties())
+                    foreach (var command in commands.GetClasses())
                     {
-                        if (cc.GetClass(property.ValueType.ToString()) != null)
+                        foreach (var property in command.Value.GetProperties())
                         {
-                            if (receivers.GetClasses() != null)
+                            if (cc.GetClass(property.ValueType) != null)
                             {
                                 foreach (var receiver in receivers.GetClasses())
                                 {
-                                    if ((property.ValueType == receiver.Value.Identifier))
+                                    if (property.ValueType == receiver.Value.Identifier)
                                     {
-                                        Debug.WriteLine("Command using receiver: " + command.Value.Identifier + " true");
-                                        receiverCommandCount += 1;
+                                        itdoes = true;
+                                        _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-USES-RECEIVER", true, command.Value));
                                     }
+
                                 }
                             }
                         }
                     }
-                }
 
-                if (receiverCommandCount > 0)
-                {
-                    _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-USES-RECEIVER", true, commandInterface));
+                    if (!itdoes)
+                    {
+                        _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-USES-RECEIVER", false, commandInterface));
+                    }
                 }
-                else _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-USES-RECEIVER", false, commandInterface));
             }
         }
-
 
 
         /// <summary>
@@ -260,23 +259,24 @@ namespace idetector.Patterns
             {
                 foreach (var property in cls.Value.GetProperties())
                 {
-                    if (cc.GetClass(property.ValueType.ToString()) != null)
+                    if (cc.GetClass(property.ValueType) != null)
                     {
-                        if (property.ValueType.ToString() == commandInterface.Identifier)
+                        if (property.ValueType == commandInterface.Identifier)
                         {
                             invoker = cls.Value;
-                            Debug.WriteLine("Invoker added: " + cls.Value.Identifier + " true");
+                            _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-INVOKER-CLASS", true, cls.Value));
+                            break;
                         }
                     }
                 }
             }
 
-            if (invoker != null)
+            if (invoker == null)
             {
-                _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-INVOKER-CLASS", true, commandInterface));
-            }
-            else
                 _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-INVOKER-CLASS", false, commandInterface));
             }
+
+        }
+
     }
 }
