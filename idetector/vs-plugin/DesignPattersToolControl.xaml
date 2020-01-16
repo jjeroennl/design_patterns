@@ -12,6 +12,8 @@
         </Style>
         <Style TargetType="Button">
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.BrandedUITextKey}}" />
+            <Setter Property="Background" Value="{x:Null}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsshell:VsBrushes.BrandedUITextKey}}" />
         </Style>
         <Style TargetType="Label">
             <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.BrandedUITextKey}}" />
@@ -23,7 +25,7 @@
                 <RowDefinition Height="64" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid x:Name="idetectorPlugin" VerticalAlignment="Stretch" Background="White">
+            <Grid x:Name="idetectorPlugin" VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.4*"/>
                     <ColumnDefinition Width="*"/>
@@ -43,13 +45,13 @@
                        VerticalAlignment="Stretch"/>
                 <StackPanel x:Name="ScanButtons" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
                             VerticalAlignment="Center" Margin="0,4,10,0">
-                    <Button x:Name="Pattern_Guide" Content="Pattern Guide" Margin="0,0,10,0" VerticalAlignment="Center" MinWidth="100" Background="{x:Null}" Click="Pattern_Guide_Click" />
+                    <Button x:Name="Pattern_Guide" Content="Pattern Guide" Margin="0,0,10,0" VerticalAlignment="Center" MinWidth="100" Click="Pattern_Guide_Click" />
                     <Button x:Name="ScanProject" Content="Scan Project" Margin="0,0,10,0" VerticalAlignment="Center" MinWidth="100"
-                            Click="Scan_Current_project" Background="{x:Null}" />
+                            Click="Scan_Current_project" />
                     <Button x:Name="ScanFile" Content="Scan open File" Margin="0,0,10,0" VerticalAlignment="Center" MinWidth="100"
-                            Click="Scan_Current_file" Background="{x:Null}" />
+                            Click="Scan_Current_file" />
                     <Button x:Name="Settings" Content="⚙️" VerticalAlignment="Center" MinWidth="32"
-                            Click="OpenSettingsPanel" Background="{x:Null}" />
+                            Click="OpenSettingsPanel" />
                 </StackPanel>
 
                 <Border Grid.Row="3" Grid.ColumnSpan="2" Background="#FFB8B8B8" />
