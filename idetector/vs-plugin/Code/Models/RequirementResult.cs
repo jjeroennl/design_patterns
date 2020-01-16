@@ -6,6 +6,7 @@ namespace idetector.Models
     {
         public string Id;
         public bool Passed;
+
         public ClassModel @Class;
         public MethodModel @Method;
 
