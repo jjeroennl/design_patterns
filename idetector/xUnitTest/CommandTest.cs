@@ -14,7 +14,7 @@ namespace xUnitTest
 {
     public class CommandTest
     {
-
+        
         [Fact]
         public void Test_Command_Has_Interface()
         {
@@ -47,14 +47,17 @@ namespace xUnitTest
         }
 
         [Fact]
-        public void Test_NoInterface()
+        public void Test_Command_Has_Commands()
         {
-            var tree = NoInterface();
+            var tree = SuccessSetup();
             var collection = Walker.GenerateModels(tree);
-            bool passed = true;
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            bool passed = false;
 
             Command command = new Command(collection);
             command.Scan();
+
             var results = command.GetResults();
 
             foreach (var cls in collection.GetClasses())
@@ -63,14 +66,138 @@ namespace xUnitTest
                 {
                     foreach (var result in results[cls.Value.Identifier].ToArray())
                     {
-                        if (result.Id.Equals("COMMAND-HAS-INTERFACE"))
+                        if (result.Id.Equals("COMMAND-HAS-COMMAND-CLASS"))
                         {
-                            passed = result.Passed;
+                            if (!passed) passed = result.Passed;
                         }
                     }
                 }
             }
-            Assert.False(passed);
+            Assert.True(passed);
+
+        }
+
+        [Fact]
+        public void Test_Command_Has_Invoker()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            bool passed = false;
+
+            Command command = new Command(collection);
+            command.Scan();
+
+            var results = command.GetResults();
+
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    foreach (var result in results[cls.Value.Identifier].ToArray())
+                    {
+                        if (result.Id.Equals("COMMAND-HAS-INVOKER-CLASS"))
+                        {
+                            if (!passed) passed = result.Passed;
+                        }
+                    }
+                }
+            }
+            Assert.True(passed);
+
+        }
+
+        [Fact]
+        public void Test_Command_Class_Public_Constructor()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            bool passed = false;
+
+            Command command = new Command(collection);
+            command.Scan();
+
+            var results = command.GetResults();
+
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    foreach (var result in results[cls.Value.Identifier].ToArray())
+                    {
+                        if (result.Id.Equals("COMMAND-HAS-PUBLIC-CONSTRUCTOR"))
+                        {
+                            if (!passed) passed = result.Passed;
+                        }
+                    }
+                }
+            }
+            Assert.True(passed);
+
+        }
+
+        [Fact]
+        public void Test_Command_Has_Receivers()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            bool passed = false;
+
+            Command command = new Command(collection);
+            command.Scan();
+
+            var results = command.GetResults();
+
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    foreach (var result in results[cls.Value.Identifier].ToArray())
+                    {
+                        if (result.Id.Equals("COMMAND-HAS-RECEIVER-CLASS"))
+                        {
+                            if (!passed) passed = result.Passed;
+                        }
+                    }
+                }
+            }
+            Assert.True(passed);
+
+        }
+        [Fact]
+        public void Test_Command_Class_Uses_Receiver()
+        {
+            var tree = SuccessSetup();
+            var collection = Walker.GenerateModels(tree);
+            Requirements r = new Requirements();
+            ScoreCalculator calculator = new ScoreCalculator(r.GetRequirements());
+            bool passed = false;
+
+            Command command = new Command(collection);
+            command.Scan();
+
+            var results = command.GetResults();
+
+            foreach (var cls in collection.GetClasses())
+            {
+                if (results.ContainsKey(cls.Key))
+                {
+                    foreach (var result in results[cls.Value.Identifier].ToArray())
+                    {
+                        if (result.Id.Equals("COMMAND-USES-RECEIVER"))
+                        {
+                            if (!passed) passed = result.Passed;
+                        }
+                    }
+                }
+            }
+            Assert.True(passed);
+
         }
 
         [Fact]
