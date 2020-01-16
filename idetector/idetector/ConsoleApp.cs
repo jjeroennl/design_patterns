@@ -117,9 +117,9 @@ namespace idetector
 
             Console.Write(new string('█', score));
 
-            if (100 - score != 0)
+            if (200 - score != 0)
             {
-                Console.Write(new string(' ', 100 - score));
+                Console.Write(new string(' ', 200 - score));
             }
 
             Console.Write("|\n");
