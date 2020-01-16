@@ -65,12 +65,6 @@ namespace idetector.Patterns
                         .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", true, cls));
                 }
             }
-
-            if (IObserverClass == null)
-            {
-                _results[IObserverClass.Identifier]
-                    .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false, IObserverClass));
-            }
         }
 
         /// <summary>
