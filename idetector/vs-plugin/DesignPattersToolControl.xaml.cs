@@ -143,7 +143,7 @@ namespace vs_plugin
             var singletonList = new List<Pattern>();
             var decoratorList = new List<Pattern>();
             var commandList = new List<Pattern>();
-            var observerList = new List<Pattern>();
+            //var observerList = new List<Pattern>();
 
             var f = new Facade(collection);
             f.Scan();
@@ -167,8 +167,8 @@ namespace vs_plugin
             var d = new Decorator(collection);
             d.Scan();
 
-            var o = new Observer(collection);
-            o.Scan();
+            //var o = new Observer(collection);
+            //o.Scan();
 
             foreach (var item in collection.GetClasses())
             {
@@ -197,7 +197,7 @@ namespace vs_plugin
             PopulatePattern("State", stateList);
             PopulatePattern("Strategy", strategyList);
             PopulatePattern("Command", commandList);
-            PopulatePattern("Observer", observerList);
+            //PopulatePattern("Observer", observerList);
 
         }
 
