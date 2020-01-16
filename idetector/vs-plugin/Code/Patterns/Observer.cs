@@ -65,18 +65,18 @@ namespace idetector.Patterns
                 }
 
 
-                // bool add = true;
-                // foreach (var result in _results[cls.Identifier].ToArray())
-                // {
-                //     if (result.Id.Equals("OBSERVER-HAS-OBSERVER-INTERFACE")) add = false;
-                // }
-                //
-                // if (add)
-                // {
-                //     Debug.WriteLine("HasObserverInterface Added: " + cls.Identifier + " false");
-                //     _results[cls.Identifier]
-                //         .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false, cls));
-                // }
+                bool add = true;
+                foreach (var result in _results[cls.Identifier].ToArray())
+                {
+                    if (result.Id.Equals("OBSERVER-HAS-OBSERVER-INTERFACE")) add = false;
+                }
+
+                if (add)
+                {
+                    Debug.WriteLine("HasObserverInterface Added: " + cls.Identifier + " false");
+                    _results[cls.Identifier]
+                        .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false, cls));
+                }
 
             }
         }
