@@ -127,7 +127,7 @@ namespace idetector.Patterns
         {
             bool result = false;
             var methods = API.ClassGetMethodsWithParam(_decoratorInterface, _cls.Identifier);
-            var propertyNames = _decoratorInterface.getProperties().Where(e => e.ValueType.Equals(_cls.Identifier)).ToList();
+            var propertyNames = _decoratorInterface.GetProperties().Where(e => e.ValueType.Equals(_cls.Identifier)).ToList();
             foreach (var method in methods)
             {
                 foreach (var property in propertyNames)

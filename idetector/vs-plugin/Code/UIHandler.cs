@@ -19,9 +19,9 @@ namespace vs_plugin.Code
         /// Calls main page to update summary based on selected item.
         /// </summary>
         /// <param name="expander"></param>
-        public static void SummarySelection(string pattern, PatternRequirement req, bool passed)
+        public static void SummarySelection(string pattern, PatternRequirement req, bool passed, IEnumerable<RequirementResult> results)
         {
-            ToolWindow1Control.UpdateSummary(pattern, req, passed);
+            ToolWindow1Control.UpdateSummary(pattern, req, passed, results);
         }
     }
 }

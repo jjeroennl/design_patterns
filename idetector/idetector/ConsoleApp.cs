@@ -65,23 +65,26 @@ namespace idetector
             Decorator d = new Decorator(collection);
             d.Scan();
 
-            foreach (var item in this.collection.GetClasses())
-            {
-                Console.WriteLine(item.Value.Identifier + ": ");
-                Singleton s = new Singleton(item.Value);
-                s.Scan();
+            Observer obs = new Observer(collection);
+            obs.Scan();
 
-                foreach (var result in s.GetResults())
-                {
-                    printBar(item.Value, "Singleton: " + result.Key, Calculator.GetScore("SINGLETON", result.Value));
-                }
-                // printBar(item.Value,"Facade", f.Score(item.Value));
-            }
+            //foreach (var item in this.collection.GetClasses())
+            //{
+            //    Console.WriteLine(item.Value.Identifier + ": ");
+            //    Singleton s = new Singleton(item.Value);
+            //    s.Scan();
 
-            foreach (var result in d.GetResults())
-            {
-                printBar(collection.GetClass(result.Key),"Decorator", Calculator.GetScore("DECORATOR", result.Value));
-            }
+            //    foreach (var result in s.GetResults())
+            //    {
+            //        printBar(item.Value, "Singleton: " + result.Key, Calculator.GetScore("SINGLETON", result.Value));
+            //    }
+            //    // printBar(item.Value,"Facade", f.Score(item.Value));
+            //}
+
+            //foreach (var result in d.GetResults())
+            //{
+            //    printBar(collection.GetClass(result.Key),"Decorator", Calculator.GetScore("DECORATOR", result.Value));
+            //}
             
             printBar("Factory Method", Calculator.GetScore("FACTORY", fm.GetResult()));
 
@@ -96,6 +99,12 @@ namespace idetector
             {
                 Console.WriteLine(result.Key + ": ");
                 printBar(collection.GetClass(result.Key), "Strategy", Calculator.GetScore("STRATEGY", result.Value));
+            }
+
+            foreach (var result in obs.GetResults())
+            {
+                Console.WriteLine(result.Key + ": ");
+                printBar(collection.GetClass(result.Key), "Observer", Calculator.GetScore("OBSERVER", result.Value));
             }
         }
 

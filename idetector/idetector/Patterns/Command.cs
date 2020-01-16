@@ -142,7 +142,7 @@ namespace idetector.Patterns
             {
                 foreach (var command in commands.GetClasses())
                 {
-                    foreach (var method in command.Value.getMethods())
+                    foreach (var method in command.Value.GetMethods())
                     {
                         if (method.isConstructor)
                         {
@@ -178,7 +178,7 @@ namespace idetector.Patterns
             foreach (var cls in cc.GetClasses())
             {
                 int count = 0;
-                    foreach (var method in cls.Value.getMethods())
+                    foreach (var method in cls.Value.GetMethods())
                     {
                         if (method.Modifiers.Length > 0)
                         {
@@ -195,7 +195,7 @@ namespace idetector.Patterns
 
                     foreach (var result in _results[commandInterface.Identifier].ToArray())
                     {
-                        if (count == cls.Value.getMethods().Count)
+                        if (count == cls.Value.GetMethods().Count)
                         {
                             if (!(result.Id.Equals("COMMAND-HAS-RECEIVER-CLASS")))
                             {
@@ -258,7 +258,7 @@ namespace idetector.Patterns
         {
                 foreach (var cls in cc.GetClasses())
                 {
-                    foreach (var property in cls.Value.getProperties())
+                    foreach (var property in cls.Value.GetProperties())
                     {
                         if (cc.GetClass(property.ValueType.ToString()) != null)
                         {

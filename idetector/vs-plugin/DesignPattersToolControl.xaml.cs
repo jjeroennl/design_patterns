@@ -4,6 +4,8 @@ using System.Data.SqlTypes;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using EnvDTE;
 using idetector;
@@ -30,6 +32,7 @@ namespace vs_plugin
         public static ScoreCalculator Calc;
         private int cutoff = 50;
         private ClassCollection collection;
+        public static string WikiLink;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ToolWindow1Control" /> class.
@@ -140,6 +143,7 @@ namespace vs_plugin
             var singletonList = new List<Pattern>();
             var decoratorList = new List<Pattern>();
             var commandList = new List<Pattern>();
+            //var observerList = new List<Pattern>();
 
             var f = new Facade(collection);
             f.Scan();
@@ -163,6 +167,8 @@ namespace vs_plugin
             var d = new Decorator(collection);
             d.Scan();
 
+            //var o = new Observer(collection);
+            //o.Scan();
 
             foreach (var item in collection.GetClasses())
             {
@@ -177,6 +183,7 @@ namespace vs_plugin
             commandList = this.HandleResults("COMMAND", commandList, c.GetResults());
             abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
             factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
+            //observerList = this.HandleResults("OBSERVER", observerList, o.GetResults());
 
 
             PatternList.Children.Clear();
@@ -190,10 +197,8 @@ namespace vs_plugin
             PopulatePattern("State", stateList);
             PopulatePattern("Strategy", strategyList);
             PopulatePattern("Command", commandList);
-            // this.PopulatePattern("factory", factoryList);
-            // this.PopulatePattern("singleton", singletonList);
-            // this.PopulatePattern("state", stateList);
-            // this.PopulatePattern("strategory", strategyList);
+            //PopulatePattern("Observer", observerList);
+
         }
 
         private List<Pattern> HandleResults(string pattern, List<Pattern> patternList, Dictionary<string, List<RequirementResult>> results)
@@ -229,9 +234,8 @@ namespace vs_plugin
         ///     Method to replace summary's information and reset the text wrapping.
         /// </summary>
         /// <param name="text">Text to be placed inside TextBlock.</param>
-        public void UpdateSummary(string pattern, PatternRequirement req, bool passed)
+        public void UpdateSummary(string pattern, PatternRequirement req, bool passed, IEnumerable<RequirementResult> results)
         {
-
             if (passed)
             {
                 this.ConditionIcon.Content = "✔️";
@@ -243,8 +247,8 @@ namespace vs_plugin
                 this.ConditionIcon.Foreground = new SolidColorBrush(Color.FromRgb(128, 0, 0));
             }
             Summary.Visibility = Visibility.Visible;
-            PatternName.Content = pattern;
-            ConditionTitle.Content = req.Title;
+            PatternName.Text = pattern;
+            ConditionTitle.Text = req.Title;
             if (passed)
             {
                 ConditionText.Text = req.Description;
@@ -254,21 +258,30 @@ namespace vs_plugin
                 ConditionText.Text = req.ErrorMessage;
             }
 
+            PatternName.TextWrapping = TextWrapping.Wrap;
+            ConditionTitle.TextWrapping = TextWrapping.Wrap;
             ConditionText.TextWrapping = TextWrapping.Wrap;
-        }
+            this.ClassList.Children.Clear();
 
-        private Dictionary<ClassModel, List<RequirementResult>> GroupResults(List<RequirementResult> unGroupedList)
-        {
-            var returnVal = new Dictionary<ClassModel, List<RequirementResult>>();
-            foreach (var reqResults in unGroupedList)
+            var ht = new TextBlock();
+            ht.Text = "Found in: ";
+            ht.FontWeight = FontWeights.Bold;
+            this.ClassList.Children.Add(ht);
+
+            WikiLink = req.WikipediaURL;
+
+            foreach (var res in results)
             {
-                if (!returnVal.ContainsKey(reqResults.Class))
-                    returnVal.Add(reqResults.Class, new List<RequirementResult>());
+                if (res.Class == null)
+                {
+                    continue;
+                }
 
-                returnVal[reqResults.Class].Add(reqResults);
+                var t = new TextBlock();
+                t.Inlines.Add(res.Class.Identifier);
+
+                this.ClassList.Children.Add(t);
             }
-
-            return returnVal;
         }
 
         private void OpenSettingsPanel(object sender, RoutedEventArgs e)
@@ -286,6 +299,11 @@ namespace vs_plugin
         private void Pattern_Guide_Click(object sender, RoutedEventArgs e)
         {
             new NewGuidance();
+        }
+
+        private void MoreInfoClick(object sender, MouseButtonEventArgs e)
+        {
+            System.Diagnostics.Process.Start(WikiLink.ToString());
         }
     }
 }

@@ -44,6 +44,7 @@ namespace idetector.Models
             Identifier = node.Identifier.ToString();
             IsInterface = true;
 
+            _setNamespace(node);
             _setMembers();
             _setAttributes();
             _setModifiers();
@@ -145,7 +146,7 @@ namespace idetector.Models
             ObjectCreations.Add(node);
         }
 
-        public List<MethodModel> getConstructors()
+        public List<MethodModel> GetConstructors()
         {
             List<MethodModel> constructors = new List<MethodModel>();
             foreach (var methods in Methods)
@@ -158,12 +159,12 @@ namespace idetector.Models
             return constructors;
         }
 
-        public List<MethodModel> getMethods()
+        public List<MethodModel> GetMethods()
         {
             return Methods;
         }
 
-        public List<PropertyModel> getProperties()
+        public List<PropertyModel> GetProperties()
         {
             return Properties;
         }

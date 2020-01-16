@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -16,6 +18,8 @@ namespace vs_plugin
         private PatternRequirement _patternRequirement;
         public bool openInfoScreen = true;
         private string _pattern;
+        private IEnumerable<RequirementResult> _classes;
+
         public Requirement()
         {
             InitializeComponent();
@@ -28,7 +32,7 @@ namespace vs_plugin
         {
             if (openInfoScreen)
             {
-                UIHandler.SummarySelection(this._pattern, _patternRequirement, this._result.Passed);
+                UIHandler.SummarySelection(this._pattern, _patternRequirement, this._result.Passed, this._classes);
             }
         }
 
@@ -56,6 +60,11 @@ namespace vs_plugin
                 var errormessage = _patternRequirement.Title;
                 this.RequirementText.Text = errormessage;
             }
+        }
+
+        internal void SetClasses(IEnumerable<RequirementResult> enumerable)
+        {
+            this._classes = enumerable;
         }
 
         internal void SetRequirement(object result)

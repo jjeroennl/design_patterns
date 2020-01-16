@@ -11,6 +11,6 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <TextBlock HorizontalAlignment="Center" Margin="0,0,0,0" TextWrapping="Wrap" Grid.Column="0" Grid.Row="0" Text="✔️" Foreground="Green" Name="Check" VerticalAlignment="Center"/>
-        <TextBlock HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Grid.Column="1" Grid.Row="0" Text="" Foreground="Black" Name="RequirementText" VerticalAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Grid.Column="1" Grid.Row="0" Text="" Name="RequirementText" VerticalAlignment="Center"/>
     </Grid>
 </UserControl>
