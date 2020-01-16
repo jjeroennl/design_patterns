@@ -29,14 +29,11 @@ namespace xUnitTest
 
             var results = command.GetResults();
 
-            foreach (var cls in collection.GetClasses())
+            foreach (var patternResult in command.GetResults())
             {
-                if (results.ContainsKey(cls.Key))
-                {
-                    int val = calculator.GetScore("COMMAND", results[cls.Key]);
-                    if (val > score) score = val;
-                }
+                score = calculator.GetScore("COMMAND", patternResult.Value);
             }
+
             Assert.Equal(100, score);
 
         }
