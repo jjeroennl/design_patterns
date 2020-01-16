@@ -13,58 +13,45 @@ namespace idetector.Patterns
     public class AbstractFactoryMethod : IPattern
     {
         /*ID's:
-         *FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS
-         *FACTORY-CONTAINS-PRODUCT-INTERFACE
-         *FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD
-         *FACTORY-INHERITING-PRODUCT-INTERFACE
-         *FACTORY-INHERITING-FACTORY-CLASS
-         *FACTORY-RETURNS-PRODUCT
-         *FACTORY-MULTIPLE-METHODS
+         FACTORY-CONCRETE-FACTORY
+         FACTORY-CONCRETE-PRODUCTS
+         FACTORY-RETURNS-PRODUCT
+         FACTORY-ONE-PRODUCT-INTERFACE
+         FACTORY-MULTIPLE-METHODS
          */
         private List<RequirementResult> _results = new List<RequirementResult>();
 
         private bool isMethod;
         private HashSet<ClassModel> ifactories = new HashSet<ClassModel>();
         private ClassModel ifactory;
-
+        private List<ClassModel> _iproducts = new List<ClassModel>();
+        private List<ClassModel> _concreteFactories = new List<ClassModel>();
         private Dictionary<string, List<RequirementResult>> _reqs = new Dictionary<string, List<RequirementResult>>();
         private ClassCollection cc;
-        private List<ClassModel> abstractClasses = new List<ClassModel>();
-        private List<ClassModel> interfaces = new List<ClassModel>();
+
         private List<ClassModel> parents = new List<ClassModel>();
-        private List<ClassModel> possibleFactoryClasses = new List<ClassModel>();
-        private List<ClassModel> productInterfaces = new List<ClassModel>();
 
 
         public AbstractFactoryMethod(ClassCollection _cc, bool ismethod)
         {
             cc = _cc;
-            abstractClasses = API.ListAbstract(cc);
-            interfaces = API.ListInterfaces(cc);
             isMethod = ismethod;
-            ifactory = null;
         }
 
         public void Scan()
         {
             SetParents();
             SetIFactoryClass();
-            SetPossibleFactoriesAndProductInterfaces();
-            
+
             foreach (var ifac in ifactories)
             {
                 _results = new List<RequirementResult>();
                 ifactory = ifac;
-                _results.Add(ContainsIFactoryClass());
-                _results.Add(ContainsAbstractProductInterfaceMethod());
-                _results.Add(IsInheritingProductInterface());
-                _results.Add(IsInheritingFactoryClass());
-                _results.Add(ConcreteFactoryIsReturningConcreteProduct());
-                _results.Add(HasMultipleMethods());
-                if (!isMethod)
-                {
-                    _results.Add(ConcreteProductsFollowOneProductInterface());
-                }
+                FindConcreteFactories();
+                FindConcreteProducts();
+                ConcreteFactoryIsReturningConcreteProduct();
+                ConcreteProductsFollowOneProductInterface();
+                HasMultipleMethods();
                 _reqs.Add(ifac.Identifier, _results);
             }
         }
@@ -78,30 +65,10 @@ namespace idetector.Patterns
         {
             return _results;
         }
-        
 
-        #region Lists
 
-        public void SetPossibleFactoriesAndProductInterfaces()
-        {
-            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
-            {
-                foreach (var method in cls.Value.GetMethods())
-                {
-                    if (cls.Value.IsAbstract || cls.Value.IsInterface)
-                    {
-                        foreach (var @interface in interfaces)
-                        {
-                            if (method.ReturnType == @interface.Identifier)
-                            {
-                                possibleFactoryClasses.Add(cls.Value);
-                                productInterfaces.Add(cc.GetClass(method.ReturnType));
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        #region privates
+
         private void SetParents()
         {
             foreach (var cls in cc.GetClasses())
@@ -123,201 +90,210 @@ namespace idetector.Patterns
         {
             foreach (var ifctr in parents)
             {
-                foreach (var method in ifctr.GetMethods())
+                if (ifctr != null)
                 {
-                    foreach (var prnt in parents)
+                    foreach (var method in ifctr.GetMethods())
                     {
-                        if (prnt != ifctr)
+                        foreach (var prnt in parents)
                         {
-                            if (method.ReturnType.Equals(prnt.Identifier))
+                            if (prnt != ifctr && prnt != null)
                             {
-                                ifactories.Add(ifctr);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        #endregion
-
-        #region Checks
-        /// <summary>
-        /// Checks if there is any (abstract) factory classes present.
-        /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
-        public RequirementResult ContainsIFactoryClass()
-        {
-            if (ifactories.Contains(ifactory)) return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", true, ifactory);
-            return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", false, ifactory);
-        }
-
-        /// <summary>
-        /// Checks if there is any classes present that have an abstract method with the return type of a product interface.
-        /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
-        public RequirementResult ContainsAbstractProductInterfaceMethod()
-        {
-            foreach (var inf in API.ListInterfaces(cc))
-            {
-                if ()
-                {
-
-                }
-            }
-            if (interfaces.Count == 0)
-            {
-                return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", false, ifactory);
-            }
-            return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", true, ifactory);
-        }
-
-        /// <summary>
-        /// Checks if there is any classes that inherit an abstract (factory) class.
-        /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
-        public RequirementResult IsInheritingFactoryClass()
-        {
-            if (parents != null)
-            {
-                foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
-                {
-                    foreach (var prnt in parents)
-                    {
-                        if (cls.Value.HasParent(prnt.Identifier))
-                        {
-                            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", true, ifactory);
-                        }
-                    }
-                }
-            }
-            return new RequirementResult("FACTORY-INHERITING-FACTORY-CLASS", false, ifactory);
-        }
-
-        /// <summary>
-        /// Checks if there is any classes that inherit a (product) interface.
-        /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
-        public RequirementResult IsInheritingProductInterface()
-        {
-            foreach (var @interface in productInterfaces)
-            {
-                if (@interface != null)
-                {
-                    foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
-                    {
-                        if (cls.Value.HasParent(@interface.Identifier))
-                        {
-                            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", true, ifactory);
-                        }
-                    }
-                }
-            }
-            return new RequirementResult("FACTORY-INHERITING-PRODUCT-INTERFACE", false, ifactory);
-        }
-
-        /// <summary>
-        /// Checks if there is a concrete factory that returns a concrete product.
-        /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
-        public RequirementResult ConcreteFactoryIsReturningConcreteProduct()
-        {
-            foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
-            {
-                foreach (var @class in possibleFactoryClasses)
-                {
-                    if (cls.Value.HasParent(@class.Identifier))
-                    {
-                        foreach (var method in cls.Value.GetMethods())
-                        {
-                            foreach (var @interface in interfaces)
-                            {
-                                if (method.ReturnType == @interface.Identifier)
+                                var x = prnt.Identifier;
+                                if (method.ReturnType.Equals(prnt.Identifier))
                                 {
-                                    return new RequirementResult("FACTORY-RETURNS-PRODUCT", true, ifactory);
-
+                                    ifactories.Add(ifctr);
                                 }
                             }
                         }
                     }
                 }
             }
-            return new RequirementResult("FACTORY-RETURNS-PRODUCT", false, ifactory);
+        }
+
+        private void _findConcreteImplementation(List<ClassModel> concretes)
+        {
+            HashSet<ClassModel> strs = new HashSet<ClassModel>();
+            foreach (var concrete in concretes)
+            {
+                foreach (var inf in API.ListInterfaces(cc).Concat(API.ListAbstract(cc)))
+                {
+                    if (API.ClassHasMethodOfType(concrete, inf.Identifier))
+                    {
+                        strs.Add(inf);
+                    }
+                }
+            }
+
+            _iproducts = strs.ToList();
+        }
+
+        private RequirementResult checkResultsFailed(List<RequirementResult> results)
+        {
+            var result = results.FirstOrDefault(e => e.Passed == false);
+            if (result == default(RequirementResult))
+            {
+                result = results.FirstOrDefault(e => e.Passed);
+            }
+
+            return result;
+        }
+
+
+        #endregion
+
+        #region Checks
+
+        public void FindConcreteFactories()
+        {
+            string id = "FACTORY-CONCRETE-FACTORY";
+            bool triggered = false;
+            foreach (var cls in cc.GetClasses().Values)
+            {
+                if (cls.HasParent(ifactory.Identifier))
+                {
+                    _concreteFactories.Add(cls);
+                    triggered = true;
+                }
+            }
+            _results.Add(new RequirementResult(id, triggered, ifactory));
+        }
+
+
+
+        public void FindConcreteProducts()
+        {
+            _findConcreteImplementation(_concreteFactories);
+            List<RequirementResult> results = new List<RequirementResult>();
+            string id = "FACTORY-CONCRETE-PRODUCTS";
+            foreach (var cls in cc.GetClasses().Values)
+            {
+                foreach (var iproduct in _iproducts)
+                {
+                    if (cls.HasParent(iproduct.Identifier))
+                    {
+                        results.Add(new RequirementResult(id, true, cls));
+                    }
+                }
+            }
+
+            if (!results.Any(e => e.Id.Equals(id)))
+            {
+                results.Add(new RequirementResult(id, false, ifactory));
+            }
+
+            var result = checkResultsFailed(results);
+            _results.Add(result);
+        }
+
+
+        /// <summary>
+        /// Checks if there is a concrete factory that returns a concrete product.
+        /// </summary>
+        public void ConcreteFactoryIsReturningConcreteProduct()
+        {
+            List<RequirementResult> results = new List<RequirementResult>();
+            string id = "FACTORY-RETURNS-PRODUCT";
+            List<ClassModel> concreteProducts = new List<ClassModel>();
+            List<string> crProductsId = new List<string>();
+            foreach (var iproduct in _iproducts)
+            {
+                var save = API.ListChildren(cc, iproduct.Identifier);
+                concreteProducts = concreteProducts.Concat(save).ToList();
+            }
+
+            foreach (var concreteProduct in concreteProducts)
+            {
+                crProductsId.Add(concreteProduct.Identifier);
+            }
+
+
+            foreach (var cls in _concreteFactories)
+            {
+                bool triggered = false;
+                foreach (var method in cls.GetMethods())
+                {
+                    if (crProductsId.Any(e => method.Body.Contains(e)))
+                    {
+                        triggered = true;
+                    }
+                }
+                results.Add(new RequirementResult(id, triggered, cls));
+            }
+            var result = checkResultsFailed(results);
+            _results.Add(result);
         }
 
         /// <summary>
         /// Checks if the concrete products follow just one product interface.
         /// </summary>
-        /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
-        public RequirementResult ConcreteProductsFollowOneProductInterface()
+        public void ConcreteProductsFollowOneProductInterface()
         {
-            if (productInterfaces.Count != 1)
+            string id = "FACTORY-ONE-PRODUCT-INTERFACE";
+            if (isMethod)
             {
-                ClassModel temp = null;
-                foreach (var @interface in productInterfaces)
+                if (_iproducts.Count == 1)
                 {
-                    if (@interface != null)
-                    {
-                        foreach (KeyValuePair<string, ClassModel> cls in cc.GetClasses())
-                        {
-                            if (cls.Value.HasParent(@interface.Identifier))
-                            {
-                                if (temp != null && temp != @interface)
-                                {
-                                    if (!isMethod)
-                                    {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true, ifactory);
-                                    }
-                                }
-                                else
-                                {
-                                    temp = @interface;
-                                }
-                            }
-                        }
-                    }
+                    _results.Add(new RequirementResult(id, true, ifactory));
+                }
+                else
+                {
+                    _results.Add(new RequirementResult(id, false, ifactory));
                 }
             }
-            else if (!isMethod)
+            else
             {
-                return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", false, ifactory);
+                if (_iproducts.Count > 1)
+                {
+                    _results.Add(new RequirementResult(id, true, ifactory));
+                }
+                else
+                {
+                    _results.Add(new RequirementResult(id, false, ifactory));
+                }
             }
 
-            return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", true, ifactory);
         }
 
         /// <summary>
         /// Checking to see if the IFactory has multiple methods
         /// </summary>
         /// <returns>Whether it is allowed to have multiple methods and if it has it</returns>
-        public RequirementResult HasMultipleMethods()
+        public void HasMultipleMethods()
         {
-            int count = 0;
-
-            if(ifactory != null)
+            string id = "FACTORY-MULTIPLE-METHODS";
+            HashSet<string> strs = new HashSet<string>();
+            foreach (var method in ifactory.GetMethods())
             {
-                if (ifactory.GetMethods().Count() > 1)
+                if (_iproducts.Contains(cc.GetClass(method.ReturnType)))
                 {
-                    foreach (var method in ifactory.GetMethods())
-                    {
-                        foreach (var prnt in parents)
-                        {
-                            if (method.ReturnType.Equals(prnt.Identifier))
-                            {
-                                count += 1;
-                            }
-                        }
-                    }
+                    strs.Add(method.ReturnType);
                 }
-                if (count > 1)
-                {
-                    if (isMethod) return new RequirementResult("FACTORY-MULTIPLE-METHODS", false, ifactory);
-                    else return new RequirementResult("FACTORY-MULTIPLE-METHODS", true, ifactory);
-                }
-                if (isMethod) return new RequirementResult("FACTORY-MULTIPLE-METHODS", true, ifactory);
-                else return new RequirementResult("FACTORY-MULTIPLE-METHODS", false, ifactory);
             }
-            return new RequirementResult("FACTORY-MULTIPLE-METHODS", false, ifactory);
+
+            if (isMethod)
+            {
+                if (_iproducts.Count == 1)
+                {
+                    _results.Add(new RequirementResult(id, true, ifactory));
+                }
+                else
+                {
+                    _results.Add(new RequirementResult(id, false, ifactory));
+                }
+            }
+            else
+            {
+                if (_iproducts.Count > 1)
+                {
+                    _results.Add(new RequirementResult(id, true, ifactory));
+                }
+                else
+                {
+                    _results.Add(new RequirementResult(id, false, ifactory));
+                }
+            }
         }
+
         #endregion
     }
 }
