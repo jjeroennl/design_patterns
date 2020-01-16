@@ -225,7 +225,7 @@ namespace idetector.Patterns
             {
               foreach (var command in commands.GetClasses())
                {
-                    foreach (var property in command.Value.getProperties())
+                    foreach (var property in command.Value.GetProperties())
                     {
                         if (cc.GetClass(property.ValueType.ToString()) != null)
                         {
