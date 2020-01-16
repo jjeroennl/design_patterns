@@ -50,8 +50,8 @@ namespace idetector.Patterns
             SetParents();
             SetIFactoryClass();
             SetPossibleFactoriesAndProductInterfaces();
-            var classes = abstractClasses.Concat(interfaces).ToList();
-            foreach (var ifac in classes)
+            
+            foreach (var ifac in ifactories)
             {
                 _results = new List<RequirementResult>();
                 ifactory = ifac;
@@ -78,7 +78,7 @@ namespace idetector.Patterns
         {
             return _results;
         }
-
+        
 
         #region Lists
 
@@ -123,20 +123,6 @@ namespace idetector.Patterns
         {
             foreach (var ifctr in parents)
             {
-                foreach (var property in ifctr.GetProperties())
-                {
-                    foreach (var prnt in parents)
-                    {
-                        if (prnt != ifctr)
-                        {
-                            if (property.ValueType.Equals(prnt.Identifier))
-                            {
-
-                                ifactories.Add(ifctr);
-                            }
-                        }
-                    }
-                }
                 foreach (var method in ifctr.GetMethods())
                 {
                     foreach (var prnt in parents)
@@ -161,7 +147,7 @@ namespace idetector.Patterns
         /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ContainsIFactoryClass()
         {
-            if (ifactory != null) return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", true, ifactory);
+            if (ifactories.Contains(ifactory)) return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", true, ifactory);
             return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-FACTORY-CLASS", false, ifactory);
         }
 
@@ -171,6 +157,13 @@ namespace idetector.Patterns
         /// <returns><see cref="RequirementResult">RequirementResult</see></returns>
         public RequirementResult ContainsAbstractProductInterfaceMethod()
         {
+            foreach (var inf in API.ListInterfaces(cc))
+            {
+                if ()
+                {
+
+                }
+            }
             if (interfaces.Count == 0)
             {
                 return new RequirementResult("FACTORY-CONTAINS-ABSTRACT-PRODUCT-INTERFACE-METHOD", false, ifactory);
@@ -272,7 +265,7 @@ namespace idetector.Patterns
                                 {
                                     if (!isMethod)
                                     {
-                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE", true, ifactory);
+                                        return new RequirementResult("FACTORY-ONE-PRODUCT-INTERFACE",true, ifactory);
                                     }
                                 }
                                 else
@@ -300,7 +293,7 @@ namespace idetector.Patterns
         {
             int count = 0;
 
-            if (ifactory != null)
+            if(ifactory != null)
             {
                 if (ifactory.GetMethods().Count() > 1)
                 {
