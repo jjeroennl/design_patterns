@@ -72,7 +72,7 @@
                 <StackPanel Grid.Column="1">
                     <StackPanel x:Name="Summary" Visibility="Collapsed" HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch" Orientation="Vertical">
-                        <Label x:Name="PatternName" Content="Summary" HorizontalAlignment="Stretch"
+                        <TextBlock x:Name="PatternName" Text="Summary" HorizontalAlignment="Stretch"
                                VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Grid.ColumnSpan="2" />
                         <StackPanel x:Name="SummaryCondition" Orientation="Horizontal">
                             <Label x:Name="ConditionIcon" Content="" Visibility="Visible" HorizontalAlignment="Left"
@@ -81,12 +81,8 @@
                                    HorizontalAlignment="Stretch" VerticalAlignment="Top" FontWeight="Bold"
                                    FontSize="15" TextWrapping="WrapWithOverflow"/>
                         </StackPanel>
-                        <Canvas x:Name="Canvas" Height="{Binding ElementName=ConditionText, Path=ActualHeight}"
-                                VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                            <TextBlock x:Name="ConditionText" Text="Placeholder text"
-                                       Width="{Binding ElementName=Canvas, Path=ActualWidth}"
+                        <TextBlock x:Name="ConditionText" Text="Placeholder text"
                                        TextWrapping="WrapWithOverflow" />
-                        </Canvas>
                         <Grid x:Name="MoreInfo" Margin="0,10,0,0" Grid.Column="2" 
                                     VerticalAlignment="Bottom">
                             <Grid.ColumnDefinitions>

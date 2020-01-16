@@ -10,7 +10,7 @@
 
     <Grid Margin="0,0,0,0">
         <Expander x:Name="PatternName1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Header="{Binding Path=HeaderTitle}" IsExpanded="False" Collapsed="Collapse" Expanded="Collapse">
-            <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
+            <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"  VerticalScrollBarVisibility="Auto">
                 <StackPanel Name="FoundList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
                 </StackPanel>

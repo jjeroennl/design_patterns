@@ -235,9 +235,7 @@ namespace vs_plugin
         /// </summary>
         /// <param name="text">Text to be placed inside TextBlock.</param>
         public void UpdateSummary(string pattern, PatternRequirement req, bool passed, IEnumerable<RequirementResult> results)
-
         {
-
             if (passed)
             {
                 this.ConditionIcon.Content = "✔️";
@@ -249,7 +247,7 @@ namespace vs_plugin
                 this.ConditionIcon.Foreground = new SolidColorBrush(Color.FromRgb(128, 0, 0));
             }
             Summary.Visibility = Visibility.Visible;
-            PatternName.Content = pattern;
+            PatternName.Text = pattern;
             ConditionTitle.Text = req.Title;
             if (passed)
             {
@@ -260,6 +258,8 @@ namespace vs_plugin
                 ConditionText.Text = req.ErrorMessage;
             }
 
+            PatternName.TextWrapping = TextWrapping.Wrap;
+            ConditionTitle.TextWrapping = TextWrapping.Wrap;
             ConditionText.TextWrapping = TextWrapping.Wrap;
             this.ClassList.Children.Clear();
 
