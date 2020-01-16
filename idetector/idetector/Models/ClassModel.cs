@@ -158,12 +158,12 @@ namespace idetector.Models
             return constructors;
         }
 
-        public List<MethodModel> getMethods()
+        public List<MethodModel> GetMethods()
         {
             return Methods;
         }
 
-        public List<PropertyModel> getProperties()
+        public List<PropertyModel> GetProperties()
         {
             return Properties;
         }

@@ -43,17 +43,6 @@ namespace idetector.Patterns
                 if (ISubjectClass != null) HasObserversAndSubjects();
                 if (observers != null && subjects != null) HasObserverRelations();
             }
-
-            foreach (var c in _cc.GetClasses())
-            {
-                foreach (var item in _results[c.Value.Identifier].ToArray())
-                {
-                    Debug.Write("ID: " + item.Id);
-                    Debug.Write(", Passed: " + item.Passed);
-                    Debug.Write(", Class: " + item.Class.Identifier);
-                    Debug.WriteLine("");
-                }
-            }
         }
 
         public Dictionary<string, List<RequirementResult>> GetResults()
@@ -72,23 +61,22 @@ namespace idetector.Patterns
                     !cls.GetMethods()[0].Modifiers.Contains("private"))
                 {
                     IObserverClass = cls;
-                    Debug.WriteLine("HasObserverInterface Added: " + cls.Identifier + " true");
                     _results[cls.Identifier].Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", true, cls));
                 }
 
 
-                bool add = true;
-                foreach (var result in _results[cls.Identifier].ToArray())
-                {
-                    if (result.Id.Equals("OBSERVER-HAS-OBSERVER-INTERFACE")) add = false;
-                }
-
-                if (add)
-                {
-                    Debug.WriteLine("HasObserverInterface Added: " + cls.Identifier + " false");
-                    _results[cls.Identifier]
-                        .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false, cls));
-                }
+                // bool add = true;
+                // foreach (var result in _results[cls.Identifier].ToArray())
+                // {
+                //     if (result.Id.Equals("OBSERVER-HAS-OBSERVER-INTERFACE")) add = false;
+                // }
+                //
+                // if (add)
+                // {
+                //     Debug.WriteLine("HasObserverInterface Added: " + cls.Identifier + " false");
+                //     _results[cls.Identifier]
+                //         .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-INTERFACE", false, cls));
+                // }
 
             }
         }
@@ -110,7 +98,7 @@ namespace idetector.Patterns
                         {
                             ISubjectClass = cls;
                             Debug.WriteLine("HasSubjectInterface Added: " + cls.Identifier + " true");
-                            _results[cls.Identifier]
+                            _results[IObserverClass.Identifier]
                                 .Add(new RequirementResult("OBSERVER-HAS-SUBJECT-INTERFACE", true, cls));
                         }
                     }
@@ -118,19 +106,19 @@ namespace idetector.Patterns
                     break;
                 }
                 bool add = true;
-                    foreach (var result in _results[cls.Identifier].ToArray())
-                    {
-                        if (result.Id.Equals("OBSERVER-HAS-SUBJECT-INTERFACE")) add = false;
-                    }
+                foreach (var result in _results[IObserverClass.Identifier].ToArray())
+                {
+                    if (result.Id.Equals("OBSERVER-HAS-SUBJECT-INTERFACE")) add = false;
+                }
 
-                    if (add)
-                    {
-                        Debug.WriteLine("HasSubjectInterface Added: " + cls.Identifier + " false");
-                        _results[cls.Identifier]
-                            .Add(new RequirementResult("OBSERVER-HAS-SUBJECT-INTERFACE", false, cls));
+                if (add)
+                {
+                    Debug.WriteLine("HasSubjectInterface Added: " + cls.Identifier + " false");
+                    _results[IObserverClass.Identifier]
+                        .Add(new RequirementResult("OBSERVER-HAS-SUBJECT-INTERFACE", false, cls));
 
-                    }
-                
+                }
+
             }
         }
 
@@ -152,7 +140,7 @@ namespace idetector.Patterns
                         hasRelations = true;
                         Debug.WriteLine("HasObserverRelations Added: " + subject.Identifier + " true, " +
                                         subject.Identifier);
-                        _results[subject.Identifier]
+                        _results[IObserverClass.Identifier]
                             .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", true, subject));
                     }
                 }
@@ -170,7 +158,7 @@ namespace idetector.Patterns
                     {
                         Debug.WriteLine("HasObserverRelations Added: " + subject.Identifier + " false, " +
                                         subject.Identifier);
-                        _results[subject.Identifier]
+                        _results[IObserverClass.Identifier]
                             .Add(new RequirementResult("OBSERVER-HAS-OBSERVER-RELATIONS", false, subject));
                     }
                 }
@@ -191,7 +179,7 @@ namespace idetector.Patterns
                         observers.Add(cls.Value);
                         Debug.WriteLine("HasObserversAndSubjects Added: " + cls.Value.Identifier + " true, " +
                                         IObserverClass.Identifier);
-                        _results[cls.Value.Identifier]
+                        _results[IObserverClass.Identifier]
                             .Add(new RequirementResult("OBSERVER-HAS-OBSERVERS-AND-SUBJECTS", true, cls.Value));
                     }
 
@@ -200,14 +188,14 @@ namespace idetector.Patterns
                         subjects.Add(cls.Value);
                         Debug.WriteLine("HasObserversAndSubjects Added: " + cls.Value.Identifier + " true, " +
                                         ISubjectClass.Identifier);
-                        _results[cls.Value.Identifier]
+                        _results[IObserverClass.Identifier]
                             .Add(new RequirementResult("OBSERVER-HAS-OBSERVERS-AND-SUBJECTS", true, cls.Value));
                     }
                 }
                 else
                 {
                     Debug.WriteLine("HasObserversAndSubjects Added: " + cls.Value.Identifier + " false");
-                    _results[cls.Value.Identifier]
+                    _results[IObserverClass.Identifier]
                         .Add(new RequirementResult("OBSERVER-HAS-OBSERVERS-AND-SUBJECTS", false, cls.Value));
                 }
             }

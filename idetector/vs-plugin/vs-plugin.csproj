@@ -74,6 +74,7 @@
     <Compile Include="Code\Patterns\Helper\RelationTable.cs" />
     <Compile Include="Code\Patterns\IPattern.cs" />
     <Compile Include="Code\Patterns\Iterator.cs" />
+    <Compile Include="Code\Patterns\Observer.cs" />
     <Compile Include="Code\Patterns\Singleton.cs" />
     <Compile Include="Code\Patterns\StateStrategy.cs" />
     <Compile Include="Code\ScoreCalculator.cs" />
@@ -111,6 +112,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
