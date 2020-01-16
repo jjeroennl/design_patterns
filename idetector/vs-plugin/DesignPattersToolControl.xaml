@@ -94,9 +94,9 @@
                                 <ColumnDefinition Width="60" />
                             </Grid.ColumnDefinitions>
                             <StackPanel Name="ClassList"></StackPanel>
-                            <Label VerticalAlignment="Bottom" FontStyle="Italic" Grid.Column="1" HorizontalAlignment="Right" MouseDown="MoreInfoClick">
+                            <TextBlock VerticalAlignment="Bottom" TextDecorations="Underline" FontStyle="Italic" Grid.Column="1" HorizontalAlignment="Right" MouseDown="MoreInfoClick" Background="{x:Null}" Foreground="#FF0029FF" Cursor="Hand">
                                 More info...
-                            </Label>
+                            </TextBlock>
                         </Grid>
                     </StackPanel>
                 </StackPanel>
