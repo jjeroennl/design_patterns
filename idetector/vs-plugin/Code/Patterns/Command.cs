@@ -23,6 +23,7 @@ namespace idetector.Patterns
         private ClassModel _cls;
 
         private ClassModel commandInterface;
+        private List<ClassModel> publicCommandConstructors;
         private ClassCollection commands;
         private ClassModel invoker;
         private ClassCollection receivers;
@@ -39,6 +40,7 @@ namespace idetector.Patterns
             commands = new ClassCollection();
             receivers = new ClassCollection();
             _results = new Dictionary<string, List<RequirementResult>>();
+            publicCommandConstructors = new List<ClassModel>();
         }
 
         public void Scan()
@@ -48,11 +50,10 @@ namespace idetector.Patterns
                 _results.Add(item.Value.Identifier, new List<RequirementResult>());
             }
 
-            HasInterfaceOrAbstract();
+            HasCommandInterface();
 
             if (commandInterface != null)
             {
-
                 HasCommandClasses();
                 HasReceiverClasses();
 
@@ -80,7 +81,7 @@ namespace idetector.Patterns
         /// Checks if command pattern has an interface or an abstract class.
         /// If this is true, adds the interface as a Classmodel to defined "commandInterface"
         /// </summary>
-        public void HasInterfaceOrAbstract()
+        public void HasCommandInterface()
         {
             if (commandInterface == null)
             {
@@ -89,11 +90,7 @@ namespace idetector.Patterns
                     if (cls.IsInterface || cls.IsAbstract)
                     {
                         commandInterface = cls;
-                        _results[cls.Identifier].Add(new RequirementResult("COMMAND-HAS-INTERFACE", true, cls));
-                    }
-                    else
-                    {
-                        _results[cls.Identifier].Add(new RequirementResult("COMMAND-HAS-INTERFACE", false, cls));
+                        _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-INTERFACE", true, cls));
                     }
                 }
             }
@@ -108,31 +105,20 @@ namespace idetector.Patterns
         {
             foreach (var cls in cc.GetClasses())
             {
-                if (commandInterface == null)
-                {
-                    return;
-                }
                 if (cls.Value.HasParent(commandInterface.Identifier))
                 {
-                    foreach (var result in _results[commandInterface.Identifier].ToArray())
-                    {
-                        if (!(result.Id.Equals("COMMAND-HAS-COMMAND-CLASS")))
-                        {
-                            commands.AddClass(cls.Value);
-                            _results[cls.Value.Identifier].Add(new RequirementResult("COMMAND-HAS-COMMAND-CLASS", true, cls.Value));
-                        }
-                    }
+                    commands.AddClass(cls.Value);
                 }
-                else
-                {
-                    foreach (var result in _results[commandInterface.Identifier].ToArray())
-                    {
-                        if (!(result.Id.Equals("COMMAND-HAS-COMMAND-CLASS")))
-                        {
-                            _results[cls.Value.Identifier].Add(new RequirementResult("COMMAND-HAS-COMMAND-CLASS", false, cls.Value));
-                        }
-                    }
-                }
+            }
+
+            if (commands.GetClasses().Count > 0)
+            {
+                _results[commandInterface.Identifier]
+                    .Add(new RequirementResult("COMMAND-HAS-COMMAND-CLASS", true, commandInterface));
+            }
+            else
+            {
+                _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-COMMAND-CLASS", false, commandInterface));
             }
         }
 
@@ -152,24 +138,25 @@ namespace idetector.Patterns
                         {
                             foreach (var modifier in method.Modifiers)
                             {
-                                foreach (var result in _results[commandInterface.Identifier].ToArray())
+                                if (method.Modifiers[0].ToLower().Equals("public"))
                                 {
-                                    if (!(result.Id.Equals("COMMAND-HAS-PUBLIC-CONSTRUCTOR")))
-                                    {
-                                        if (method.Modifiers[0].ToLower().Equals("public"))
-                                        {
-                                            Debug.WriteLine("wow");
-                                            _results[command.Value.Identifier].Add(new RequirementResult("COMMAND-HAS-PUBLIC-CONSTRUCTOR", true, command.Value));
-                                        }
-                                        else
-                                        {
-                                            _results[command.Value.Identifier].Add(new RequirementResult("COMMAND-HAS-PUBLIC-CONSTRUCTOR", false, command.Value));
-                                        }
-                                    }
+                                    publicCommandConstructors.Add(command.Value);
                                 }
                             }
                         }
                     }
+                }
+
+                if (commands.GetClasses().Count == publicCommandConstructors.Count)
+                {
+                    _results[commandInterface.Identifier]
+                        .Add(new RequirementResult("COMMAND-HAS-PUBLIC-CONSTRUCTOR", true, commandInterface));
+
+                }
+                else
+                {
+                    _results[commandInterface.Identifier]
+                        .Add(new RequirementResult("COMMAND-HAS-PUBLIC-CONSTRUCTOR", false, commandInterface));
                 }
             }
         }
@@ -184,7 +171,7 @@ namespace idetector.Patterns
         {
             foreach (var cls in cc.GetClasses())
             {
-                int count = 0;
+                int privateMethods = 0;
                 foreach (var method in cls.Value.GetMethods())
                 {
                     if (method.Modifiers.Length > 0)
@@ -193,34 +180,35 @@ namespace idetector.Patterns
                         {
                             if (method.Modifiers[0].ToLower().Equals("public"))
                             {
-                                count += 1;
+                                privateMethods += 1;
 
                             }
                         }
 
-                    }
-
-                    foreach (var result in _results[commandInterface.Identifier].ToArray())
-                    {
-                        if (count == cls.Value.GetMethods().Count)
-                        {
-                            if (!(result.Id.Equals("COMMAND-HAS-RECEIVER-CLASS")))
-                            {
-                                receivers.AddClass(cls.Value);
-                                _results[cls.Value.Identifier].Add(new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", true, cls.Value));
-                            }
-                        }
-                        else
-                        {
-                            if (!(result.Id.Equals("COMMAND-HAS-RECEIVER-CLASS")))
-                            {
-                                _results[cls.Value.Identifier].Add(new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", false, cls.Value));
-                            }
-                        }
                     }
                 }
+
+                if (privateMethods == cls.Value.GetMethods().Count)
+                {
+                    receivers.AddClass(cls.Value);
+                }
             }
+
+            if (receivers.GetClasses().Count > 0)
+            {
+                _results[commandInterface.Identifier]
+                    .Add(new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", true, commandInterface));
+                
+            }
+
+            else
+            {
+                _results[commandInterface.Identifier]
+                    .Add(new RequirementResult("COMMAND-HAS-RECEIVER-CLASS", false, commandInterface));
+            }
+
         }
+
 
 
         /// <summary>
@@ -229,6 +217,7 @@ namespace idetector.Patterns
         /// </summary>
         public void CommandsUseReceiver()
         {
+            bool itdoes = false;
             if (commands != null)
             {
                 if (receivers != null)
@@ -237,22 +226,24 @@ namespace idetector.Patterns
                     {
                         foreach (var property in command.Value.GetProperties())
                         {
-                            if (cc.GetClass(property.ValueType.ToString()) != null)
+                            if (cc.GetClass(property.ValueType) != null)
                             {
                                 foreach (var receiver in receivers.GetClasses())
                                 {
-                                    if ((property.ValueType == receiver.Value.Identifier))
+                                    if (property.ValueType == receiver.Value.Identifier)
                                     {
-                                        _results[command.Value.Identifier].Add(new RequirementResult("COMMAND-USES-RECEIVER", true, command.Value));
+                                        itdoes = true;
+                                        _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-USES-RECEIVER", true, command.Value));
                                     }
-                                    else
-                                    {
-                                        _results[command.Value.Identifier].Add(new RequirementResult("COMMAND-USES-RECEIVER", false, command.Value));
 
-                                    }
                                 }
                             }
                         }
+                    }
+
+                    if (!itdoes)
+                    {
+                        _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-USES-RECEIVER", false, commandInterface));
                     }
                 }
             }
@@ -268,21 +259,21 @@ namespace idetector.Patterns
             {
                 foreach (var property in cls.Value.GetProperties())
                 {
-                    if (cc.GetClass(property.ValueType.ToString()) != null)
+                    if (cc.GetClass(property.ValueType) != null)
                     {
-                        if (property.ValueType.ToString() == commandInterface.Identifier)
+                        if (property.ValueType == commandInterface.Identifier)
                         {
                             invoker = cls.Value;
-                            _results[cls.Value.Identifier].Add(new RequirementResult("COMMAND-HAS-INVOKER-CLASS", true, cls.Value));
+                            _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-INVOKER-CLASS", true, cls.Value));
+                            break;
                         }
-                        else
-                        {
-                            _results[cls.Value.Identifier].Add(new RequirementResult("COMMAND-HAS-INVOKER-CLASS", false, cls.Value));
-                        }
-
                     }
                 }
+            }
 
+            if (invoker == null)
+            {
+                _results[commandInterface.Identifier].Add(new RequirementResult("COMMAND-HAS-INVOKER-CLASS", false, commandInterface));
             }
 
         }
