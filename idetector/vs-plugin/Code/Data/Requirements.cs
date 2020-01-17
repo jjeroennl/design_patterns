@@ -138,12 +138,10 @@ namespace idetector.Data
                 "One or more concrete factories returned one or less products. If only one product is required, consider using a regular factory method",
                                                      "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
             absfactoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS",
-                "One Method",
-                "A concrete factory is only allowed to have one method that returns a concrete product." +
-                "Concrete factories are as the name implies concrete, and should always return only one concrete product. " +
-                "If a factory is required to return more then one concrete product, consider using abstract factory",
-                "One or more concrete factories return no or more then one concrete product. If " +
-                "a factory is required to return more then one concrete product, consider using abstract factory",
+                "Multiple Methods",
+                "A concrete abstract factory is only allowed to have multiple method that returns a concrete product." +
+                "Concrete factories are as the name implies concrete, and should always return concrete products.",
+                "One or more concrete factories return no concrete product.",
                                                      "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
             PatternRequirements.Add("ABSTRACT-FACTORY", absfactoryreqs);
 
