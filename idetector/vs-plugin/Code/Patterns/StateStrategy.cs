@@ -42,7 +42,7 @@ namespace idetector.Patterns
 
         public void Scan()
         {
-            SetInterfaceOrAbstract();
+            HasInterfaceOrAbstract();
             ContextChecks();
             HasConcreteClasses();
             if (!IsState)
@@ -56,17 +56,27 @@ namespace idetector.Patterns
             return _results;
         }
 
-        private void SetInterfaceOrAbstract()
+        private void HasInterfaceOrAbstract()
         {
             foreach (ClassModel cls in cc.GetClasses().Values)
             {
                 if (API.ClassIsAbstractOrInterface(cls))
                 {
                     interfaces.Add(cls);
+                    _results.Add(cls.Identifier, new List<RequirementResult>());
+                    _results[cls.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true, cls));
+                }
+                else
+                {
+                    _results.Add(cls.Identifier, new List<RequirementResult>());
+                    _results[cls.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", false, cls));
                 }
             }
         }
 
+        /// <summary>
+        /// Checking if there is a class which suffises as an 'Context' class
+        /// </summary>
         private void ContextChecks()
         {
             int score, oldScore = 0;
@@ -118,9 +128,6 @@ namespace idetector.Patterns
             {
                 foreach (ClassModel @interface in interfaces)
                 {
-                    _results.Add(@interface.Identifier, new List<RequirementResult>());
-                    _results[@interface.Identifier].Add(new RequirementResult("STATE-STRATEGY-INTERFACE-ABSTRACT", true, @interface));
-
                     bool addStrategy = true, addPrivate = true, addPublic = true, addSetter = true, addLogic = true;
                     foreach (var result in _results[@interface.Identifier].ToArray())
                     {
@@ -169,19 +176,12 @@ namespace idetector.Patterns
         {
             if (cls != null)
             {
-                List<ClassModel> newInterfaces = new List<ClassModel>();
                 foreach (ClassModel @interface in interfaces)
                 {
                     if (API.ClassHasPropertyOfType(cls, @interface.Identifier))
                     {
-                        newInterfaces.Add(@interface);
+                        return true;
                     }
-                }
-
-                if (newInterfaces.Count > 0)
-                {
-                    interfaces = newInterfaces;
-                    return true;
                 }
             }
             return false;
