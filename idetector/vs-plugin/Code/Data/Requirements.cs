@@ -192,7 +192,7 @@ namespace idetector.Data
              * COMMAND-HAS-INVOKER-CLASS
              */
             List<PatternRequirement> commandreqs = new List<PatternRequirement>();
-            commandreqs.Add(new PatternRequirement("COMMAND-HAS-INTERFACE", "Interface or Abstract", "The pattern should contain an interface for all the commands.", "The command pattern does not contain either an interface or an abstract class.", "https://en.wikipedia.org/wiki/Command_pattern"));
+            commandreqs.Add(new PatternRequirement("COMMAND-HAS-INTERFACE", "Interface with method", "The pattern should contain an interface with only one method for all the commands.", "The command pattern does either not contain an interface or the interface does not contain one method.", "https://en.wikipedia.org/wiki/Command_pattern"));
             commandreqs.Add(new PatternRequirement("COMMAND-HAS-COMMAND-CLASS", "Command classes", "The pattern should contain command classes in order to execute functions through them.", "There are no commands that implement the abstract class or interface.", "https://en.wikipedia.org/wiki/Command_pattern"));
             commandreqs.Add(new PatternRequirement("COMMAND-HAS-PUBLIC-CONSTRUCTOR", "Command public constructor", "The pattern should contain a public constructor so this can be called through the interface.", "One or all of the commands do not have a public constructor.", "https://en.wikipedia.org/wiki/Command_pattern"));
             commandreqs.Add(new PatternRequirement("COMMAND-HAS-RECEIVER-CLASS", "Receiver classes", "The pattern should contain one or more receiver classes to perform commands on.", "There are no receiver classes implemented", "https://en.wikipedia.org/wiki/Command_pattern"));

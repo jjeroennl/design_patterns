@@ -593,6 +593,7 @@ namespace ObserverPattern
                 oPresent = true;
             }
 
+            // If both interfaces are not found, present will be set to true.
             if (sPresent == oPresent)
             {
                 present = true;

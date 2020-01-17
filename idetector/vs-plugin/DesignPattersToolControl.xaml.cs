@@ -143,7 +143,7 @@ namespace vs_plugin
             var singletonList = new List<Pattern>();
             var decoratorList = new List<Pattern>();
             var commandList = new List<Pattern>();
-            //var observerList = new List<Pattern>();
+            var observerList = new List<Pattern>();
 
             var f = new Facade(collection);
             f.Scan();
@@ -167,8 +167,8 @@ namespace vs_plugin
             var d = new Decorator(collection);
             d.Scan();
 
-            //var o = new Observer(collection);
-            //o.Scan();
+            var o = new Observer(collection);
+            o.Scan();
 
             foreach (var item in collection.GetClasses())
             {
@@ -183,7 +183,9 @@ namespace vs_plugin
             commandList = this.HandleResults("COMMAND", commandList, c.GetResults());
             abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
             factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
-            //observerList = this.HandleResults("OBSERVER", observerList, o.GetResults());
+            stateList = this.HandleResults("STATE", stateList, state.GetResults());
+            strategyList = this.HandleResults("STRATEGY", strategyList, strat.GetResults());
+            observerList = this.HandleResults("OBSERVER", observerList, o.GetResults());
 
 
             PatternList.Children.Clear();
@@ -197,7 +199,7 @@ namespace vs_plugin
             PopulatePattern("State", stateList);
             PopulatePattern("Strategy", strategyList);
             PopulatePattern("Command", commandList);
-            //PopulatePattern("Observer", observerList);
+            PopulatePattern("Observer", observerList);
 
         }
 
