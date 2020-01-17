@@ -125,11 +125,9 @@ namespace idetector.Data
                                                      "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
             absfactoryreqs.Add(new PatternRequirement("FACTORY-MULTIPLE-METHODS",
                 "One Method",
-                "A concrete factory is only allowed to have one method that returns a concrete product." +
-                "Concrete factories are as the name implies concrete, and should always return only one concrete product. " +
-                "If a factory is required to return more then one concrete product, consider using abstract factory",
-                "One or more concrete factories return no or more then one concrete product. If " +
-                "a factory is required to return more then one concrete product, consider using abstract factory",
+                "A concrete factory is only allowed to have multiple methods that returns a concrete product." +
+                "Concrete factories are as the name implies concrete, and should always return one concrete product.",
+                "One or more concrete factories return no then one concrete product.",
                                                      "https://en.wikipedia.org/wiki/Abstract_factory_pattern"));
             PatternRequirements.Add("ABSTRACT-FACTORY", absfactoryreqs);
 
@@ -146,8 +144,7 @@ namespace idetector.Data
              * STATE-CONCRETE-CLASS-RELATIONS
              */
             List<PatternRequirement> statereqs = new List<PatternRequirement>();
-            statereqs.Add(new PatternRequirement("STATE-STRATEGY-INTERFACE-ABSTRACT", "Parent classes", "There should be an parent class", "There are no interfaces or abstract classes found", "https://en.wikipedia.org/wiki/State_pattern"));
-            statereqs.Add(new PatternRequirement("STATE-STRATEGY-HAS-CONTEXT", "Context class", "There should be an context class, to call all the States/Strategies", "There is no class which suffices to be an Context class", "https://en.wikipedia.org/wiki/State_pattern"));
+            statereqs.Add(new PatternRequirement("STATE-STRATEGY-INTERFACE-ABSTRACT", "Parent classes", "There should be an parent class", "There are no interfaces or abstract classes found which are implemented by the Context class", "https://en.wikipedia.org/wiki/State_pattern")); statereqs.Add(new PatternRequirement("STATE-STRATEGY-HAS-CONTEXT", "Context class", "There should be an context class, to call all the States/Strategies", "There is no class which suffices to be an Context class", "https://en.wikipedia.org/wiki/State_pattern"));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-HAS-STRATEGY", "State/Strategy implementation", "In the Context class, there should be an implementation of the State/Strategy", "There is either no class which suffices to be an Context class, or in the Context class there is no implementation of the State/Strategy", "https://en.wikipedia.org/wiki/State_pattern"));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PRIVATE-STRATEGY", "Private State/Strategy implementation", "In the Context class, there should be an private implementation of the State/Strategy", "There is either no class which suffices to be an Context class, or no implementation of the State/Strategy, or that implementation is not private", "https://en.wikipedia.org/wiki/State_pattern"));
             statereqs.Add(new PatternRequirement("STATE-STRATEGY-CONTEXT-PUBLIC-CONSTRUCTOR", "Context public constructor", "The Context class should have an public constructor", "There is either no class which suffices to be an Context class, or the context class has no public constructor", "https://en.wikipedia.org/wiki/State_pattern"));
