@@ -184,7 +184,7 @@ namespace vs_plugin
             abstractFactoryList = this.HandleResults("ABSTRACT-FACTORY", abstractFactoryList, am.GetResults());
             factoryList = this.HandleResults("FACTORY", factoryList, fm.GetResults());
             stateList = this.HandleResults("STATE", stateList, state.GetResults());
-            strategyList = this.HandleResults("STRATEGY", stateList, strat.GetResults());
+            strategyList = this.HandleResults("STRATEGY", strategyList, strat.GetResults());
             observerList = this.HandleResults("OBSERVER", observerList, o.GetResults());
 
 
