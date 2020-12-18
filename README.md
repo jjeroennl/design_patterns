@@ -10,3 +10,5 @@ The project is able to detect:
 * Observers
 * Singleton
 * Façade
+
+This plugin has been made for Hogeschool Windesheim by students.
